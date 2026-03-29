@@ -5,7 +5,8 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Bible Notes</title>
   <meta name="theme-color" content="#5C3D2E">
   <link rel="manifest" href="manifest.json">
@@ -15,10 +16,37 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     /* Inter (Keep for custom components) */
-    @font-face { font-family: 'Inter'; src: url('./fonts/Inter-400.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
-    @font-face { font-family: 'Inter'; src: url('./fonts/Inter-500.ttf') format('truetype'); font-weight: 500; font-style: normal; font-display: swap; }
-    @font-face { font-family: 'Inter'; src: url('./fonts/Inter-600.ttf') format('truetype'); font-weight: 600; font-style: normal; font-display: swap; }
-    @font-face { font-family: 'Inter'; src: url('./fonts/Inter-700.ttf') format('truetype'); font-weight: 700; font-style: normal; font-display: swap; }
+    @font-face {
+      font-family: 'Inter';
+      src: url('./fonts/Inter-400.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Inter';
+      src: url('./fonts/Inter-500.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Inter';
+      src: url('./fonts/Inter-600.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Inter';
+      src: url('./fonts/Inter-700.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
   </style>
   <style>
     /* ─────────────────────────── TOKENS ─────────────────────────── */
@@ -118,7 +146,8 @@
     textarea,
     select {
       font-family: var(--font-body);
-      font-size: 16px; /* Prevents iOS auto-zoom on focus */
+      font-size: 16px;
+      /* Prevents iOS auto-zoom on focus */
     }
 
     a {
@@ -545,14 +574,16 @@
     .editor-overlay {
       position: fixed;
       inset: 0;
-      height: 100dvh; /* Modern viewport height that accounts for mobile address bars */
+      height: 100dvh;
+      /* Modern viewport height that accounts for mobile address bars */
       background: var(--bg);
       z-index: 200;
       display: flex;
       flex-direction: column;
       transform: translateY(100%);
       transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
-      overflow: hidden; /* Prevents the whole overlay from scrolling */
+      overflow: hidden;
+      /* Prevents the whole overlay from scrolling */
     }
 
     .editor-overlay.open {
@@ -686,11 +717,12 @@
     }
 
     .editor-header {
-      position: fixed;
+      position: absolute;
+      /* Absolute within the overlay, unaffected by viewport shifts */
       top: 0;
       left: 0;
       right: 0;
-      z-index: 1001; /* Higher than other overlays */
+      z-index: 110;
       background: var(--surface);
       display: flex;
       flex-direction: column;
@@ -758,7 +790,8 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 16px;
-      padding-top: 140px; /* Offset for fixed header */
+      padding-top: 150px;
+      /* Offset for absolute header with extra clearance */
     }
 
     .editor-content {
@@ -2095,13 +2128,16 @@
       padding: 24px;
       transition: opacity 300ms ease;
     }
-    #auth-overlay.hidden, #complete-profile-overlay.hidden {
+
+    #auth-overlay.hidden,
+    #complete-profile-overlay.hidden {
       display: none !important;
     }
+
     #complete-profile-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       z-index: 10000;
@@ -2111,6 +2147,7 @@
       padding: 24px;
       transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .auth-card {
       background: var(--surface);
       width: 100%;
@@ -2122,6 +2159,7 @@
       border: 1px solid var(--border-soft);
       transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .auth-logo {
       font-family: var(--font-display);
       font-size: 36px;
@@ -2129,11 +2167,13 @@
       color: var(--brand);
       margin-bottom: 8px;
     }
+
     .auth-subtitle {
-       color: var(--text-muted);
-       font-size: 15px;
-       margin-bottom: 32px;
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 32px;
     }
+
     .auth-input {
       width: 100%;
       padding: 14px 16px;
@@ -2147,19 +2187,23 @@
       outline: none;
       transition: border-color var(--trans), box-shadow var(--trans);
     }
+
     .auth-input:focus {
       border-color: var(--gold);
       box-shadow: 0 0 0 3px rgba(201, 150, 60, 0.15);
     }
+
     .password-wrapper {
       position: relative;
       width: 100%;
       margin-bottom: 16px;
     }
+
     .password-wrapper .auth-input {
       margin-bottom: 0;
       padding-right: 48px;
     }
+
     .btn-password-toggle {
       position: absolute;
       right: 12px;
@@ -2175,13 +2219,16 @@
       justify-content: center;
       transition: color var(--trans);
     }
+
     .btn-password-toggle:hover {
       color: var(--text-primary);
     }
+
     .btn-password-toggle svg {
       width: 20px;
       height: 20px;
     }
+
     /* Auth Alert */
     .auth-alert {
       padding: 12px 14px;
@@ -2191,78 +2238,102 @@
       line-height: 1.5;
       animation: alertSlide 300ms ease;
     }
+
     @keyframes alertSlide {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .auth-alert--error {
       background: #FEF2F2;
       color: #991B1B;
       border: 1px solid #F87171;
     }
+
     .auth-alert--success {
       background: #F0FDF4;
       color: #166534;
       border: 1px solid #4ADE80;
     }
+
     .auth-alert.hidden {
       display: none;
     }
+
     .auth-field-group {
       margin-bottom: 16px;
       transition: all 0.3s ease;
     }
+
     .auth-field-group.hidden {
       display: none;
       opacity: 0;
       transform: translateY(-10px);
     }
+
     .phone-input-group {
       display: flex;
-      align-items: center; /* Changed to center to avoid stretching */
+      align-items: center;
+      /* Changed to center to avoid stretching */
       margin-bottom: 16px;
       width: 100%;
     }
+
     .phone-input-group .auth-input {
       margin-bottom: 0 !important;
-      height: 48px; /* Fixed height for consistency */
+      height: 48px;
+      /* Fixed height for consistency */
     }
+
     .country-select-container {
       width: 120px;
       flex-shrink: 0;
     }
+
     #auth-phone {
       flex: 1;
     }
+
     /* Custom Scroll for Country Code */
     .country-select-container .app-select-list {
-      max-height: 200px; /* ~5 items */
+      max-height: 200px;
+      /* ~5 items */
       overflow-y: auto;
     }
+
     .auth-btn {
-       width: 100%;
-       padding: 14px;
-       border-radius: var(--r-md);
-       background: var(--brand);
-       color: white;
-       font-weight: 600;
-       font-size: 16px;
-       border: none;
-       cursor: pointer;
-       transition: background 0.2s;
-       margin-bottom: 16px;
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--r-md);
+      background: var(--brand);
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 16px;
     }
+
     .auth-btn:hover {
-       background: var(--brand-mid);
+      background: var(--brand-mid);
     }
+
     .auth-toggle {
-       background: none;
-       border: none;
-       color: var(--brand-mid);
-       font-size: 14px;
-       font-weight: 500;
-       cursor: pointer;
-       padding: 8px;
+      background: none;
+      border: none;
+      color: var(--brand-mid);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 8px;
     }
   </style>
 </head>
@@ -2277,12 +2348,15 @@
       <div id="auth-alert" class="auth-alert hidden"></div>
       <form id="auth-form">
         <div id="auth-name-group" class="auth-field-group hidden">
-          <input type="text" id="auth-name" name="full_name" class="auth-input" placeholder="Full Name" autocomplete="name">
+          <input type="text" id="auth-name" name="full_name" class="auth-input" placeholder="Full Name"
+            autocomplete="name">
         </div>
-        <input type="email" id="auth-email" name="email" class="auth-input" placeholder="Email address" required autocomplete="username">
+        <input type="email" id="auth-email" name="email" class="auth-input" placeholder="Email address" required
+          autocomplete="username">
         <div id="auth-phone-group" class="auth-field-group hidden">
           <div class="phone-input-group">
-            <select id="auth-country-code" class="auth-input" style="width: 120px; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; margin-bottom: 0; height: 48px;">
+            <select id="auth-country-code" class="auth-input"
+              style="width: 120px; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; margin-bottom: 0; height: 48px;">
               <option value="+255">TZ (+255)</option>
               <option value="+254">KE (+254)</option>
               <option value="+256">UG (+256)</option>
@@ -2291,24 +2365,38 @@
               <option value="+1">US (+1)</option>
               <option value="+44">UK (+44)</option>
             </select>
-            <input type="tel" id="auth-phone" name="phone" style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none; flex: 1; margin-bottom: 0; height: 48px;" class="auth-input" placeholder="Phone Number" autocomplete="tel">
+            <input type="tel" id="auth-phone" name="phone"
+              style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none; flex: 1; margin-bottom: 0; height: 48px;"
+              class="auth-input" placeholder="Phone Number" autocomplete="tel">
           </div>
         </div>
         <div class="password-wrapper" id="auth-password-wrapper">
-          <input type="password" id="auth-password" name="password" class="auth-input" placeholder="Password" required minlength="6" autocomplete="current-password">
-          <button type="button" class="btn-password-toggle" id="toggle-password-btn" aria-label="Toggle password visibility">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <input type="password" id="auth-password" name="password" class="auth-input" placeholder="Password" required
+            minlength="6" autocomplete="current-password">
+          <button type="button" class="btn-password-toggle" id="toggle-password-btn"
+            aria-label="Toggle password visibility">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
           </button>
         </div>
         <button type="submit" class="auth-btn" id="auth-submit-btn">SIGN IN</button>
       </form>
       <button class="auth-toggle" id="auth-toggle-mode">Don't have an account? Create one</button>
-      <div style="text-align: center; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; align-items: center;">
-        <button type="button" id="auth-forgot-btn" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:4px; transition: color var(--trans);">Forgot password?</button>
-        <button type="button" onclick="localStorage.clear(); sessionStorage.clear(); if('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(regs => { for(let reg of regs) reg.unregister(); }); } location.reload(true);" style="font-size: 11px; color: var(--text-muted); text-decoration: underline; background: none; border: none; cursor: pointer; padding: 4px;">
+      <div
+        style="text-align: center; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+        <button type="button" id="auth-forgot-btn"
+          style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:4px; transition: color var(--trans);">Forgot
+          password?</button>
+        <button type="button"
+          onclick="localStorage.clear(); sessionStorage.clear(); if('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(regs => { for(let reg of regs) reg.unregister(); }); } location.reload(true);"
+          style="font-size: 11px; color: var(--text-muted); text-decoration: underline; background: none; border: none; cursor: pointer; padding: 4px;">
           Problem signing in? Reset & Reload
         </button>
-        <button type="button" id="test-conn-btn" style="font-size: 11px; color: var(--gold); background: none; border: none; cursor: pointer; padding: 4px;">
+        <button type="button" id="test-conn-btn"
+          style="font-size: 11px; color: var(--gold); background: none; border: none; cursor: pointer; padding: 4px;">
           Test Connection
         </button>
       </div>
@@ -2319,15 +2407,18 @@
   <div id="complete-profile-overlay" class="hidden">
     <div class="auth-card">
       <div class="auth-logo">Complete Profile<span style="color:var(--gold)">.</span></div>
-      <div class="auth-subtitle">Welcome to Bible Notes! Please provide your details to securely sync your notes and stay connected.</div>
-      
+      <div class="auth-subtitle">Welcome to Bible Notes! Please provide your details to securely sync your notes and
+        stay connected.</div>
+
       <div id="cp-alert" class="auth-alert hidden"></div>
-      
+
       <div class="auth-form" id="complete-profile-form">
-        <input type="text" id="cp-full-name" class="auth-input" placeholder="Full Name (e.g. John Doe)" autocomplete="name">
-        
+        <input type="text" id="cp-full-name" class="auth-input" placeholder="Full Name (e.g. John Doe)"
+          autocomplete="name">
+
         <div class="phone-input-group">
-          <select id="cp-country-code" class="auth-input" style="width: 120px; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; margin-bottom: 0;">
+          <select id="cp-country-code" class="auth-input"
+            style="width: 120px; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; margin-bottom: 0;">
             <option value="+255">TZ (+255)</option>
             <option value="+254">KE (+254)</option>
             <option value="+256">UG (+256)</option>
@@ -2336,11 +2427,14 @@
             <option value="+1">US (+1)</option>
             <option value="+44">UK (+44)</option>
           </select>
-          <input type="tel" id="cp-phone" class="auth-input" style="border-top-left-radius: 0; border-bottom-left-radius: 0; flex: 1; margin-bottom: 0;" placeholder="Phone Number" autocomplete="tel">
+          <input type="tel" id="cp-phone" class="auth-input"
+            style="border-top-left-radius: 0; border-bottom-left-radius: 0; flex: 1; margin-bottom: 0;"
+            placeholder="Phone Number" autocomplete="tel">
         </div>
 
         <button type="submit" class="auth-btn" id="cp-submit-btn">SAVE & CONTINUE</button>
-        <button type="button" class="auth-toggle" id="cp-logout-btn" style="margin-top: 8px; color: var(--error);">Sign out</button>
+        <button type="button" class="auth-toggle" id="cp-logout-btn" style="margin-top: 8px; color: var(--error);">Sign
+          out</button>
       </div>
     </div>
   </div>
@@ -2394,7 +2488,8 @@
       <div class="side-nav__spacer"></div>
       <div class="side-nav__bottom">
         <button class="side-nav__theme-btn" id="snav-lang-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="2" y1="12" x2="22" y2="12"></line>
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
@@ -2443,7 +2538,8 @@
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
-      <button class="top-nav__action" id="top-lang-btn" aria-label="Toggle language" style="font-weight: 700; font-size: 13px; font-family: var(--font-display); width: 28px; height: 28px; line-height: 1;">EN</button>
+      <button class="top-nav__action" id="top-lang-btn" aria-label="Toggle language"
+        style="font-weight: 700; font-size: 13px; font-family: var(--font-display); width: 28px; height: 28px; line-height: 1;">EN</button>
     </nav>
 
     <!-- MAIN SCROLL AREA -->
@@ -2520,7 +2616,8 @@
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input class="search-bar__input" type="text" placeholder="Search notes…" id="notes-search-input" data-i18n-placeholder="search_placeholder">
+            <input class="search-bar__input" type="text" placeholder="Search notes…" id="notes-search-input"
+              data-i18n-placeholder="search_placeholder">
           </div>
         </div>
 
@@ -2691,7 +2788,8 @@
                 <path d="m9 18 6-6-6-6"></path>
               </svg></div>
           </div>
-          <button class="settings-item" id="logout-btn" style="width:100%; border:none; cursor:pointer; background:none; padding:0; text-align:left;">
+          <button class="settings-item" id="logout-btn"
+            style="width:100%; border:none; cursor:pointer; background:none; padding:0; text-align:left;">
             <div class="settings-item__icon" style="background:var(--error-light)">🚪</div>
             <div class="settings-item__text">
               <div class="settings-item__label" style="color:var(--error)" data-i18n="settings_logout">Log Out</div>
@@ -2702,7 +2800,8 @@
                 <path d="m9 18 6-6-6-6"></path>
               </svg></div>
           </button>
-          <div style="text-align:center; padding: 16px; font-size:12px; color:var(--text-muted)">Bible Notes v1.0 · Made with
+          <div style="text-align:center; padding: 16px; font-size:12px; color:var(--text-muted)">Bible Notes v1.0 · Made
+            with
             ✦</div>
         </div>
       </section>
@@ -2774,90 +2873,91 @@
   <div class="editor-overlay" id="editor-overlay">
     <div class="editor-header">
       <div class="editor-topbar">
-      <button class="editor-back-btn" id="editor-back-btn" aria-label="Close editor">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m15 18-6-6 6-6"></path>
-        </svg>
-      </button>
-      <input class="editor-title-input" id="editor-title" placeholder="Note title…" data-i18n-placeholder="untitled_note" autocomplete="off">
-      <button class="editor-save-btn" id="editor-save-btn" data-i18n="btn_save">Save</button>
-    </div>
-    <div class="editor-meta-bar">
-      <select class="meta-tag-select" id="editor-type-select">
-        <option value="sermon" data-i18n="tag_sermon">🎤 Sermon</option>
-        <option value="study" data-i18n="tag_study">📚 Bible Study</option>
-        <option value="prayer" data-i18n="tag_prayer">🙏 Prayer</option>
-        <option value="general" data-i18n="tag_general">📝 General</option>
-      </select>
-      <button class="meta-tag-btn" id="pin-btn" data-i18n="btn_pin">📌 Pin</button>
-      <button class="meta-tag-btn" id="reminder-btn" data-i18n="btn_reminder">⏰ Reminder</button>
-      <button class="meta-tag-btn" id="share-btn" data-i18n="btn_share">🔗 Share</button>
-      <button class="meta-tag-btn" id="add-to-collection-btn" data-i18n="btn_collection">📁 Collection</button>
-    </div>
-    <div class="editor-toolbar">
-      <button class="toolbar-btn" id="tb-bold" title="Bold"><b>B</b></button>
-      <button class="toolbar-btn" id="tb-italic" title="Italic"><i>I</i></button>
-      <button class="toolbar-btn" id="tb-underline" title="Underline"><u>U</u></button>
-      <div class="toolbar-sep"></div>
-      <button class="toolbar-btn" id="tb-h1" title="Heading">H1</button>
-      <button class="toolbar-btn" id="tb-h2" title="Subheading">H2</button>
-      <div class="toolbar-sep"></div>
-      <button class="toolbar-btn" id="tb-ul" title="List">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="8" y1="6" x2="21" y2="6"></line>
-          <line x1="8" y1="12" x2="21" y2="12"></line>
-          <line x1="8" y1="18" x2="21" y2="18"></line>
-          <line x1="3" y1="6" x2="3.01" y2="6"></line>
-          <line x1="3" y1="12" x2="3.01" y2="12"></line>
-          <line x1="3" y1="18" x2="3.01" y2="18"></line>
-        </svg>
-      </button>
-      <button class="toolbar-btn" id="tb-quote" title="Quote">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path
-            d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z">
-          </path>
-          <path
-            d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z">
-          </path>
-        </svg>
-      </button>
-      <div class="toolbar-sep"></div>
-      <button class="toolbar-ref-btn" id="mark-ref-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-        </svg>
-        <span data-i18n="mark_reference">Mark Reference</span>
-      </button>
-      <div class="toolbar-sep"></div>
-      <div class="bible-lang-toggle" id="bible-lang-toggle"
-        style="background:transparent; padding:0; margin-left:auto;">
-        <button class="bible-lang-btn active" data-lang="en">KJV</button>
-        <button class="bible-lang-btn" data-lang="sw">SWA</button>
+        <button class="editor-back-btn" id="editor-back-btn" aria-label="Close editor">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6"></path>
+          </svg>
+        </button>
+        <input class="editor-title-input" id="editor-title" placeholder="Note title…"
+          data-i18n-placeholder="untitled_note" autocomplete="off">
+        <button class="editor-save-btn" id="editor-save-btn" data-i18n="btn_save">Save</button>
       </div>
-      <div class="toolbar-sep"></div>
-      <button class="toolbar-btn" id="insert-verse-btn" title="Insert Verse"
-        style="display:flex; color:var(--gold); font-weight:600; width:auto; padding:0 8px; font-size:12px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-          style="margin-right:4px">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        <span data-i18n="insert_verse">Insert Verse</span>
-      </button>
+      <div class="editor-meta-bar">
+        <select class="meta-tag-select" id="editor-type-select">
+          <option value="sermon" data-i18n="tag_sermon">🎤 Sermon</option>
+          <option value="study" data-i18n="tag_study">📚 Bible Study</option>
+          <option value="prayer" data-i18n="tag_prayer">🙏 Prayer</option>
+          <option value="general" data-i18n="tag_general">📝 General</option>
+        </select>
+        <button class="meta-tag-btn" id="pin-btn" data-i18n="btn_pin">📌 Pin</button>
+        <button class="meta-tag-btn" id="reminder-btn" data-i18n="btn_reminder">⏰ Reminder</button>
+        <button class="meta-tag-btn" id="share-btn" data-i18n="btn_share">🔗 Share</button>
+        <button class="meta-tag-btn" id="add-to-collection-btn" data-i18n="btn_collection">📁 Collection</button>
+      </div>
+      <div class="editor-toolbar">
+        <button class="toolbar-btn" id="tb-bold" title="Bold"><b>B</b></button>
+        <button class="toolbar-btn" id="tb-italic" title="Italic"><i>I</i></button>
+        <button class="toolbar-btn" id="tb-underline" title="Underline"><u>U</u></button>
+        <div class="toolbar-sep"></div>
+        <button class="toolbar-btn" id="tb-h1" title="Heading">H1</button>
+        <button class="toolbar-btn" id="tb-h2" title="Subheading">H2</button>
+        <div class="toolbar-sep"></div>
+        <button class="toolbar-btn" id="tb-ul" title="List">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </button>
+        <button class="toolbar-btn" id="tb-quote" title="Quote">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z">
+            </path>
+            <path
+              d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z">
+            </path>
+          </svg>
+        </button>
+        <div class="toolbar-sep"></div>
+        <button class="toolbar-ref-btn" id="mark-ref-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span data-i18n="mark_reference">Mark Reference</span>
+        </button>
+        <div class="toolbar-sep"></div>
+        <div class="bible-lang-toggle" id="bible-lang-toggle"
+          style="background:transparent; padding:0; margin-left:auto;">
+          <button class="bible-lang-btn active" data-lang="en">KJV</button>
+          <button class="bible-lang-btn" data-lang="sw">SWA</button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <button class="toolbar-btn" id="insert-verse-btn" title="Insert Verse"
+          style="display:flex; color:var(--gold); font-weight:600; width:auto; padding:0 8px; font-size:12px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            style="margin-right:4px">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span data-i18n="insert_verse">Insert Verse</span>
+        </button>
+      </div>
+      <div class="editor-verse-preview" id="editor-verse-preview">
+        <div class="editor-verse-preview__ref" id="verse-preview-ref" style="margin-bottom:4px;"></div>
+        <div id="verse-preview-text"></div>
+      </div>
     </div>
-    <div class="editor-verse-preview" id="editor-verse-preview">
-      <div class="editor-verse-preview__ref" id="verse-preview-ref" style="margin-bottom:4px;"></div>
-      <div id="verse-preview-text"></div>
-    </div>
-  </div>
     <div class="editor-body">
       <div class="editor-content" id="editor-content" contenteditable="true"
         data-placeholder="Start writing your notes here…" spellcheck="true"></div>
@@ -2937,11 +3037,13 @@
     <div class="modal-sheet">
       <div class="modal-handle"></div>
       <div class="modal-title" data-i18n="modal_mark_title">Mark as Reference</div>
-      <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px" data-i18n="modal_mark_sub">Enter the scripture reference for your
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px" data-i18n="modal_mark_sub">Enter the
+        scripture reference for your
         selected text.</div>
-      <input class="modal-input" type="text" id="ref-verse-input" placeholder="e.g. John 3:16" data-i18n-placeholder="placeholder_ref_verse" autocomplete="off">
-      <input class="modal-input" type="text" id="ref-note-input" placeholder="Add a note (optional)…" data-i18n-placeholder="placeholder_ref_note"
-        autocomplete="off">
+      <input class="modal-input" type="text" id="ref-verse-input" placeholder="e.g. John 3:16"
+        data-i18n-placeholder="placeholder_ref_verse" autocomplete="off">
+      <input class="modal-input" type="text" id="ref-note-input" placeholder="Add a note (optional)…"
+        data-i18n-placeholder="placeholder_ref_note" autocomplete="off">
       <button class="modal-btn modal-btn--primary" id="confirm-ref-btn" data-i18n="btn_save">Save Reference</button>
       <button class="modal-btn modal-btn--ghost" id="cancel-ref-btn" data-i18n="btn_cancel">Cancel</button>
     </div>
@@ -2953,13 +3055,15 @@
       <div class="modal-handle"></div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div class="modal-title" style="margin-bottom:0;" data-i18n="modal_insert_title">Insert Bible Verse</div>
-        <select class="modal-input" id="insert-verse-lang" style="width:auto; min-width:130px; margin-bottom:0; padding-right:28px; font-size:12px; height:32px; align-self:center;">
+        <select class="modal-input" id="insert-verse-lang"
+          style="width:auto; min-width:130px; margin-bottom:0; padding-right:28px; font-size:12px; height:32px; align-self:center;">
           <option value="" disabled selected hidden data-i18n="select_bible_lang">Select Bible</option>
           <option value="en">English (KJV)</option>
           <option value="sw">Swahili</option>
         </select>
       </div>
-      <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px" data-i18n="modal_insert_sub">Select translation, book, chapter, and verse to insert into your notes.</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px" data-i18n="modal_insert_sub">Select
+        translation, book, chapter, and verse to insert into your notes.</div>
       <div style="display:flex; gap:10px; margin-bottom:12px;">
         <select class="modal-input" id="insert-verse-book"
           style="flex:2; margin-bottom:0; padding-right:24px;"></select>
@@ -2971,7 +3075,8 @@
       <div id="insert-verse-preview-box"
         style="padding:16px; background:var(--gold-light); border:1px solid rgba(201,150,60,0.3); border-radius:var(--r-md); font-size:14px; color:var(--text-secondary); margin-bottom:16px; min-height:80px; font-style:italic;">
       </div>
-      <button class="modal-btn modal-btn--primary" id="confirm-insert-verse-btn" data-i18n="insert_verse">Insert Verse</button>
+      <button class="modal-btn modal-btn--primary" id="confirm-insert-verse-btn" data-i18n="insert_verse">Insert
+        Verse</button>
       <button class="modal-btn modal-btn--ghost" id="cancel-insert-verse-btn" data-i18n="btn_cancel">Cancel</button>
     </div>
   </div>
@@ -2982,7 +3087,8 @@
       <div class="modal-confirm-title" id="confirm-title">Confirm Action</div>
       <div class="modal-confirm-msg" id="confirm-msg">Are you sure you want to proceed?</div>
       <div class="modal-confirm-actions">
-        <button class="modal-confirm-btn modal-confirm-btn--ghost" id="confirm-cancel-btn" data-i18n="btn_cancel">Cancel</button>
+        <button class="modal-confirm-btn modal-confirm-btn--ghost" id="confirm-cancel-btn"
+          data-i18n="btn_cancel">Cancel</button>
         <button class="modal-confirm-btn" id="confirm-ok-btn" data-i18n="btn_confirm">Confirm</button>
       </div>
     </div>
@@ -2993,8 +3099,10 @@
     <div class="modal-sheet">
       <div class="modal-handle"></div>
       <div class="modal-title" data-i18n="modal_export_title">Export Notes</div>
-      <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px" data-i18n="modal_export_sub">Choose your preferred export format.</div>
-      <button class="modal-btn modal-btn--primary" id="export-json-btn" data-i18n="btn_export_json">📄 Export as JSON</button>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px" data-i18n="modal_export_sub">Choose your
+        preferred export format.</div>
+      <button class="modal-btn modal-btn--primary" id="export-json-btn" data-i18n="btn_export_json">📄 Export as
+        JSON</button>
       <button class="modal-btn"
         style="background:var(--brand-light);color:var(--brand);margin-bottom:8px;width:100%;padding:12px;border-radius:var(--r-lg);font-size:15px;font-weight:500"
         id="export-md-btn" data-i18n="btn_export_md">📝 Export as Markdown</button>
@@ -3010,7 +3118,8 @@
       <div class="modal-notes-select" id="notes-select-list">
         <!-- populated by JS -->
       </div>
-      <button class="modal-btn modal-btn--primary" id="confirm-notes-select-btn" data-i18n="btn_confirm">Add Selected</button>
+      <button class="modal-btn modal-btn--primary" id="confirm-notes-select-btn" data-i18n="btn_confirm">Add
+        Selected</button>
       <button class="modal-btn modal-btn--ghost" id="cancel-notes-select-btn" data-i18n="btn_cancel">Cancel</button>
     </div>
   </div>
@@ -3078,9 +3187,9 @@
     }
 
     function generateNewVotdSequence() {
-      const seq = Array.from({length: VOTD_POOL.length}, (_, i) => i);
+      const seq = Array.from({ length: VOTD_POOL.length }, (_, i) => i);
       // Fisher-Yates shuffle
-      for(let i = seq.length - 1; i > 0; i--) {
+      for (let i = seq.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [seq[i], seq[j]] = [seq[j], seq[i]];
       }
@@ -3092,12 +3201,12 @@
     function getDailyVerseTarget() {
       const sequence = getShuffledVotdSequence();
       let idx = parseInt(localStorage.getItem('votd-idx') || '0');
-      
+
       const today = new Date().toDateString();
       const storedDay = localStorage.getItem('votd-date');
-      
+
       if (storedDay !== today) {
-        if (storedDay !== null) { 
+        if (storedDay !== null) {
           idx++;
           if (idx >= sequence.length) {
             const newSeq = generateNewVotdSequence();
@@ -3107,7 +3216,7 @@
         localStorage.setItem('votd-date', today);
         localStorage.setItem('votd-idx', idx.toString());
       }
-      
+
       return VOTD_POOL[sequence[idx]];
     }
 
@@ -3122,7 +3231,7 @@
           state.notes = Array.isArray(state.notes) ? state.notes : [];
           state.collections = Array.isArray(state.collections) ? state.collections : [];
           state.references = Array.isArray(state.references) ? state.references : [];
-          
+
           if (state.bibleLang === 'kjv') state.bibleLang = 'en';
           if (state.bibleLang === 'swahili') state.bibleLang = 'sw';
         }
@@ -3191,9 +3300,9 @@
       // Pull Collections
       const { data: cols } = await supabaseClient.from('collections').select('*').eq('user_id', uid);
       if (cols) {
-        state.collections = cols.map(c => ({ 
-          id: c.id, 
-          name: c.name, 
+        state.collections = cols.map(c => ({
+          id: c.id,
+          name: c.name,
           icon: c.icon || '📁',
           noteIds: [] // Initialized empty, will populate from notes
         }));
@@ -3239,7 +3348,7 @@
         .select('full_name, phone')
         .eq('id', uid)
         .single();
-      
+
       if (data && !error) {
         state.userName = data.full_name || '';
         state.userFullName = data.full_name || '';
@@ -3255,7 +3364,7 @@
       const displayName = state.userFullName || state.userName || (state.user ? state.user.email : '') || 'Member';
       const displayEmail = state.user ? state.user.email : (state.userEmail || '-');
       const displayPhone = state.userPhone || '-';
-      
+
       // Initials Logic
       let initials = '??';
       const nameForInitials = state.userFullName || state.userName;
@@ -3270,21 +3379,21 @@
       const seVal = document.getElementById('settings-email'); if (seVal) seVal.textContent = displayEmail;
       const phoneEl = document.getElementById('settings-phone'); if (phoneEl) phoneEl.textContent = displayPhone;
       const sn = document.getElementById('snav-name'); if (sn) sn.textContent = displayName;
-      
+
       const sa = document.getElementById('snav-avatar'); if (sa) sa.textContent = initials;
       const settAva = document.getElementById('settings-avatar'); if (settAva) settAva.textContent = initials;
     }
 
     function saveState() {
-      try { 
-        localStorage.setItem('logos-app-state', JSON.stringify(state)); 
+      try {
+        localStorage.setItem('logos-app-state', JSON.stringify(state));
         if (state.user) syncPush();
       } catch (e) { }
     }
 
     function debounce(func, wait) {
       let timeout;
-      return function(...args) {
+      return function (...args) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, args), wait);
       };
@@ -3363,7 +3472,7 @@
       saveState();
       updateLangToggles();
       if (typeof applyTranslations === 'function') applyTranslations(state.appLang);
-      loadDailyVerse(); 
+      loadDailyVerse();
       renderNotes();
       renderCollections();
       renderRefs();
@@ -3373,8 +3482,8 @@
       const topBtn = document.getElementById('top-lang-btn');
       const sideLabel = document.getElementById('snav-lang-label');
       const txt = state.appLang.toUpperCase();
-      if(topBtn) topBtn.textContent = txt;
-      if(sideLabel) sideLabel.textContent = txt;
+      if (topBtn) topBtn.textContent = txt;
+      if (sideLabel) sideLabel.textContent = txt;
     }
 
     document.getElementById('snav-lang-btn')?.addEventListener('click', toggleAppLanguage);
@@ -3417,11 +3526,11 @@
     }
 
     function getBadgeMap() {
-      return { 
-        sermon: [window.t('tag_sermon') || 'Sermon', 'badge--sermon'], 
-        study: [window.t('tag_study') || 'Bible Study', 'badge--study'], 
-        prayer: [window.t('tag_prayer') || 'Prayer', 'badge--prayer'], 
-        general: [window.t('tag_general') || 'General', 'badge--general'] 
+      return {
+        sermon: [window.t('tag_sermon') || 'Sermon', 'badge--sermon'],
+        study: [window.t('tag_study') || 'Bible Study', 'badge--study'],
+        prayer: [window.t('tag_prayer') || 'Prayer', 'badge--prayer'],
+        general: [window.t('tag_general') || 'General', 'badge--general']
       };
     }
 
@@ -3435,7 +3544,7 @@
       list.innerHTML = notes.map(n => {
         const m = getBadgeMap();
         const [badgeTxt, badgeCls] = m[n.type] || [window.t('tag_general') || 'General', 'badge--general'];
-        const date = new Date(n.updated).toLocaleDateString((state.appLang==='sw'?'sw-KE':'en-GB'), { day: 'numeric', month: 'short' });
+        const date = new Date(n.updated).toLocaleDateString((state.appLang === 'sw' ? 'sw-KE' : 'en-GB'), { day: 'numeric', month: 'short' });
         const refCount = state.references.filter(r => r.noteId === n.id).length;
         return `
     <div class="note-card ${n.pinned ? 'pinned' : ''}" data-id="${n.id}">
@@ -3667,7 +3776,7 @@
       if (selection.rangeCount > 0 && selection.getRangeAt(0).startContainer.nodeType === 3) {
         activeText = selection.getRangeAt(0).startContainer.nodeValue;
       }
-      
+
       const bibleRefGen = activeText.match(/\b([123]?\s?[A-Za-z]+(?:\s+[A-Za-z]+){0,2})\s+(\d+:\d+(?:-\d+)?)\b/ig);
 
       if (bibleRefGen) {
@@ -3692,7 +3801,7 @@
       if (previewBox.classList.contains('visible')) {
         let text = document.getElementById('verse-preview-text').textContent;
         const ref = document.getElementById('verse-preview-ref').textContent;
-        
+
         // Force refresh if stuck in legacy 'Loading...' view
         if (text === 'Loading...') {
           await loadBibleData(state.bibleLang);
@@ -3940,7 +4049,7 @@
         await loadBibleData(state.appLang); // Ensure the app language DB is loaded
         const vt = getDailyVerseTarget();
         const data = bibleData[state.appLang];
-        
+
         if (data && data.books[vt.b] && data.books[vt.b].chapters[vt.c] && data.books[vt.b].chapters[vt.c].verses[vt.v]) {
           const verse = data.books[vt.b].chapters[vt.c].verses[vt.v];
           vTextEl.textContent = `"${verse.text}"`;
@@ -4234,10 +4343,10 @@
       let currentIdx = modes.indexOf(state.fontMode || 'Medium');
       let nextIdx = (currentIdx + 1) % modes.length;
       state.fontMode = modes[nextIdx];
-      
+
       applyFontMode(state.fontMode);
       saveState();
-      
+
       showToast('success', 'Font size: ' + state.fontMode);
     });
 
@@ -4270,7 +4379,7 @@
       const btn = e.target;
       const subtitle = document.getElementById('auth-subtitle');
       const submit = document.getElementById('auth-submit-btn');
-      
+
       if (btn.textContent.includes('Create one')) {
         btn.textContent = 'Already have an account? Sign in';
         subtitle.textContent = 'Create an account to backup your notes';
@@ -4293,7 +4402,7 @@
     });
 
     // Auto-capitalize name
-    document.getElementById('auth-name').addEventListener('input', function(e) {
+    document.getElementById('auth-name').addEventListener('input', function (e) {
       let val = e.target.value;
       e.target.value = val.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     });
@@ -4324,7 +4433,7 @@
       }
     });
 
-    document.getElementById('toggle-password-btn').addEventListener('click', function() {
+    document.getElementById('toggle-password-btn').addEventListener('click', function () {
       const input = document.getElementById('auth-password');
       if (input.type === 'password') {
         input.type = 'text';
@@ -4350,11 +4459,11 @@
       e.preventDefault();
       console.log("Auth submit started");
       setAuthAlert(null);
-      
+
       const email = document.getElementById('auth-email').value.trim();
       const btn = document.getElementById('auth-submit-btn');
       const isResetting = document.getElementById('auth-password-wrapper').style.display === 'none';
-      
+
       if (isResetting) {
         if (!email) return;
         btn.textContent = 'Sending...';
@@ -4363,7 +4472,7 @@
           const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
           if (error) throw error;
           setAuthAlert('success', 'Reset link sent to ' + email);
-          setTimeout(() => document.getElementById('auth-forgot-btn').click(), 3000); 
+          setTimeout(() => document.getElementById('auth-forgot-btn').click(), 3000);
         } catch (err) {
           setAuthAlert('error', err.message);
         } finally {
@@ -4378,15 +4487,15 @@
         setAuthAlert('error', 'Invalid email or password (min 6 chars).');
         return;
       }
-      
+
       const isSignUp = document.getElementById('auth-subtitle')?.textContent?.includes('Create') || btn.textContent.includes('ACCOUNT');
-      
+
       if (isSignUp) {
         const nameInput = document.getElementById('auth-name');
         const phoneInput = document.getElementById('auth-phone');
         if (!nameInput || !phoneInput) {
-           console.error("Missing signup fields");
-           return;
+          console.error("Missing signup fields");
+          return;
         }
         const name = nameInput.value.trim();
         const phone = phoneInput.value.trim();
@@ -4406,9 +4515,9 @@
 
       try {
         console.log("Attempting " + (isSignUp ? "SignUp" : "SignIn") + " for " + email);
-        
+
         // Timeout for the request
-        const timeoutPromise = new Promise((_, reject) => 
+        const timeoutPromise = new Promise((_, reject) =>
           setTimeout(() => reject(new Error("Request timed out. Please check your internet.")), 15000)
         );
 
@@ -4418,10 +4527,12 @@
           authPromise = supabaseClient.auth.signUp({
             email: email,
             password: pass,
-            options: { data: { 
-              full_name: document.getElementById('auth-name').value.trim(), 
-              phone: document.getElementById('auth-country-code').value + document.getElementById('auth-phone').value.trim() 
-            } }
+            options: {
+              data: {
+                full_name: document.getElementById('auth-name').value.trim(),
+                phone: document.getElementById('auth-country-code').value + document.getElementById('auth-phone').value.trim()
+              }
+            }
           });
         } else {
           btn.textContent = 'Verifying...';
@@ -4429,7 +4540,7 @@
         }
 
         const { data, error } = await Promise.race([authPromise, timeoutPromise]);
-        
+
         if (error) {
           console.error("Supabase Error:", error);
           if (error.message.toLowerCase().includes('invalid login credentials')) {
@@ -4526,7 +4637,7 @@
         cancelBtn.textContent = cancelText;
 
         okBtn.className = 'modal-confirm-btn ' + (isDanger ? 'modal-confirm-btn--danger' : 'modal-confirm-btn--primary');
-        
+
         const resolveVal = (val) => {
           console.log("Confirm resolved with:", val);
           modal.classList.remove('open');
@@ -4569,7 +4680,7 @@
       if (select.style.alignSelf) container.style.alignSelf = select.style.alignSelf;
       if (select.style.marginLeft) container.style.marginLeft = select.style.marginLeft;
       if (select.style.marginRight) container.style.marginRight = select.style.marginRight;
-      
+
       // Only apply the default modal-input margin if it's not a special small header select
       if (select.className.includes('modal-input') && !select.style.height) {
         container.style.marginBottom = '12px';
@@ -4682,7 +4793,7 @@
 
       listWrap.innerHTML = '';
       Array.from(select.options).forEach((opt, idx) => {
-        if (opt.disabled || opt.hidden) return; 
+        if (opt.disabled || opt.hidden) return;
         const div = document.createElement('div');
         div.className = 'app-select-option' + (select.selectedIndex === idx ? ' selected' : '');
         div.textContent = opt.textContent;
@@ -4757,7 +4868,10 @@
     /* ═══════════════════════════════════════════════════════
        INIT
     ═══════════════════════════════════════════════════════ */
+    let hasInitialized = false;
     function init() {
+      if (hasInitialized) return;
+      hasInitialized = true;
       loadState();
       // seedData removed for production
       if (typeof updateLangToggles === 'function') updateLangToggles();
@@ -4778,7 +4892,7 @@
 
       // FAB visible only on notes
       document.getElementById('fab-btn').style.display = 'flex';
-      
+
       // AUTHENTICATION GUARD
       if (!state.user) {
         document.getElementById('app').style.display = 'none';
@@ -4787,7 +4901,7 @@
         document.getElementById('auth-overlay').classList.add('hidden');
         document.getElementById('app').style.display = 'flex';
       }
-      
+
       // Font settings
       applyFontMode(state.fontMode || 'Medium');
 
@@ -4795,7 +4909,7 @@
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').then(reg => {
           console.log('PWA ServiceWorker Active:', reg.scope);
-          
+
           // Check for updates
           reg.onupdatefound = () => {
             const installingWorker = reg.installing;
@@ -4810,7 +4924,7 @@
             }
           };
         }).catch(err => console.log('SW Error:', err));
-        
+
         // Ensure that skipping waiting works and reloads
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -4821,7 +4935,7 @@
         });
       }
     }
-    
+
     function applyFontMode(mode) {
       const sizes = { 'Small': '14px', 'Medium': '15px', 'Large': '18px' };
       document.documentElement.style.setProperty('--editor-font-size', sizes[mode] || '15px');
@@ -4835,19 +4949,19 @@
     // Connect Supabase active session state to internal router
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth State Changed:", event, session ? "Session active" : "No session");
-      
+
       // If we are already processing a major state transition, skip duplicates unless it's a SIGN_OUT
       if (isProcessingAuth && event !== 'SIGNED_OUT') {
-         console.warn("Auth processing already in progress, skipping event:", event);
-         return;
+        console.warn("Auth processing already in progress, skipping event:", event);
+        return;
       }
-      
+
       isProcessingAuth = true;
       try {
         if (session) {
           state.user = session.user;
           state.userEmail = session.user.email;
-          
+
           // 1. Fast Lane: Sync from Metadata first
           const metaName = session.user.user_metadata?.full_name || session.user.user_metadata?.name;
           const metaPhone = session.user.user_metadata?.phone;
@@ -4858,19 +4972,19 @@
           try {
             const timeoutVal = 15000;
             const timeout = new Promise((_, r) => setTimeout(() => r(new Error("Initial fetch timeout")), timeoutVal));
-            
+
             // Only warn if we truly have NO data yet
             await Promise.race([fetchProfile(session.user.id), timeout]).catch(e => {
               if (!state.userFullName) console.warn("Background profile fetch is taking longer than expected...");
             });
-            
+
             // 2b. Always sync data from cloud to get changes from other devices
             if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
               await Promise.race([syncPull(), timeout]).catch(e => {
                 console.warn("Could not sync with cloud after refresh - using local backup.", e.message);
               });
             }
-          } catch (e) {}
+          } catch (e) { }
 
           // 3. Final Verification: Show App or Modal
           // Pre-fill modal values if we have partial data
@@ -4892,14 +5006,15 @@
           } else {
             enterApp();
           }
-          
+
           function enterApp() {
             document.getElementById('complete-profile-overlay').classList.add('hidden');
             document.getElementById('auth-overlay').classList.add('hidden');
             document.getElementById('app').style.display = 'flex';
+            // Trigger a single init if it hasn't happened yet
             init();
           }
-          
+
           saveState();
         } else {
           state.user = null;
@@ -4920,13 +5035,13 @@
       btn.textContent = 'Testing...';
       try {
         if (!window.supabase) throw new Error("Supabase script blocked by browser!");
-        
+
         // Try a simple ping to the Supabase REST API
-        const res = await fetch('https://inpsceqswsmcixgxkaad.supabase.co/rest/v1/', { 
+        const res = await fetch('https://inpsceqswsmcixgxkaad.supabase.co/rest/v1/', {
           method: 'GET',
-          headers: { 'apikey': SUPABASE_ANON_KEY } 
+          headers: { 'apikey': SUPABASE_ANON_KEY }
         });
-        
+
         // 200 or 401 (Unauthorized) both mean the domain is reachable
         if (res.ok || res.status === 401) {
           showToast('success', "Connection Successful! Supabase is reachable.");
@@ -4954,7 +5069,7 @@
       const countryCode = document.getElementById('cp-country-code').value;
       const fullPhone = countryCode + phoneVal;
       const alertBox = document.getElementById('cp-alert');
-      
+
       if (!name || name.split(' ').filter(n => n).length < 2) {
         alertBox.textContent = "Please enter your full name (at least 2 names).";
         alertBox.classList.remove('hidden');
@@ -4975,7 +5090,7 @@
 
       try {
         console.log("Saving profile for:", state.user.id, { name, fullPhone });
-        
+
         // 1. Update Public Profile Table
         const { error: pError } = await supabaseClient
           .from('profiles')
@@ -4989,25 +5104,25 @@
 
         // 2. Sync with Auth User Metadata (Fast lane for future sessions)
         const { error: aError } = await supabaseClient.auth.updateUser({
-          data: { 
-            full_name: name, 
-            phone: fullPhone 
+          data: {
+            full_name: name,
+            phone: fullPhone
           }
         });
         if (aError) console.warn("Auth meta update failed (non-critical):", aError);
-        
+
         console.log("Profile saved successfully");
-        
+
         state.userName = name;
         state.userFullName = name;
         state.userPhone = fullPhone;
         saveState();
         updateProfileDisplay();
-        
+
         document.getElementById('complete-profile-overlay').classList.add('hidden');
         document.getElementById('app').style.display = 'flex';
         showToast('success', 'Profile completed!');
-        
+
       } catch (err) {
         alertBox.textContent = "Failed to save profile: " + err.message;
         alertBox.style.display = 'block';
@@ -5017,23 +5132,23 @@
     });
 
     async function handleLogout() {
-        console.log("Starting logout sequence...");
-        try {
-           await supabaseClient.auth.signOut();
-        } catch (e) {
-           console.error("Sign out error:", e);
-        }
-        
-        // Clear local credentials
-        state.user = null;
-        state.userName = '';
-        state.userFullName = '';
-        state.userPhone = '';
-        saveState();
-        
-        console.log("Logout successful, reloading...");
-        localStorage.removeItem('logos-app-state'); // Clear cached profile
-        location.reload(); 
+      console.log("Starting logout sequence...");
+      try {
+        await supabaseClient.auth.signOut();
+      } catch (e) {
+        console.error("Sign out error:", e);
+      }
+
+      // Clear local credentials
+      state.user = null;
+      state.userName = '';
+      state.userFullName = '';
+      state.userPhone = '';
+      saveState();
+
+      console.log("Logout successful, reloading...");
+      localStorage.removeItem('logos-app-state'); // Clear cached profile
+      location.reload();
     }
     window.handleLogout = handleLogout;
 
