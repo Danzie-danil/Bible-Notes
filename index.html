@@ -5,7 +5,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <title>Bible Notes</title>
   <meta name="theme-color" content="#5C3D2E">
   <link rel="manifest" href="manifest.json">
@@ -136,6 +136,9 @@
       display: flex;
       flex-direction: column;
       height: 100dvh;
+      width: 100%;
+      position: fixed; /* Lock app shell to viewport */
+      inset: 0;
       overflow: hidden;
     }
 
@@ -686,14 +689,10 @@
     }
 
     .editor-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1001; /* Higher than other overlays */
-      background: var(--surface);
       display: flex;
       flex-direction: column;
+      flex-shrink: 0;
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
     }
 
@@ -758,7 +757,7 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 16px;
-      padding-top: 140px; /* Offset for fixed header */
+      min-height: 0;
     }
 
     .editor-content {
