@@ -4024,7 +4024,7 @@
       const coll = state.collections.find(c => c.id === id);
       if (!coll) return;
       state.selectedCollectionId = id;
-      document.getElementById('coll-detail-icon').textContent = coll.emoji || '📁';
+      document.getElementById('coll-detail-icon').textContent = coll.icon || coll.emoji || '📁';
       document.getElementById('coll-detail-title').textContent = coll.name;
       renderCollDetailNotes(coll);
       document.getElementById('collection-detail-overlay').classList.add('open');
@@ -4037,8 +4037,9 @@
         list.innerHTML = `<div class="empty-state"><div class="empty-state__icon">📝</div><div class="empty-state__title">No notes in this collection</div><div class="empty-state__msg">Tap "Add Notes" to include notes here.</div></div>`;
         return;
       }
+      const bMap = getBadgeMap();
       list.innerHTML = notes.map(n => {
-        const [badgeTxt, badgeCls] = badgeMap[n.type] || ['General', 'badge--general'];
+        const [badgeTxt, badgeCls] = bMap[n.type] || ['General', 'badge--general'];
         return `
     <div class="note-card" data-id="${n.id}" style="cursor:pointer">
       <div class="note-card__top">
@@ -4850,9 +4851,10 @@
               if (!state.userFullName) console.warn("Background profile fetch is taking longer than expected...");
             });
             
-            if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && !state.notes.length) {
+            // 2b. Always sync data from cloud to get changes from other devices
+            if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
               await Promise.race([syncPull(), timeout]).catch(e => {
-                if (!state.notes.length) console.warn("Deep sync pull is taking longer than expected...");
+                console.warn("Could not sync with cloud after refresh - using local backup.", e.message);
               });
             }
           } catch (e) {}
