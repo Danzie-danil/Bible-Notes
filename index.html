@@ -2083,9 +2083,7 @@
       transition: opacity 300ms ease;
     }
     #auth-overlay.hidden, #complete-profile-overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(1.05);
+      display: none !important;
     }
     #complete-profile-overlay {
       position: fixed;
@@ -4873,7 +4871,7 @@
 
           if (!state.userFullName || !state.userPhone) {
             document.getElementById('app').style.display = 'none';
-            document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('auth-overlay').classList.add('hidden'); // Fully remove login from DOM tree
             document.getElementById('complete-profile-overlay').classList.remove('hidden');
             initCustomSelect('cp-country-code');
           } else {
