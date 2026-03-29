@@ -686,13 +686,15 @@
     }
 
     .editor-header {
-      position: sticky;
+      position: fixed;
       top: 0;
-      z-index: 100;
+      left: 0;
+      right: 0;
+      z-index: 1001; /* Higher than other overlays */
       background: var(--surface);
       display: flex;
       flex-direction: column;
-      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
     }
 
     .toolbar-btn {
@@ -756,6 +758,7 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 16px;
+      padding-top: 140px; /* Offset for fixed header */
     }
 
     .editor-content {
