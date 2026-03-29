@@ -2335,10 +2335,62 @@
       cursor: pointer;
       padding: 8px;
     }
+
+    /* ─────────────────────────── LOADING OVERLAY ─────────────────────────── */
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 10001;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      transition: opacity 400ms ease;
+    }
+    #loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #loading-overlay.removed {
+      display: none !important;
+    }
+    .loading-logo {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--brand);
+      letter-spacing: 0.5px;
+    }
+    .loading-logo span { color: var(--gold); }
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: loadSpin 0.8s linear infinite;
+    }
+    @keyframes loadSpin {
+      to { transform: rotate(360deg); }
+    }
+    .loading-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- ═══════════ LOADING OVERLAY ═══════════ -->
+  <div id="loading-overlay" class="hidden removed">
+    <div class="loading-logo">Bible Notes<span>.</span></div>
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Syncing your notes…</div>
+  </div>
 
   <!-- ═══════════ AUTH OVERLAY ═══════════ -->
   <div id="auth-overlay" class="hidden">
@@ -3221,16 +3273,19 @@
     }
 
     /* ─── Load / Save ─── */
+    // loadState only restores transient UI preferences from localStorage.
+    // Core data (notes, collections, references) is ALWAYS loaded from Supabase via syncPull.
     function loadState() {
       try {
-        const saved = localStorage.getItem('logos-app-state');
+        const saved = localStorage.getItem('logos-app-prefs');
         if (saved) {
           const parsed = JSON.parse(saved);
-          state = { ...state, ...parsed };
-          // Ensure arrays are initialized to prevent .length crashes
-          state.notes = Array.isArray(state.notes) ? state.notes : [];
-          state.collections = Array.isArray(state.collections) ? state.collections : [];
-          state.references = Array.isArray(state.references) ? state.references : [];
+          // Only restore UI preferences, never data arrays
+          state.autoSave = parsed.autoSave !== undefined ? parsed.autoSave : state.autoSave;
+          state.fontMode = parsed.fontMode || state.fontMode;
+          state.bibleLang = parsed.bibleLang || state.bibleLang;
+          state.appLang = parsed.appLang || state.appLang;
+          state.readingDay = parsed.readingDay || state.readingDay;
 
           if (state.bibleLang === 'kjv') state.bibleLang = 'en';
           if (state.bibleLang === 'swahili') state.bibleLang = 'sw';
@@ -3280,12 +3335,32 @@
       }
     }, 2000);
 
+    function showLoadingOverlay() {
+      const el = document.getElementById('loading-overlay');
+      if (el) { el.classList.remove('hidden', 'removed'); }
+    }
+    function hideLoadingOverlay() {
+      const el = document.getElementById('loading-overlay');
+      if (el) {
+        el.classList.add('hidden');
+        setTimeout(() => el.classList.add('removed'), 450);
+      }
+    }
+
     async function syncPull() {
       if (!state.user) return;
       const uid = state.user.id;
 
-      // Pull Settings
-      const { data: settings } = await supabaseClient.from('user_settings').select('*').eq('user_id', uid).single();
+      // Fire ALL queries in parallel for maximum speed
+      const [settingsRes, colsRes, notesRes, refsRes] = await Promise.all([
+        supabaseClient.from('user_settings').select('*').eq('user_id', uid).single(),
+        supabaseClient.from('collections').select('*').eq('user_id', uid),
+        supabaseClient.from('notes').select('*').eq('user_id', uid),
+        supabaseClient.from('references').select('*').eq('user_id', uid)
+      ]);
+
+      // Apply Settings
+      const settings = settingsRes.data;
       if (settings) {
         state.userName = settings.user_name || state.userName;
         state.bibleLang = settings.bible_lang || state.bibleLang;
@@ -3297,41 +3372,35 @@
         applyTheme(settings.dark_mode);
       }
 
-      // Pull Collections
-      const { data: cols } = await supabaseClient.from('collections').select('*').eq('user_id', uid);
+      // Apply Collections
+      const cols = colsRes.data;
       if (cols) {
         state.collections = cols.map(c => ({
-          id: c.id,
-          name: c.name,
-          icon: c.icon || '📁',
-          noteIds: [] // Initialized empty, will populate from notes
+          id: c.id, name: c.name, icon: c.icon || '📁', noteIds: []
         }));
       }
 
-      // Pull Notes
-      const { data: notes } = await supabaseClient.from('notes').select('*').eq('user_id', uid);
+      // Apply Notes
+      const notes = notesRes.data;
       if (notes) {
         state.notes = notes.map(n => ({
           id: n.id, title: n.title, content: n.content, type: n.type,
           pinned: n.pinned, collections: n.collections || [], tags: n.tags || [],
           created: n.created, updated: n.updated
         }));
-
         // Reconstruct collection relationships
         state.notes.forEach(note => {
           if (note.collections) {
             note.collections.forEach(cid => {
               const col = state.collections.find(c => c.id === cid);
-              if (col && !col.noteIds.includes(note.id)) {
-                col.noteIds.push(note.id);
-              }
+              if (col && !col.noteIds.includes(note.id)) col.noteIds.push(note.id);
             });
           }
         });
       }
 
-      // Pull References
-      const { data: refs } = await supabaseClient.from('references').select('*').eq('user_id', uid);
+      // Apply References
+      const refs = refsRes.data;
       if (refs) state.references = refs.map(r => ({
         id: r.id, note_id: r.note_id, verse: r.verse, text: r.text
       }));
@@ -3340,6 +3409,7 @@
       renderNotes();
       renderCollections();
       updateStats();
+      hideLoadingOverlay();
     }
 
     async function fetchProfile(uid) {
@@ -3384,9 +3454,19 @@
       const settAva = document.getElementById('settings-avatar'); if (settAva) settAva.textContent = initials;
     }
 
+    // saveState only persists UI preferences locally. Data sync is handled by syncPush to Supabase.
     function saveState() {
       try {
-        localStorage.setItem('logos-app-state', JSON.stringify(state));
+        // Only save transient UI preferences to localStorage
+        const prefs = {
+          autoSave: state.autoSave,
+          fontMode: state.fontMode,
+          bibleLang: state.bibleLang,
+          appLang: state.appLang,
+          readingDay: state.readingDay,
+        };
+        localStorage.setItem('logos-app-prefs', JSON.stringify(prefs));
+        // Push core data to Supabase
         if (state.user) syncPush();
       } catch (e) { }
     }
@@ -4943,89 +5023,80 @@
       if (el) el.textContent = mode;
     }
 
-    // Supabase Concurrency Guard
-    let isProcessingAuth = false;
+    // Sync guard: ensures we only do the heavy data pull once per page load
+    let hasSynced = false;
 
     // Connect Supabase active session state to internal router
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth State Changed:", event, session ? "Session active" : "No session");
 
-      // If we are already processing a major state transition, skip duplicates unless it's a SIGN_OUT
-      if (isProcessingAuth && event !== 'SIGNED_OUT') {
-        console.warn("Auth processing already in progress, skipping event:", event);
+      if (!session) {
+        state.user = null;
+        hasSynced = false;
+        saveState();
+        document.getElementById('complete-profile-overlay').classList.add('hidden');
+        document.getElementById('auth-overlay').classList.remove('hidden');
+        document.getElementById('app').style.display = 'none';
         return;
       }
 
-      isProcessingAuth = true;
-      try {
-        if (session) {
-          state.user = session.user;
-          state.userEmail = session.user.email;
+      // We have a session — set user immediately
+      state.user = session.user;
+      state.userEmail = session.user.email;
 
-          // 1. Fast Lane: Sync from Metadata first
-          const metaName = session.user.user_metadata?.full_name || session.user.user_metadata?.name;
-          const metaPhone = session.user.user_metadata?.phone;
-          if (metaName && !state.userFullName) state.userFullName = metaName;
-          if (metaPhone && !state.userPhone) state.userPhone = metaPhone;
+      // Fast lane: extract name/phone from JWT metadata (instant, no network)
+      const metaName = session.user.user_metadata?.full_name || session.user.user_metadata?.name;
+      const metaPhone = session.user.user_metadata?.phone;
+      if (metaName) state.userFullName = metaName;
+      if (metaPhone) state.userPhone = metaPhone;
+      state.userName = state.userFullName || state.userName;
 
-          // 2. Initial Data Pull (with higher 15s timeout for first load)
-          try {
-            const timeoutVal = 15000;
-            const timeout = new Promise((_, r) => setTimeout(() => r(new Error("Initial fetch timeout")), timeoutVal));
-
-            // Only warn if we truly have NO data yet
-            await Promise.race([fetchProfile(session.user.id), timeout]).catch(e => {
-              if (!state.userFullName) console.warn("Background profile fetch is taking longer than expected...");
-            });
-
-            // 2b. Always sync data from cloud to get changes from other devices
-            if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-              await Promise.race([syncPull(), timeout]).catch(e => {
-                console.warn("Could not sync with cloud after refresh - using local backup.", e.message);
-              });
-            }
-          } catch (e) { }
-
-          // 3. Final Verification: Show App or Modal
-          // Pre-fill modal values if we have partial data
-          const inputName = document.getElementById('cp-full-name');
-          const inputPhone = document.getElementById('cp-phone');
-          if (inputName && state.userFullName && !inputName.value) inputName.value = state.userFullName;
-          if (inputPhone && state.userPhone && !inputPhone.value) {
-            let displayPhone = state.userPhone;
-            const cc = document.getElementById('cp-country-code')?.value || "+255";
-            if (displayPhone.startsWith(cc)) displayPhone = displayPhone.replace(cc, "");
-            inputPhone.value = displayPhone;
-          }
-
-          if (!state.userFullName || !state.userPhone) {
-            document.getElementById('app').style.display = 'none';
-            document.getElementById('auth-overlay').classList.add('hidden'); // Fully remove login from DOM tree
-            document.getElementById('complete-profile-overlay').classList.remove('hidden');
-            initCustomSelect('cp-country-code');
-          } else {
-            enterApp();
-          }
-
-          function enterApp() {
-            document.getElementById('complete-profile-overlay').classList.add('hidden');
-            document.getElementById('auth-overlay').classList.add('hidden');
-            document.getElementById('app').style.display = 'flex';
-            // Trigger a single init if it hasn't happened yet
-            init();
-          }
-
-          saveState();
-        } else {
-          state.user = null;
-          saveState();
-          document.getElementById('complete-profile-overlay').classList.add('hidden');
-          document.getElementById('auth-overlay').classList.remove('hidden');
-          document.getElementById('app').style.display = 'none';
+      // Check profile completion BEFORE waiting for data sync
+      if (!state.userFullName || !state.userPhone) {
+        // Pre-fill modal values if we have partial data
+        const inputName = document.getElementById('cp-full-name');
+        const inputPhone = document.getElementById('cp-phone');
+        if (inputName && state.userFullName && !inputName.value) inputName.value = state.userFullName;
+        if (inputPhone && state.userPhone && !inputPhone.value) {
+          let displayPhone = state.userPhone;
+          const cc = document.getElementById('cp-country-code')?.value || "+255";
+          if (displayPhone.startsWith(cc)) displayPhone = displayPhone.replace(cc, "");
+          inputPhone.value = displayPhone;
         }
-      } finally {
-        isProcessingAuth = false;
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('auth-overlay').classList.add('hidden');
+        document.getElementById('complete-profile-overlay').classList.remove('hidden');
+        initCustomSelect('cp-country-code');
+        return;
       }
+
+      // Profile is complete — show the app immediately
+      document.getElementById('complete-profile-overlay').classList.add('hidden');
+      document.getElementById('auth-overlay').classList.add('hidden');
+      document.getElementById('app').style.display = 'flex';
+      init();
+      updateProfileDisplay();
+
+      // Only do the heavy data sync ONCE per page load
+      if (hasSynced) {
+        console.log("Already synced, skipping duplicate event:", event);
+        return;
+      }
+      hasSynced = true;
+
+      // Show loading overlay and fetch data from Supabase in the background
+      showLoadingOverlay();
+
+      // Fire profile + all data queries in parallel — no waiting in sequence
+      Promise.all([
+        fetchProfile(session.user.id).catch(e => console.warn("Profile fetch:", e.message)),
+        syncPull().catch(e => { console.warn("Sync pull:", e.message); hideLoadingOverlay(); })
+      ]).then(() => {
+        updateProfileDisplay();
+        saveState();
+      }).catch(() => {
+        hideLoadingOverlay();
+      });
     });
 
     // Connectivity Test Helper
@@ -5139,15 +5210,19 @@
         console.error("Sign out error:", e);
       }
 
-      // Clear local credentials
+      // Clear in-memory state
       state.user = null;
       state.userName = '';
       state.userFullName = '';
       state.userPhone = '';
-      saveState();
+      state.notes = [];
+      state.collections = [];
+      state.references = [];
+
+      // Clear local preferences
+      localStorage.removeItem('logos-app-prefs');
 
       console.log("Logout successful, reloading...");
-      localStorage.removeItem('logos-app-state'); // Clear cached profile
       location.reload();
     }
     window.handleLogout = handleLogout;
