@@ -4248,7 +4248,17 @@
           showToast('success', 'Logged in successfully!');
         }
       } catch (err) {
-        showToast('error', err.message);
+        let msg = err.message;
+        if (msg.includes('Invalid login credentials')) {
+          msg = 'Wrong email or password. Please try again.';
+        } else if (msg.includes('already registered')) {
+          msg = 'An account with this email already exists.';
+        } else if (msg.includes('rate limit')) {
+          msg = 'Too many attempts. Please wait a moment.';
+        } else if (msg.includes('User not found')) {
+          msg = 'Account does not exist. Please create one.';
+        }
+        showToast('error', msg);
       } finally {
         btn.disabled = false;
         btn.textContent = isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN';
