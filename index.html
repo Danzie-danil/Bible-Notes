@@ -1370,7 +1370,7 @@
       bottom: calc(var(--bottom-nav-h, 68px) + var(--safe-bottom, 0px) + 16px);
       left: 50%;
       transform: translateX(-50%);
-      z-index: 999;
+      z-index: 99999;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -2138,6 +2138,32 @@
       width: 20px;
       height: 20px;
     }
+    /* Auth Alert */
+    .auth-alert {
+      padding: 12px 14px;
+      border-radius: var(--r-md);
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.5;
+      animation: alertSlide 300ms ease;
+    }
+    @keyframes alertSlide {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .auth-alert--error {
+      background: #FEF2F2;
+      color: #991B1B;
+      border: 1px solid #F87171;
+    }
+    .auth-alert--success {
+      background: #F0FDF4;
+      color: #166534;
+      border: 1px solid #4ADE80;
+    }
+    .auth-alert.hidden {
+      display: none;
+    }
     .auth-btn {
        width: 100%;
        padding: 14px;
@@ -2173,6 +2199,7 @@
     <div class="auth-card">
       <div class="auth-logo">Bible Notes<span style="color:var(--text-primary)">.</span></div>
       <div class="auth-subtitle" id="auth-subtitle">Sign in to sync your notes across devices</div>
+      <div id="auth-alert" class="auth-alert hidden"></div>
       <form id="auth-form">
         <input type="email" id="auth-email" name="email" class="auth-input" placeholder="Email address" required autocomplete="username">
         <div class="password-wrapper" id="auth-password-wrapper">
@@ -3109,8 +3136,103 @@
         }
       } catch (e) { }
     }
+
+    const syncPush = debounce(async () => {
+      if (!state.user) return;
+      const uid = state.user.id;
+
+      // 1. Sync Settings
+      await supabaseClient.from('user_settings').upsert({
+        user_id: uid,
+        user_name: state.userName,
+        bible_lang: state.bibleLang,
+        app_lang: state.appLang,
+        font_mode: state.fontMode,
+        dark_mode: document.documentElement.getAttribute('data-theme') === 'dark',
+        auto_save: state.autoSave,
+        reading_day: state.readingDay
+      });
+
+      // 2. Sync Collections
+      if (state.collections.length > 0) {
+        const cols = state.collections.map(c => ({ id: c.id, user_id: uid, name: c.name, icon: c.icon }));
+        await supabaseClient.from('collections').upsert(cols);
+      }
+
+      // 3. Sync Notes
+      if (state.notes.length > 0) {
+        const notes = state.notes.map(n => ({
+          id: n.id, user_id: uid, title: n.title, content: n.content,
+          type: n.type, pinned: n.pinned, collections: n.collections || [],
+          tags: n.tags || [], created: n.created || new Date().toISOString(),
+          updated: new Date().toISOString()
+        }));
+        await supabaseClient.from('notes').upsert(notes);
+      }
+
+      // 4. Sync References
+      if (state.references.length > 0) {
+        const refs = state.references.map(r => ({
+          id: r.id, user_id: uid, note_id: r.note_id, verse: r.verse, text: r.text
+        }));
+        await supabaseClient.from('references').upsert(refs);
+      }
+    }, 2000);
+
+    async function syncPull() {
+      if (!state.user) return;
+      const uid = state.user.id;
+
+      // Pull Settings
+      const { data: settings } = await supabaseClient.from('user_settings').select('*').eq('user_id', uid).single();
+      if (settings) {
+        state.userName = settings.user_name || state.userName;
+        state.bibleLang = settings.bible_lang || state.bibleLang;
+        state.appLang = settings.app_lang || state.appLang;
+        state.fontMode = settings.font_mode || state.fontMode;
+        state.autoSave = settings.auto_save !== undefined ? settings.auto_save : state.autoSave;
+        state.readingDay = settings.reading_day || state.readingDay;
+        applyFontMode(state.fontMode);
+        applyTheme(settings.dark_mode);
+      }
+
+      // Pull Collections
+      const { data: cols } = await supabaseClient.from('collections').select('*').eq('user_id', uid);
+      if (cols) state.collections = cols.map(c => ({ id: c.id, name: c.name, icon: c.icon }));
+
+      // Pull Notes
+      const { data: notes } = await supabaseClient.from('notes').select('*').eq('user_id', uid);
+      if (notes) state.notes = notes.map(n => ({
+        id: n.id, title: n.title, content: n.content, type: n.type,
+        pinned: n.pinned, collections: n.collections, tags: n.tags,
+        created: n.created, updated: n.updated
+      }));
+
+      // Pull References
+      const { data: refs } = await supabaseClient.from('references').select('*').eq('user_id', uid);
+      if (refs) state.references = refs.map(r => ({
+        id: r.id, note_id: r.note_id, verse: r.verse, text: r.text
+      }));
+
+      saveState();
+      renderNotes();
+      renderCollections();
+      updateStats();
+    }
+
     function saveState() {
-      try { localStorage.setItem('logos-app-state', JSON.stringify(state)); } catch (e) { }
+      try { 
+        localStorage.setItem('logos-app-state', JSON.stringify(state)); 
+        if (state.user) syncPush();
+      } catch (e) { }
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
     }
 
     /* ─── Seeds ─── */
@@ -4196,8 +4318,20 @@
       }
     });
 
+    function setAuthAlert(type, message) {
+      const el = document.getElementById('auth-alert');
+      if (!message) {
+        el.classList.add('hidden');
+        return;
+      }
+      el.className = `auth-alert auth-alert--${type}`;
+      el.textContent = message;
+      el.classList.remove('hidden');
+    }
+
     document.getElementById('auth-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      setAuthAlert(null); // Clear old alerts
       const email = document.getElementById('auth-email').value.trim();
       const btn = document.getElementById('auth-submit-btn');
       
@@ -4211,16 +4345,16 @@
         btn.textContent = 'SEND RESET LINK';
         
         if (error) {
-          showToast('error', error.message);
+          setAuthAlert('error', error.message);
         } else {
-          showToast('success', 'Reset link sent to ' + email);
-          document.getElementById('auth-forgot-btn').click(); // Revert back to login form
+          setAuthAlert('success', 'Reset link sent to ' + email);
+          setTimeout(() => document.getElementById('auth-forgot-btn').click(), 3000); 
         }
         return;
       }
       
       const pass = document.getElementById('auth-password').value.trim();
-      if (!email || pass.length < 6) return; // Basic validation handled by HTML5
+      if (!email || pass.length < 6) return; 
       
       const isSignUp = document.getElementById('auth-subtitle').textContent.includes('Create');
       btn.textContent = 'Processing...';
@@ -4235,30 +4369,46 @@
           if (error) throw error;
           
           if (data.session) {
-             showToast('success', 'Account created successfully!');
+             setAuthAlert('success', 'Account created successfully!');
           } else {
-             showToast('success', 'Registration successful! Check your email to confirm.');
+             setAuthAlert('success', 'Registration successful! Check your email to confirm.');
           }
         } else {
+          // 1. Check if email exists in public profiles first
+          const { data: profile, error: pError } = await supabaseClient
+            .from('profiles')
+            .select('email')
+            .eq('email', email)
+            .single();
+            
+          if (!profile) {
+            setAuthAlert('error', 'Account does not exist. Please create one.');
+            btn.disabled = false;
+            btn.textContent = 'SIGN IN';
+            return;
+          }
+
+          // 2. Attempt login
           const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: pass,
           });
-          if (error) throw error;
-          showToast('success', 'Logged in successfully!');
+          
+          if (error) {
+            if (error.message.includes('Invalid login credentials')) {
+              throw new Error('Incorrect password. Please try again.');
+            }
+            throw error;
+          }
         }
       } catch (err) {
         let msg = err.message;
-        if (msg.includes('Invalid login credentials')) {
-          msg = 'Wrong email or password. Please try again.';
-        } else if (msg.includes('already registered')) {
+        if (msg.includes('already registered')) {
           msg = 'An account with this email already exists.';
         } else if (msg.includes('rate limit')) {
           msg = 'Too many attempts. Please wait a moment.';
-        } else if (msg.includes('User not found')) {
-          msg = 'Account does not exist. Please create one.';
         }
-        showToast('error', msg);
+        setAuthAlert('error', msg);
       } finally {
         btn.disabled = false;
         btn.textContent = isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN';
@@ -4627,10 +4777,21 @@
     }
 
     // Connect Supabase active session state to internal router
-    supabaseClient.auth.onAuthStateChange((event, session) => {
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
       if (session) {
+        const isFirstLogin = !state.user;
         state.user = session.user;
         state.userEmail = session.user.email;
+        
+        if (isFirstLogin) {
+          // If we have local data and just logged in, push it to cloud (Auto-Merge)
+          if (state.notes.length > 0 || state.collections.length > 0) {
+            showToast('info', 'Syncing your local data to cloud...');
+            await syncPush();
+          }
+          await syncPull();
+        }
+        
         saveState();
         document.getElementById('auth-overlay').classList.add('hidden');
         document.getElementById('app').style.display = 'flex';
