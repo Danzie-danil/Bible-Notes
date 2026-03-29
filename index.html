@@ -1129,7 +1129,7 @@
       inset: 0;
       background: rgba(28, 20, 16, 0.4);
       backdrop-filter: blur(4px);
-      z-index: 2000;
+      z-index: 11000;
       align-items: center;
       justify-content: center;
       padding: 24px;
@@ -2197,10 +2197,16 @@
     }
     .phone-input-group {
       display: flex;
-      gap: 8px;
+      align-items: center; /* Changed to center to avoid stretching */
+      margin-bottom: 16px;
+      width: 100%;
+    }
+    .phone-input-group .auth-input {
+      margin-bottom: 0 !important;
+      height: 48px; /* Fixed height for consistency */
     }
     .country-select-container {
-      width: 100px;
+      width: 120px;
       flex-shrink: 0;
     }
     #auth-phone {
@@ -2249,28 +2255,21 @@
       <div id="auth-alert" class="auth-alert hidden"></div>
       <form id="auth-form">
         <div id="auth-name-group" class="auth-field-group hidden">
-          <input type="text" id="auth-name" name="full_name" class="auth-input" placeholder="Full Name">
+          <input type="text" id="auth-name" name="full_name" class="auth-input" placeholder="Full Name" autocomplete="name">
         </div>
         <input type="email" id="auth-email" name="email" class="auth-input" placeholder="Email address" required autocomplete="username">
         <div id="auth-phone-group" class="auth-field-group hidden">
           <div class="phone-input-group">
-            <div class="app-select-container country-select-container" id="country-code-container">
-              <select id="auth-country-code" hidden>
-                <option value="+255">TZ (+255)</option>
-                <option value="+254">KE (+254)</option>
-                <option value="+256">UG (+256)</option>
-                <option value="+250">RW (+250)</option>
-                <option value="+257">BI (+257)</option>
-                <option value="+1">US (+1)</option>
-                <option value="+44">UK (+44)</option>
-                <option value="+91">IN (+91)</option>
-                <option value="+234">NG (+234)</option>
-                <option value="+27">SA (+27)</option>
-              </select>
-              <div class="app-select-trigger"></div>
-              <div class="app-select-list"></div>
-            </div>
-            <input type="tel" id="auth-phone" name="phone" class="auth-input" placeholder="Phone Number">
+            <select id="auth-country-code" class="auth-input" style="width: 120px; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; margin-bottom: 0; height: 48px;">
+              <option value="+255">TZ (+255)</option>
+              <option value="+254">KE (+254)</option>
+              <option value="+256">UG (+256)</option>
+              <option value="+250">RW (+250)</option>
+              <option value="+257">BI (+257)</option>
+              <option value="+1">US (+1)</option>
+              <option value="+44">UK (+44)</option>
+            </select>
+            <input type="tel" id="auth-phone" name="phone" style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none; flex: 1; margin-bottom: 0; height: 48px;" class="auth-input" placeholder="Phone Number" autocomplete="tel">
           </div>
         </div>
         <div class="password-wrapper" id="auth-password-wrapper">
@@ -2282,8 +2281,14 @@
         <button type="submit" class="auth-btn" id="auth-submit-btn">SIGN IN</button>
       </form>
       <button class="auth-toggle" id="auth-toggle-mode">Don't have an account? Create one</button>
-      <div style="text-align: center; margin-top: 12px;">
+      <div style="text-align: center; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; align-items: center;">
         <button type="button" id="auth-forgot-btn" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:4px; transition: color var(--trans);">Forgot password?</button>
+        <button type="button" onclick="localStorage.clear(); sessionStorage.clear(); if('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(regs => { for(let reg of regs) reg.unregister(); }); } location.reload(true);" style="font-size: 11px; color: var(--text-muted); text-decoration: underline; background: none; border: none; cursor: pointer; padding: 4px;">
+          Problem signing in? Reset & Reload
+        </button>
+        <button type="button" id="test-conn-btn" style="font-size: 11px; color: var(--gold); background: none; border: none; cursor: pointer; padding: 4px;">
+          Test Connection
+        </button>
       </div>
     </div>
   </div>
@@ -2313,6 +2318,7 @@
         </div>
 
         <button type="submit" class="auth-btn" id="cp-submit-btn">SAVE & CONTINUE</button>
+        <button type="button" class="auth-toggle" id="cp-logout-btn" style="margin-top: 8px; color: var(--error);">Sign out</button>
       </div>
     </div>
   </div>
@@ -2663,7 +2669,7 @@
                 <path d="m9 18 6-6-6-6"></path>
               </svg></div>
           </div>
-          <div class="settings-item" id="logout-btn">
+          <button class="settings-item" id="logout-btn" style="width:100%; border:none; cursor:pointer; background:none; padding:0; text-align:left;">
             <div class="settings-item__icon" style="background:var(--error-light)">🚪</div>
             <div class="settings-item__text">
               <div class="settings-item__label" style="color:var(--error)" data-i18n="settings_logout">Log Out</div>
@@ -2673,7 +2679,7 @@
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m9 18 6-6-6-6"></path>
               </svg></div>
-          </div>
+          </button>
           <div style="text-align:center; padding: 16px; font-size:12px; color:var(--text-muted)">Bible Notes v1.0 · Made with
             ✦</div>
         </div>
@@ -2997,6 +3003,16 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlucHNjZXFzd3NtY2l4Z3hrYWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3ODkwNzcsImV4cCI6MjA5MDM2NTA3N30.hevNI_TMu1m6ePiLrIHpi9m24g3jDrIbVnou7iasOvI';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Global Error Catcher
+    window.onerror = (msg, url, line) => {
+      console.error("Global Error:", msg, url, line);
+      if (typeof showToast === 'function') showToast('error', "System Error: " + msg);
+    };
+    window.onunhandledrejection = (event) => {
+      console.error("Unhandled Promise Rejection:", event.reason);
+      if (typeof showToast === 'function') showToast('error', "Network/Auth Error: " + (event.reason?.message || event.reason));
+    };
+
     /* ═══════════════════════════════════════════════════════
        STATE
     ═══════════════════════════════════════════════════════ */
@@ -3150,15 +3166,36 @@
 
       // Pull Collections
       const { data: cols } = await supabaseClient.from('collections').select('*').eq('user_id', uid);
-      if (cols) state.collections = cols.map(c => ({ id: c.id, name: c.name, icon: c.icon }));
+      if (cols) {
+        state.collections = cols.map(c => ({ 
+          id: c.id, 
+          name: c.name, 
+          icon: c.icon || '📁',
+          noteIds: [] // Initialized empty, will populate from notes
+        }));
+      }
 
       // Pull Notes
       const { data: notes } = await supabaseClient.from('notes').select('*').eq('user_id', uid);
-      if (notes) state.notes = notes.map(n => ({
-        id: n.id, title: n.title, content: n.content, type: n.type,
-        pinned: n.pinned, collections: n.collections, tags: n.tags,
-        created: n.created, updated: n.updated
-      }));
+      if (notes) {
+        state.notes = notes.map(n => ({
+          id: n.id, title: n.title, content: n.content, type: n.type,
+          pinned: n.pinned, collections: n.collections || [], tags: n.tags || [],
+          created: n.created, updated: n.updated
+        }));
+
+        // Reconstruct collection relationships
+        state.notes.forEach(note => {
+          if (note.collections) {
+            note.collections.forEach(cid => {
+              const col = state.collections.find(c => c.id === cid);
+              if (col && !col.noteIds.includes(note.id)) {
+                col.noteIds.push(note.id);
+              }
+            });
+          }
+        });
+      }
 
       // Pull References
       const { data: refs } = await supabaseClient.from('references').select('*').eq('user_id', uid);
@@ -3187,6 +3224,31 @@
         updateProfileDisplay();
       }
       return data;
+    }
+
+    function updateProfileDisplay() {
+      if (!state) return;
+      const displayName = state.userFullName || state.userName || (state.user ? state.user.email : '') || 'Member';
+      const displayEmail = state.user ? state.user.email : (state.userEmail || '-');
+      const displayPhone = state.userPhone || '-';
+      
+      // Initials Logic
+      let initials = '??';
+      const nameForInitials = state.userFullName || state.userName;
+      if (nameForInitials) {
+        initials = nameForInitials.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      } else if (state.user && state.user.email) {
+        initials = state.user.email.slice(0, 2).toUpperCase();
+      }
+
+      // Update elements
+      const snVal = document.getElementById('settings-name'); if (snVal) snVal.textContent = displayName;
+      const seVal = document.getElementById('settings-email'); if (seVal) seVal.textContent = displayEmail;
+      const phoneEl = document.getElementById('settings-phone'); if (phoneEl) phoneEl.textContent = displayPhone;
+      const sn = document.getElementById('snav-name'); if (sn) sn.textContent = displayName;
+      
+      const sa = document.getElementById('snav-avatar'); if (sa) sa.textContent = initials;
+      const settAva = document.getElementById('settings-avatar'); if (settAva) settAva.textContent = initials;
     }
 
     function saveState() {
@@ -3822,7 +3884,13 @@
       try {
         const fileMap = { 'en': 'bible_kjv.json', 'sw': 'bible_swahili.json' };
         const fileName = fileMap[lang] || `bible_${lang}.json`;
-        const res = await fetch(fileName + '?v=2', { cache: 'force-cache' });
+        let res;
+        try {
+          res = await fetch(fileName + '?v=2', { cache: 'force-cache' });
+        } catch (e) {
+          // Fallback if force-cache fails (e.g. not in cache yet)
+          res = await fetch(fileName + '?v=2');
+        }
         if (!res.ok) throw new Error('Network response was not ok');
         const data = await res.json();
         bibleData[lang] = data;
@@ -3925,11 +3993,11 @@
         return;
       }
       grid.innerHTML = state.collections.map(c => {
-        const count = c.noteIds.length;
+        const count = (c.noteIds || []).length;
         return `
     <div class="collection-card" data-id="${c.id}">
       <div>
-        <div class="collection-card__icon">${c.emoji || '📁'}</div>
+        <div class="collection-card__icon">${c.icon || c.emoji || '📁'}</div>
         <div class="collection-card__name">${escHtml(c.name)}</div>
         <div class="collection-card__count">${count} note${count !== 1 ? 's' : ''}</div>
       </div>
@@ -4172,25 +4240,6 @@
       showToast('info', 'Church group sharing coming soon!');
     });
 
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-      const confirmed = await showConfirm({
-        title: 'Log Out',
-        message: 'Are you sure you want to log out from this session? Your notes remain synced.',
-        confirmText: 'Log Out',
-        isDanger: true
-      });
-      if (confirmed) {
-        await supabaseClient.auth.signOut();
-        state.user = null;
-        saveState();
-        showToast('info', 'Successfully logged out');
-        document.getElementById('app').style.display = 'none';
-        document.getElementById('auth-overlay').classList.remove('hidden');
-        document.getElementById('auth-email').value = '';
-        document.getElementById('auth-password').value = '';
-      }
-    });
-
     document.getElementById('auth-toggle-mode').addEventListener('click', (e) => {
       e.preventDefault();
       const btn = e.target;
@@ -4274,39 +4323,48 @@
 
     document.getElementById('auth-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      setAuthAlert(null); // Clear old alerts
+      console.log("Auth submit started");
+      setAuthAlert(null);
+      
       const email = document.getElementById('auth-email').value.trim();
       const btn = document.getElementById('auth-submit-btn');
-      
       const isResetting = document.getElementById('auth-password-wrapper').style.display === 'none';
+      
       if (isResetting) {
         if (!email) return;
         btn.textContent = 'Sending...';
         btn.disabled = true;
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
-        btn.disabled = false;
-        btn.textContent = 'SEND RESET LINK';
-        
-        if (error) {
-          setAuthAlert('error', error.message);
-        } else {
+        try {
+          const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+          if (error) throw error;
           setAuthAlert('success', 'Reset link sent to ' + email);
           setTimeout(() => document.getElementById('auth-forgot-btn').click(), 3000); 
+        } catch (err) {
+          setAuthAlert('error', err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'SEND RESET LINK';
         }
         return;
       }
-      
+
       const pass = document.getElementById('auth-password').value.trim();
-      if (!email || (pass || "").length < 6) return; 
+      if (!email || (pass || "").length < 6) {
+        setAuthAlert('error', 'Invalid email or password (min 6 chars).');
+        return;
+      }
       
       const isSignUp = document.getElementById('auth-subtitle')?.textContent?.includes('Create') || btn.textContent.includes('ACCOUNT');
       
-      // Name validation for signup
       if (isSignUp) {
-        const name = document.getElementById('auth-name').value.trim();
-        const phone = document.getElementById('auth-phone').value.trim();
-        const code = document.getElementById('auth-country-code').value;
-        
+        const nameInput = document.getElementById('auth-name');
+        const phoneInput = document.getElementById('auth-phone');
+        if (!nameInput || !phoneInput) {
+           console.error("Missing signup fields");
+           return;
+        }
+        const name = nameInput.value.trim();
+        const phone = phoneInput.value.trim();
         const nameParts = (name || "").split(/\s+/).filter(p => p.length > 0);
         if (nameParts.length < 2) {
           setAuthAlert('error', 'Please enter your full name (at least two names).');
@@ -4318,72 +4376,56 @@
         }
       }
 
-      btn.textContent = 'Processing...';
+      btn.textContent = 'Connecting...';
       btn.disabled = true;
 
       try {
-        if (isSignUp) {
-          const name = document.getElementById('auth-name').value.trim();
-          const phone = document.getElementById('auth-country-code').value + document.getElementById('auth-phone').value.trim();
-          
-          const { data, error } = await supabaseClient.auth.signUp({
-            email: email,
-            password: pass,
-            options: {
-              data: {
-                full_name: name,
-                phone: phone
-              }
-            }
-          });
-          if (error) throw error;
-          
-          if (data.session) {
-             setAuthAlert('success', 'Account created successfully!');
-          } else {
-             setAuthAlert('success', 'Registration successful! Check your email to confirm.');
-          }
-        } else {
-          // 1. Check if email exists in public profiles first
-          const { data: profile, error: pError } = await supabaseClient
-            .from('profiles')
-            .select('email')
-            .eq('email', email)
-            .single();
-            
-          if (!profile) {
-            setAuthAlert('error', 'Account does not exist. Please create one.');
-            btn.disabled = false;
-            btn.textContent = 'SIGN IN';
-            return;
-          }
+        console.log("Attempting " + (isSignUp ? "SignUp" : "SignIn") + " for " + email);
+        
+        // Timeout for the request
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Request timed out. Please check your internet.")), 15000)
+        );
 
-          // 2. Attempt login
-          const { data, error } = await supabaseClient.auth.signInWithPassword({
+        let authPromise;
+        if (isSignUp) {
+          btn.textContent = 'Creating Account...';
+          authPromise = supabaseClient.auth.signUp({
             email: email,
             password: pass,
+            options: { data: { 
+              full_name: document.getElementById('auth-name').value.trim(), 
+              phone: document.getElementById('auth-country-code').value + document.getElementById('auth-phone').value.trim() 
+            } }
           });
-          
-          if (error) {
-            if (error.message.includes('Invalid login credentials')) {
-              throw new Error('Incorrect password. Please try again.');
-            }
-            throw error;
+        } else {
+          btn.textContent = 'Verifying...';
+          authPromise = supabaseClient.auth.signInWithPassword({ email, password: pass });
+        }
+
+        const { data, error } = await Promise.race([authPromise, timeoutPromise]);
+        
+        if (error) {
+          console.error("Supabase Error:", error);
+          if (error.message.toLowerCase().includes('invalid login credentials')) {
+            throw new Error('Incorrect email or password.');
           }
+          throw error;
+        }
+
+        btn.textContent = 'Success!';
+        console.log("Auth success!", data);
+        if (isSignUp) {
+          if (data.session) setAuthAlert('success', 'Account created!');
+          else setAuthAlert('success', 'Registration successful! Check email.');
         }
       } catch (err) {
-        let msg = err?.message || 'An unexpected error occurred. Please try again.';
-        if (typeof msg === 'string') {
-          if (msg.includes('already registered')) {
-            msg = 'An account with this email already exists.';
-          } else if (msg.includes('rate limit')) {
-            msg = 'Too many attempts. Please wait a moment.';
-          }
-        }
-        setAuthAlert('error', msg);
+        console.error("Auth Catch:", err);
+        setAuthAlert('error', err.message || 'An unexpected error occurred.');
       } finally {
         btn.disabled = false;
-        btn.textContent = isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN';
+        btn.textContent = isSignUp ? (document.getElementById('auth-password-wrapper').style.display === 'none' ? 'SEND RESET LINK' : 'CREATE ACCOUNT') : 'SIGN IN';
+        console.log("Auth UI Reset");
       }
     });
 
@@ -4459,20 +4501,23 @@
         cancelBtn.textContent = cancelText;
 
         okBtn.className = 'modal-confirm-btn ' + (isDanger ? 'modal-confirm-btn--danger' : 'modal-confirm-btn--primary');
-
-        const cleanup = (val) => {
+        
+        const resolveVal = (val) => {
+          console.log("Confirm resolved with:", val);
           modal.classList.remove('open');
           setTimeout(() => {
             modal.style.display = 'none';
-            okBtn.onclick = null;
-            cancelBtn.onclick = null;
             resolve(val);
           }, 200);
         };
 
-        okBtn.onclick = () => cleanup(true);
-        cancelBtn.onclick = () => cleanup(false);
-        modal.onclick = (e) => { if (e.target === modal) cleanup(false); };
+        const onOk = () => resolveVal(true);
+        const onCancel = () => resolveVal(false);
+        const onBackdrop = (e) => { if (e.target === modal) resolveVal(false); };
+
+        okBtn.addEventListener('click', onOk, { once: true });
+        cancelBtn.addEventListener('click', onCancel, { once: true });
+        modal.addEventListener('click', onBackdrop, { once: true });
 
         modal.style.display = 'flex';
         requestAnimationFrame(() => modal.classList.add('open'));
@@ -4702,31 +4747,9 @@
       applyTheme(document.documentElement.getAttribute('data-theme') === 'dark');
       navigateTo('notes');
       updateStats();
-
-      function updateProfileDisplay() {
-        const displayName = state.userFullName || state.userName || (state.user ? state.user.email : '') || 'Member';
-        const displayEmail = state.user ? state.user.email : (state.userEmail || '-');
-        const displayPhone = state.userPhone || '-';
-        
-        // Initials Logic
-        let initials = '??';
-        const nameForInitials = state.userFullName || state.userName;
-        if (nameForInitials) {
-          initials = nameForInitials.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-        } else if (state.user && state.user.email) {
-          initials = state.user.email.slice(0, 2).toUpperCase();
-        }
-
-        // Update elements
-        document.getElementById('settings-name').textContent = displayName;
-        document.getElementById('settings-email').textContent = displayEmail;
-        const phoneEl = document.getElementById('settings-phone'); if (phoneEl) phoneEl.textContent = displayPhone;
-        const sn = document.getElementById('snav-name'); if (sn) sn.textContent = displayName;
-        
-        const sa = document.getElementById('snav-avatar'); if (sa) sa.textContent = initials;
-        const settAva = document.getElementById('settings-avatar'); if (settAva) settAva.textContent = initials;
-      }
       updateProfileDisplay();
+
+
 
       // FAB visible only on notes
       document.getElementById('fab-btn').style.display = 'flex';
@@ -4743,11 +4766,34 @@
       // Font settings
       applyFontMode(state.fontMode || 'Medium');
 
-      // Register PWA Service Worker
+      // Register PWA Service Worker with Update Handling
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').then(
-          (reg) => console.log('PWA ServiceWorker Active:', reg.scope)
-        ).catch(err => console.log('SW Error:', err));
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          console.log('PWA ServiceWorker Active:', reg.scope);
+          
+          // Check for updates
+          reg.onupdatefound = () => {
+            const installingWorker = reg.installing;
+            if (installingWorker) {
+              installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('New update available! Reloading...');
+                  if (typeof showToast === 'function') showToast('info', 'Updating to latest version...');
+                  setTimeout(() => location.reload(), 1500);
+                }
+              };
+            }
+          };
+        }).catch(err => console.log('SW Error:', err));
+        
+        // Ensure that skipping waiting works and reloads
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
       }
     }
     
@@ -4758,51 +4804,120 @@
       if (el) el.textContent = mode;
     }
 
+    // Supabase Concurrency Guard
+    let isProcessingAuth = false;
+
     // Connect Supabase active session state to internal router
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
-      if (session) {
-        state.user = session.user;
-        state.userEmail = session.user.email;
-        
-        // Always try to fetch profile on login or refresh
-        await fetchProfile(session.user.id);
-        
-        if (event === 'SIGNED_IN' || !state.userFullName || !state.userPhone) {
-          try {
-            await syncPull();
-          } catch (e) {}
-        }
+      console.log("Auth State Changed:", event, session ? "Session active" : "No session");
+      
+      // If we are already processing a major state transition, skip duplicates unless it's a SIGN_OUT
+      if (isProcessingAuth && event !== 'SIGNED_OUT') {
+         console.warn("Auth processing already in progress, skipping event:", event);
+         return;
+      }
+      
+      isProcessingAuth = true;
+      try {
+        if (session) {
+          state.user = session.user;
+          state.userEmail = session.user.email;
+          
+          // 1. Fast Lane: Sync from Metadata first
+          const metaName = session.user.user_metadata?.full_name || session.user.user_metadata?.name;
+          const metaPhone = session.user.user_metadata?.phone;
+          if (metaName && !state.userFullName) state.userFullName = metaName;
+          if (metaPhone && !state.userPhone) state.userPhone = metaPhone;
 
-        // Enforcement: If missing data, stay in the completion overlay
-        if (!state.userFullName || !state.userPhone) {
-          document.getElementById('app').style.display = 'none';
-          document.getElementById('auth-overlay').classList.add('hidden');
-          document.getElementById('complete-profile-overlay').classList.remove('hidden');
-          
-          // Re-init the custom selector for this modal
-          initCustomSelect('cp-country-code');
-          
-          // Auto-capitalize name input
-          const nameInp = document.getElementById('cp-full-name');
-          if (nameInp) {
-            nameInp.addEventListener('input', () => {
-               nameInp.value = nameInp.value.replace(/\b\w/g, c => c.toUpperCase());
+          // 2. Initial Data Pull (with higher 15s timeout for first load)
+          try {
+            const timeoutVal = 15000;
+            const timeout = new Promise((_, r) => setTimeout(() => r(new Error("Initial fetch timeout")), timeoutVal));
+            
+            // Only warn if we truly have NO data yet
+            await Promise.race([fetchProfile(session.user.id), timeout]).catch(e => {
+              if (!state.userFullName) console.warn("Background profile fetch is taking longer than expected...");
             });
+            
+            if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && !state.notes.length) {
+              await Promise.race([syncPull(), timeout]).catch(e => {
+                if (!state.notes.length) console.warn("Deep sync pull is taking longer than expected...");
+              });
+            }
+          } catch (e) {}
+
+          // 3. Final Verification: Show App or Modal
+          // Pre-fill modal values if we have partial data
+          const inputName = document.getElementById('cp-full-name');
+          const inputPhone = document.getElementById('cp-phone');
+          if (inputName && state.userFullName && !inputName.value) inputName.value = state.userFullName;
+          if (inputPhone && state.userPhone && !inputPhone.value) {
+            let displayPhone = state.userPhone;
+            const cc = document.getElementById('cp-country-code')?.value || "+255";
+            if (displayPhone.startsWith(cc)) displayPhone = displayPhone.replace(cc, "");
+            inputPhone.value = displayPhone;
+          }
+
+          if (!state.userFullName || !state.userPhone) {
+            document.getElementById('app').style.display = 'none';
+            document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('complete-profile-overlay').classList.remove('hidden');
+            initCustomSelect('cp-country-code');
+          } else {
+            enterApp();
           }
           
+          function enterApp() {
+            document.getElementById('complete-profile-overlay').classList.add('hidden');
+            document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('app').style.display = 'flex';
+            init();
+          }
+          
+          saveState();
         } else {
+          state.user = null;
+          saveState();
           document.getElementById('complete-profile-overlay').classList.add('hidden');
-          document.getElementById('auth-overlay').classList.add('hidden');
-          document.getElementById('app').style.display = 'flex';
+          document.getElementById('auth-overlay').classList.remove('hidden');
+          document.getElementById('app').style.display = 'none';
         }
+      } finally {
+        isProcessingAuth = false;
+      }
+    });
+
+    // Connectivity Test Helper
+    document.getElementById('test-conn-btn')?.addEventListener('click', async () => {
+      const btn = document.getElementById('test-conn-btn');
+      const authAlert = document.getElementById('auth-alert');
+      btn.textContent = 'Testing...';
+      try {
+        if (!window.supabase) throw new Error("Supabase script blocked by browser!");
         
-        saveState();
-      } else {
-        state.user = null;
-        saveState();
-        document.getElementById('complete-profile-overlay').classList.add('hidden');
-        document.getElementById('auth-overlay').classList.remove('hidden');
-        document.getElementById('app').style.display = 'none';
+        // Try a simple ping to the Supabase REST API
+        const res = await fetch('https://inpsceqswsmcixgxkaad.supabase.co/rest/v1/', { 
+          method: 'GET',
+          headers: { 'apikey': SUPABASE_ANON_KEY } 
+        });
+        
+        // 200 or 401 (Unauthorized) both mean the domain is reachable
+        if (res.ok || res.status === 401) {
+          showToast('success', "Connection Successful! Supabase is reachable.");
+          btn.textContent = 'Connection OK ✅';
+          if (authAlert) authAlert.classList.add('hidden');
+        } else {
+          throw new Error("Server returned " + res.status);
+        }
+      } catch (e) {
+        console.error("Connectivity Test Failed:", e);
+        showToast('error', "Blocked: " + e.message);
+        btn.textContent = 'Connection FAILED ❌';
+        if (authAlert) {
+          authAlert.textContent = "Your network or ad-blocker is blocking Supabase. Please disable ad-blockers or try a different Wi-Fi/Hotspot.";
+          authAlert.className = "auth-alert auth-alert--error";
+          authAlert.classList.remove('hidden');
+        }
       }
     });
 
@@ -4833,7 +4948,10 @@
       btn.textContent = "SAVING...";
 
       try {
-        const { error } = await supabaseClient
+        console.log("Saving profile for:", state.user.id, { name, fullPhone });
+        
+        // 1. Update Public Profile Table
+        const { error: pError } = await supabaseClient
           .from('profiles')
           .update({
             full_name: name,
@@ -4841,9 +4959,19 @@
             updated_at: new Date().toISOString()
           })
           .eq('id', state.user.id);
+        if (pError) throw pError;
 
-        if (error) throw error;
-
+        // 2. Sync with Auth User Metadata (Fast lane for future sessions)
+        const { error: aError } = await supabaseClient.auth.updateUser({
+          data: { 
+            full_name: name, 
+            phone: fullPhone 
+          }
+        });
+        if (aError) console.warn("Auth meta update failed (non-critical):", aError);
+        
+        console.log("Profile saved successfully");
+        
         state.userName = name;
         state.userFullName = name;
         state.userPhone = fullPhone;
@@ -4859,6 +4987,41 @@
         alertBox.style.display = 'block';
         document.getElementById('cp-submit-btn').disabled = false;
         document.getElementById('cp-submit-btn').textContent = "Save & Continue";
+      }
+    });
+
+    async function handleLogout() {
+        console.log("Starting logout sequence...");
+        try {
+           await supabaseClient.auth.signOut();
+        } catch (e) {
+           console.error("Sign out error:", e);
+        }
+        
+        // Clear local credentials
+        state.user = null;
+        state.userName = '';
+        state.userFullName = '';
+        state.userPhone = '';
+        saveState();
+        
+        console.log("Logout successful, reloading...");
+        localStorage.removeItem('logos-app-state'); // Clear cached profile
+        location.reload(); 
+    }
+    window.handleLogout = handleLogout;
+
+    const cpl = document.getElementById('cp-logout-btn'); if (cpl) cpl.addEventListener('click', handleLogout);
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      const confirmed = await showConfirm({
+        title: 'Log Out',
+        message: 'Are you sure you want to log out from this session? Your notes remain synced.',
+        confirmText: 'Log Out',
+        isDanger: true
+      });
+      if (confirmed) {
+        await handleLogout();
       }
     });
 

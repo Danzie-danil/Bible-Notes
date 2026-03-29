@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bible-notes-v2';
+const CACHE_NAME = 'bible-notes-v5';
 
 // Add core static assets here.
 const CORE_ASSETS = [
@@ -6,7 +6,8 @@ const CORE_ASSETS = [
   './language.js',
   './app logo.PNG',
   './manifest.json',
-  './bible_swahili.json?v=2' // Cache busted latest versions
+  './bible_swahili.json?v=2',
+  './bible_kjv.json?v=2'
 ];
 
 // On Install, cache the core application shell
@@ -39,23 +40,23 @@ self.addEventListener('activate', event => {
 // Fetch events: Network First falling back to Cache (ideal for dynamic JSON data, but fine for shell too)
 // Or Cache First falling back to network. We'll use Stale-While-Revalidate for safety.
 self.addEventListener('fetch', event => {
-  // Exclude external API calls (e.g. Supabase once added)
-  if (event.request.url.includes('supabase.co')) return;
+  // IMPORTANT: COMPLETELY BYPASS SERVICE WORKER FOR EXTERNAL REQUESTS (Supabase, CDN, etc)
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return; // Let the browser handle it naturally
+  }
 
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       const fetchPromise = fetch(event.request).then(networkResponse => {
-        // Cache the dynamically fetched responses for offline
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const clone = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return networkResponse;
       }).catch(() => {
-        // Network failed (offline), if we don't have cache, throw raw error
+        // Silent fallthrough for network errors
       });
 
-      // Return cached immediately if there is one, else wait for network
       return cachedResponse || fetchPromise;
     })
   );
