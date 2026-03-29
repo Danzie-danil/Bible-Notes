@@ -1089,6 +1089,13 @@
       margin-top: 2px;
     }
 
+    .settings-profile__phone {
+      font-size: 13px;
+      color: var(--gold);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
     .settings-profile__edit {
       margin-left: auto;
       background: var(--surface-2);
@@ -2064,9 +2071,23 @@
       padding: 24px;
       transition: opacity 300ms ease;
     }
-    #auth-overlay.hidden {
+    #auth-overlay.hidden, #complete-profile-overlay.hidden {
       opacity: 0;
       pointer-events: none;
+      transform: scale(1.05);
+    }
+    #complete-profile-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
     }
     .auth-card {
       background: var(--surface);
@@ -2077,6 +2098,7 @@
       box-shadow: var(--shadow-lg);
       text-align: center;
       border: 1px solid var(--border-soft);
+      transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
     }
     .auth-logo {
       font-family: var(--font-display);
@@ -2164,6 +2186,31 @@
     .auth-alert.hidden {
       display: none;
     }
+    .auth-field-group {
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+    .auth-field-group.hidden {
+      display: none;
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    .phone-input-group {
+      display: flex;
+      gap: 8px;
+    }
+    .country-select-container {
+      width: 100px;
+      flex-shrink: 0;
+    }
+    #auth-phone {
+      flex: 1;
+    }
+    /* Custom Scroll for Country Code */
+    .country-select-container .app-select-list {
+      max-height: 200px; /* ~5 items */
+      overflow-y: auto;
+    }
     .auth-btn {
        width: 100%;
        padding: 14px;
@@ -2201,7 +2248,31 @@
       <div class="auth-subtitle" id="auth-subtitle">Sign in to sync your notes across devices</div>
       <div id="auth-alert" class="auth-alert hidden"></div>
       <form id="auth-form">
+        <div id="auth-name-group" class="auth-field-group hidden">
+          <input type="text" id="auth-name" name="full_name" class="auth-input" placeholder="Full Name">
+        </div>
         <input type="email" id="auth-email" name="email" class="auth-input" placeholder="Email address" required autocomplete="username">
+        <div id="auth-phone-group" class="auth-field-group hidden">
+          <div class="phone-input-group">
+            <div class="app-select-container country-select-container" id="country-code-container">
+              <select id="auth-country-code" hidden>
+                <option value="+255">TZ (+255)</option>
+                <option value="+254">KE (+254)</option>
+                <option value="+256">UG (+256)</option>
+                <option value="+250">RW (+250)</option>
+                <option value="+257">BI (+257)</option>
+                <option value="+1">US (+1)</option>
+                <option value="+44">UK (+44)</option>
+                <option value="+91">IN (+91)</option>
+                <option value="+234">NG (+234)</option>
+                <option value="+27">SA (+27)</option>
+              </select>
+              <div class="app-select-trigger"></div>
+              <div class="app-select-list"></div>
+            </div>
+            <input type="tel" id="auth-phone" name="phone" class="auth-input" placeholder="Phone Number">
+          </div>
+        </div>
         <div class="password-wrapper" id="auth-password-wrapper">
           <input type="password" id="auth-password" name="password" class="auth-input" placeholder="Password" required minlength="6" autocomplete="current-password">
           <button type="button" class="btn-password-toggle" id="toggle-password-btn" aria-label="Toggle password visibility">
@@ -2213,6 +2284,35 @@
       <button class="auth-toggle" id="auth-toggle-mode">Don't have an account? Create one</button>
       <div style="text-align: center; margin-top: 12px;">
         <button type="button" id="auth-forgot-btn" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:4px; transition: color var(--trans);">Forgot password?</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ COMPLETE PROFILE OVERLAY (MANDATORY) ═══════════ -->
+  <div id="complete-profile-overlay" class="hidden">
+    <div class="auth-card">
+      <div class="auth-logo">Complete Profile<span style="color:var(--gold)">.</span></div>
+      <div class="auth-subtitle">Welcome to Bible Notes! Please provide your details to securely sync your notes and stay connected.</div>
+      
+      <div id="cp-alert" class="auth-alert hidden"></div>
+      
+      <div class="auth-form" id="complete-profile-form">
+        <input type="text" id="cp-full-name" class="auth-input" placeholder="Full Name (e.g. John Doe)" autocomplete="name">
+        
+        <div class="phone-input-group">
+          <select id="cp-country-code" class="auth-input" style="width: 120px; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; margin-bottom: 0;">
+            <option value="+255">TZ (+255)</option>
+            <option value="+254">KE (+254)</option>
+            <option value="+256">UG (+256)</option>
+            <option value="+250">RW (+250)</option>
+            <option value="+257">BI (+257)</option>
+            <option value="+1">US (+1)</option>
+            <option value="+44">UK (+44)</option>
+          </select>
+          <input type="tel" id="cp-phone" class="auth-input" style="border-top-left-radius: 0; border-bottom-left-radius: 0; flex: 1; margin-bottom: 0;" placeholder="Phone Number" autocomplete="tel">
+        </div>
+
+        <button type="submit" class="auth-btn" id="cp-submit-btn">SAVE & CONTINUE</button>
       </div>
     </div>
   </div>
@@ -2281,9 +2381,9 @@
           <span id="snav-theme-label" data-i18n="settings_dark_mode">Dark mode</span>
         </button>
         <div class="side-nav__user" id="snav-user">
-          <div class="side-nav__avatar" id="snav-avatar">JD</div>
+          <div class="side-nav__avatar" id="snav-avatar">-</div>
           <div>
-            <div class="side-nav__user-name" id="snav-name">John Doe</div>
+            <div class="side-nav__user-name" id="snav-name">...</div>
             <div class="side-nav__user-role">Member</div>
           </div>
         </div>
@@ -2333,15 +2433,15 @@
         <!-- Stats -->
         <div class="stats-row">
           <div class="stat-card">
-            <div class="stat-card__val" id="stat-notes">3</div>
+            <div class="stat-card__val" id="stat-notes">0</div>
             <div class="stat-card__lbl">Notes</div>
           </div>
           <div class="stat-card">
-            <div class="stat-card__val" id="stat-streak">5</div>
+            <div class="stat-card__val" id="stat-streak">0</div>
             <div class="stat-card__lbl">Day Streak 🔥</div>
           </div>
           <div class="stat-card">
-            <div class="stat-card__val" id="stat-refs">3</div>
+            <div class="stat-card__val" id="stat-refs">0</div>
             <div class="stat-card__lbl">References</div>
           </div>
         </div>
@@ -2365,7 +2465,7 @@
         <div class="section-header">
           <div>
             <div class="section-header__title">My Notes</div>
-            <div class="section-header__sub" id="notes-count-label">3 notes</div>
+            <div class="section-header__sub" id="notes-count-label">0 notes</div>
           </div>
           <button class="section-header__action" id="new-note-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -2397,125 +2497,7 @@
         </div>
 
         <div class="notes-list" id="notes-list">
-          <div class="note-card pinned" data-id="n1">
-            <div class="note-card__top">
-              <div class="note-card__title">Sunday Sermon – Grace &amp; Truth</div>
-              <span class="note-card__badge badge--sermon">Sermon</span>
-            </div>
-            <div class="note-card__preview">Pastor opened with John 1:14. The Word became flesh and made his dwelling
-              among us.
-
-              Key point: Grace without truth beco</div>
-            <div class="note-card__tags"><span class="note-tag">#grace</span><span class="note-tag">#truth</span><span
-                class="note-tag">#john</span></div>
-            <div class="note-card__meta">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              27 Mar
-              <span style="color:var(--ref-color);font-size:11px">📌 2 refs</span>
-              <span style="font-size:11px">📌 Pinned</span>
-              <div class="note-card__actions">
-                <button class="note-card__action-btn pin-note-btn" data-id="n1" title="Pin" aria-label="Pin note">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"
-                    stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="17" x2="12" y2="22"></line>
-                    <path d="M5 17H19V15L17 10V4H7V10L5 15V17Z"></path>
-                  </svg>
-                </button>
-                <button class="note-card__action-btn delete-note-btn" data-id="n1" title="Delete"
-                  aria-label="Delete note">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="note-card " data-id="n3">
-            <div class="note-card__top">
-              <div class="note-card__title">Morning Prayer – Seeking Guidance</div>
-              <span class="note-card__badge badge--prayer">Prayer</span>
-            </div>
-            <div class="note-card__preview">Lord, I come before You today with a grateful heart.
-
-              Lead my steps today. Let Your Word be a lamp to my feet.
-
-              Praying </div>
-            <div class="note-card__tags"><span class="note-tag">#prayer</span><span class="note-tag">#guidance</span>
-            </div>
-            <div class="note-card__meta">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              28 Mar
-
-
-              <div class="note-card__actions">
-                <button class="note-card__action-btn pin-note-btn" data-id="n3" title="Pin" aria-label="Pin note">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="17" x2="12" y2="22"></line>
-                    <path d="M5 17H19V15L17 10V4H7V10L5 15V17Z"></path>
-                  </svg>
-                </button>
-                <button class="note-card__action-btn delete-note-btn" data-id="n3" title="Delete"
-                  aria-label="Delete note">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="note-card " data-id="n2">
-            <div class="note-card__top">
-              <div class="note-card__title">Psalm 23 – Deep Study</div>
-              <span class="note-card__badge badge--study">Bible Study</span>
-            </div>
-            <div class="note-card__preview">The LORD is my shepherd; I shall not want.
-
-              He makes me lie down in green pastures.
-              He leads me beside still waters.
-              He </div>
-            <div class="note-card__tags"><span class="note-tag">#psalms</span><span
-                class="note-tag">#shepherd</span><span class="note-tag">#peace</span></div>
-            <div class="note-card__meta">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              26 Mar
-              <span style="color:var(--ref-color);font-size:11px">📌 1 ref</span>
-
-              <div class="note-card__actions">
-                <button class="note-card__action-btn pin-note-btn" data-id="n2" title="Pin" aria-label="Pin note">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="17" x2="12" y2="22"></line>
-                    <path d="M5 17H19V15L17 10V4H7V10L5 15V17Z"></path>
-                  </svg>
-                </button>
-                <button class="note-card__action-btn delete-note-btn" data-id="n2" title="Delete"
-                  aria-label="Delete note">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
+          <!-- Populated by JS -->
         </div>
       </section>
 
@@ -2535,22 +2517,7 @@
           </button>
         </div>
         <div class="collections-grid" id="collections-grid">
-          <div class="collection-card" data-id="c1">
-            <div>
-              <div class="collection-card__icon">🎤</div>
-              <div class="collection-card__name">Sunday Sermons</div>
-              <div class="collection-card__count">1 note</div>
-            </div>
-            <div class="collection-card__bar" style="background:#5C3D2E"></div>
-          </div>
-          <div class="collection-card" data-id="c2">
-            <div>
-              <div class="collection-card__icon">🙏</div>
-              <div class="collection-card__name">Prayer Journal</div>
-              <div class="collection-card__count">1 note</div>
-            </div>
-            <div class="collection-card__bar" style="background:#2C5FBE"></div>
-          </div>
+          <!-- Populated by JS -->
         </div>
       </section>
 
@@ -2582,30 +2549,7 @@
         </div>
 
         <div class="refs-list" id="refs-list">
-          <div class="ref-card" data-note-id="n1">
-            <div class="ref-card__verse">John 1:14</div>
-            <div class="ref-card__text">"The Word became flesh and made his dwelling among us."</div>
-            <div style="font-size:12px;color:var(--text-secondary);margin-top:6px">💬 Key verse of the sermon</div>
-            <div class="ref-card__meta">
-              <span class="ref-card__from-note">From: Sunday Sermon – Grace &amp; Truth</span>
-            </div>
-          </div>
-          <div class="ref-card" data-note-id="n1">
-            <div class="ref-card__verse">John 3:16</div>
-            <div class="ref-card__text">"For God so loved the world that he gave his one and only Son..."</div>
-
-            <div class="ref-card__meta">
-              <span class="ref-card__from-note">From: Sunday Sermon – Grace &amp; Truth</span>
-            </div>
-          </div>
-          <div class="ref-card" data-note-id="n2">
-            <div class="ref-card__verse">Psalm 23:1</div>
-            <div class="ref-card__text">"The LORD is my shepherd; I shall not want."</div>
-            <div style="font-size:12px;color:var(--text-secondary);margin-top:6px">💬 Opening verse of the Psalm</div>
-            <div class="ref-card__meta">
-              <span class="ref-card__from-note">From: Psalm 23 – Deep Study</span>
-            </div>
-          </div>
+          <!-- Populated by JS -->
         </div>
       </section>
 
@@ -2617,10 +2561,11 @@
         <div class="settings-list">
           <!-- Profile -->
           <div class="settings-profile">
-            <div class="settings-avatar" id="settings-avatar">JD</div>
+            <div class="settings-avatar" id="settings-avatar">-</div>
             <div>
-              <div class="settings-profile__name" id="settings-name">John Doe</div>
-              <div class="settings-profile__email" id="settings-email">john@church.com</div>
+              <div class="settings-profile__name" id="settings-name">...</div>
+              <div class="settings-profile__email" id="settings-email">...</div>
+              <div class="settings-profile__phone" id="settings-phone">...</div>
             </div>
             <button class="settings-profile__edit" id="edit-profile-btn">Edit</button>
           </div>
@@ -3072,8 +3017,10 @@
       fontMode: 'Medium',
       bibleLang: 'en',
       appLang: 'en',
-      userName: 'John Doe',
-      userEmail: 'john@church.com',
+      userName: '',
+      userFullName: '',
+      userPhone: '',
+      userEmail: '',
     };
 
     const VOTD_POOL = [
@@ -3131,6 +3078,11 @@
         if (saved) {
           const parsed = JSON.parse(saved);
           state = { ...state, ...parsed };
+          // Ensure arrays are initialized to prevent .length crashes
+          state.notes = Array.isArray(state.notes) ? state.notes : [];
+          state.collections = Array.isArray(state.collections) ? state.collections : [];
+          state.references = Array.isArray(state.references) ? state.references : [];
+          
           if (state.bibleLang === 'kjv') state.bibleLang = 'en';
           if (state.bibleLang === 'swahili') state.bibleLang = 'sw';
         }
@@ -3154,13 +3106,13 @@
       });
 
       // 2. Sync Collections
-      if (state.collections.length > 0) {
+      if ((state.collections || []).length > 0) {
         const cols = state.collections.map(c => ({ id: c.id, user_id: uid, name: c.name, icon: c.icon }));
         await supabaseClient.from('collections').upsert(cols);
       }
 
       // 3. Sync Notes
-      if (state.notes.length > 0) {
+      if ((state.notes || []).length > 0) {
         const notes = state.notes.map(n => ({
           id: n.id, user_id: uid, title: n.title, content: n.content,
           type: n.type, pinned: n.pinned, collections: n.collections || [],
@@ -3171,7 +3123,7 @@
       }
 
       // 4. Sync References
-      if (state.references.length > 0) {
+      if ((state.references || []).length > 0) {
         const refs = state.references.map(r => ({
           id: r.id, user_id: uid, note_id: r.note_id, verse: r.verse, text: r.text
         }));
@@ -3220,6 +3172,23 @@
       updateStats();
     }
 
+    async function fetchProfile(uid) {
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('full_name, phone')
+        .eq('id', uid)
+        .single();
+      
+      if (data && !error) {
+        state.userName = data.full_name || '';
+        state.userFullName = data.full_name || '';
+        state.userPhone = data.phone || '';
+        saveState();
+        updateProfileDisplay();
+      }
+      return data;
+    }
+
     function saveState() {
       try { 
         localStorage.setItem('logos-app-state', JSON.stringify(state)); 
@@ -3235,47 +3204,7 @@
       };
     }
 
-    /* ─── Seeds ─── */
-    function seedData() {
-      if (state.notes.length === 0) {
-        state.notes = [
-          {
-            id: 'n1', title: 'Sunday Sermon – Grace & Truth',
-            content: 'Pastor opened with John 1:14. The Word became flesh and made his dwelling among us.\n\nKey point: Grace without truth becomes permissiveness. Truth without grace becomes legalism.\n\nJohn 3:16 — God so loved the world...',
-            type: 'sermon', tags: ['grace', 'truth', 'john'], pinned: true,
-            collections: ['c1'],
-            created: new Date(Date.now() - 86400000 * 2).toISOString(),
-            updated: new Date(Date.now() - 86400000 * 2).toISOString(),
-          },
-          {
-            id: 'n2', title: 'Psalm 23 – Deep Study',
-            content: 'The LORD is my shepherd; I shall not want.\n\nHe makes me lie down in green pastures.\nHe leads me beside still waters.\nHe restores my soul.\n\nNote: "Valley of the shadow of death" — בְּגֵיא צַלְמָוֶת — means deep darkness, not necessarily death.',
-            type: 'study', tags: ['psalms', 'shepherd', 'peace'], pinned: false,
-            collections: [],
-            created: new Date(Date.now() - 86400000 * 5).toISOString(),
-            updated: new Date(Date.now() - 86400000 * 3).toISOString(),
-          },
-          {
-            id: 'n3', title: 'Morning Prayer – Seeking Guidance',
-            content: 'Lord, I come before You today with a grateful heart.\n\nLead my steps today. Let Your Word be a lamp to my feet.\n\nPraying for clarity on the decision ahead. Trusting Your timing.',
-            type: 'prayer', tags: ['prayer', 'guidance'], pinned: false,
-            collections: ['c2'],
-            created: new Date(Date.now() - 86400000).toISOString(),
-            updated: new Date(Date.now() - 86400000).toISOString(),
-          },
-        ];
-        state.collections = [
-          { id: 'c1', name: 'Sunday Sermons', emoji: '🎤', color: '#5C3D2E', noteIds: ['n1'] },
-          { id: 'c2', name: 'Prayer Journal', emoji: '🙏', color: '#2C5FBE', noteIds: ['n3'] },
-        ];
-        state.references = [
-          { id: 'r1', verse: 'John 1:14', text: 'The Word became flesh and made his dwelling among us.', noteId: 'n1', noteTitle: 'Sunday Sermon – Grace & Truth', note: 'Key verse of the sermon' },
-          { id: 'r2', verse: 'John 3:16', text: 'For God so loved the world that he gave his one and only Son...', noteId: 'n1', noteTitle: 'Sunday Sermon – Grace & Truth', note: '' },
-          { id: 'r3', verse: 'Psalm 23:1', text: 'The LORD is my shepherd; I shall not want.', noteId: 'n2', noteTitle: 'Psalm 23 – Deep Study', note: 'Opening verse of the Psalm' },
-        ];
-        saveState();
-      }
-    }
+
 
     /* ═══════════════════════════════════════════════════════
        NAV
@@ -4273,12 +4202,26 @@
         subtitle.textContent = 'Create an account to backup your notes';
         submit.textContent = 'CREATE ACCOUNT';
         document.getElementById('auth-forgot-btn').style.display = 'none';
+        document.getElementById('auth-name-group').classList.remove('hidden');
+        document.getElementById('auth-phone-group').classList.remove('hidden');
+        document.getElementById('auth-name').setAttribute('required', 'true');
+        // Initialize country picker
+        if (typeof updateCustomSelect === 'function') updateCustomSelect('auth-country-code');
       } else {
         btn.textContent = 'Don\'t have an account? Create one';
         subtitle.textContent = 'Sign in to sync your notes across devices';
         submit.textContent = 'SIGN IN';
         document.getElementById('auth-forgot-btn').style.display = 'inline-block';
+        document.getElementById('auth-name-group').classList.add('hidden');
+        document.getElementById('auth-phone-group').classList.add('hidden');
+        document.getElementById('auth-name').removeAttribute('required');
       }
+    });
+
+    // Auto-capitalize name
+    document.getElementById('auth-name').addEventListener('input', function(e) {
+      let val = e.target.value;
+      e.target.value = val.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     });
 
     document.getElementById('auth-forgot-btn').addEventListener('click', (e) => {
@@ -4354,17 +4297,44 @@
       }
       
       const pass = document.getElementById('auth-password').value.trim();
-      if (!email || pass.length < 6) return; 
+      if (!email || (pass || "").length < 6) return; 
       
-      const isSignUp = document.getElementById('auth-subtitle').textContent.includes('Create');
+      const isSignUp = document.getElementById('auth-subtitle')?.textContent?.includes('Create') || btn.textContent.includes('ACCOUNT');
+      
+      // Name validation for signup
+      if (isSignUp) {
+        const name = document.getElementById('auth-name').value.trim();
+        const phone = document.getElementById('auth-phone').value.trim();
+        const code = document.getElementById('auth-country-code').value;
+        
+        const nameParts = (name || "").split(/\s+/).filter(p => p.length > 0);
+        if (nameParts.length < 2) {
+          setAuthAlert('error', 'Please enter your full name (at least two names).');
+          return;
+        }
+        if (!phone) {
+          setAuthAlert('error', 'Please enter your phone number.');
+          return;
+        }
+      }
+
       btn.textContent = 'Processing...';
       btn.disabled = true;
 
       try {
         if (isSignUp) {
+          const name = document.getElementById('auth-name').value.trim();
+          const phone = document.getElementById('auth-country-code').value + document.getElementById('auth-phone').value.trim();
+          
           const { data, error } = await supabaseClient.auth.signUp({
             email: email,
             password: pass,
+            options: {
+              data: {
+                full_name: name,
+                phone: phone
+              }
+            }
           });
           if (error) throw error;
           
@@ -4402,11 +4372,13 @@
           }
         }
       } catch (err) {
-        let msg = err.message;
-        if (msg.includes('already registered')) {
-          msg = 'An account with this email already exists.';
-        } else if (msg.includes('rate limit')) {
-          msg = 'Too many attempts. Please wait a moment.';
+        let msg = err?.message || 'An unexpected error occurred. Please try again.';
+        if (typeof msg === 'string') {
+          if (msg.includes('already registered')) {
+            msg = 'An account with this email already exists.';
+          } else if (msg.includes('rate limit')) {
+            msg = 'Too many attempts. Please wait a moment.';
+          }
         }
         setAuthAlert('error', msg);
       } finally {
@@ -4717,7 +4689,7 @@
     ═══════════════════════════════════════════════════════ */
     function init() {
       loadState();
-      seedData();
+      // seedData removed for production
       if (typeof updateLangToggles === 'function') updateLangToggles();
       if (typeof applyTranslations === 'function') applyTranslations(state.appLang);
       loadDailyVerse();
@@ -4731,20 +4703,30 @@
       navigateTo('notes');
       updateStats();
 
-      // Update avatar and name from saved state
-      const initials = state.userName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      function updateProfileDisplay() {
+        const displayName = state.userFullName || state.userName || (state.user ? state.user.email : '') || 'Member';
+        const displayEmail = state.user ? state.user.email : (state.userEmail || '-');
+        const displayPhone = state.userPhone || '-';
+        
+        // Initials Logic
+        let initials = '??';
+        const nameForInitials = state.userFullName || state.userName;
+        if (nameForInitials) {
+          initials = nameForInitials.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        } else if (state.user && state.user.email) {
+          initials = state.user.email.slice(0, 2).toUpperCase();
+        }
 
-      // Settings view
-      document.getElementById('settings-avatar').textContent = initials;
-      document.getElementById('settings-name').textContent = state.userName;
-      
-      // Fallback email if no user session
-      const userEmailDisplay = state.user ? state.user.email : state.userEmail;
-      document.getElementById('settings-email').textContent = userEmailDisplay;
-
-      // Sidebar sync
-      const sn = document.getElementById('snav-name'); if (sn) sn.textContent = state.userName;
-      const sa = document.getElementById('snav-avatar'); if (sa) sa.textContent = initials;
+        // Update elements
+        document.getElementById('settings-name').textContent = displayName;
+        document.getElementById('settings-email').textContent = displayEmail;
+        const phoneEl = document.getElementById('settings-phone'); if (phoneEl) phoneEl.textContent = displayPhone;
+        const sn = document.getElementById('snav-name'); if (sn) sn.textContent = displayName;
+        
+        const sa = document.getElementById('snav-avatar'); if (sa) sa.textContent = initials;
+        const settAva = document.getElementById('settings-avatar'); if (settAva) settAva.textContent = initials;
+      }
+      updateProfileDisplay();
 
       // FAB visible only on notes
       document.getElementById('fab-btn').style.display = 'flex';
@@ -4779,27 +4761,104 @@
     // Connect Supabase active session state to internal router
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
       if (session) {
-        const isFirstLogin = !state.user;
         state.user = session.user;
         state.userEmail = session.user.email;
         
-        if (isFirstLogin) {
-          // If we have local data and just logged in, push it to cloud (Auto-Merge)
-          if (state.notes.length > 0 || state.collections.length > 0) {
-            showToast('info', 'Syncing your local data to cloud...');
-            await syncPush();
+        // Always try to fetch profile on login or refresh
+        await fetchProfile(session.user.id);
+        
+        if (event === 'SIGNED_IN' || !state.userFullName || !state.userPhone) {
+          try {
+            await syncPull();
+          } catch (e) {}
+        }
+
+        // Enforcement: If missing data, stay in the completion overlay
+        if (!state.userFullName || !state.userPhone) {
+          document.getElementById('app').style.display = 'none';
+          document.getElementById('auth-overlay').classList.add('hidden');
+          document.getElementById('complete-profile-overlay').classList.remove('hidden');
+          
+          // Re-init the custom selector for this modal
+          initCustomSelect('cp-country-code');
+          
+          // Auto-capitalize name input
+          const nameInp = document.getElementById('cp-full-name');
+          if (nameInp) {
+            nameInp.addEventListener('input', () => {
+               nameInp.value = nameInp.value.replace(/\b\w/g, c => c.toUpperCase());
+            });
           }
-          await syncPull();
+          
+        } else {
+          document.getElementById('complete-profile-overlay').classList.add('hidden');
+          document.getElementById('auth-overlay').classList.add('hidden');
+          document.getElementById('app').style.display = 'flex';
         }
         
         saveState();
-        document.getElementById('auth-overlay').classList.add('hidden');
-        document.getElementById('app').style.display = 'flex';
       } else {
         state.user = null;
         saveState();
+        document.getElementById('complete-profile-overlay').classList.add('hidden');
         document.getElementById('auth-overlay').classList.remove('hidden');
         document.getElementById('app').style.display = 'none';
+      }
+    });
+
+    // Handle Complete Profile Submission
+    document.getElementById('cp-submit-btn').addEventListener('click', async () => {
+      const name = document.getElementById('cp-full-name').value.trim();
+      const phoneVal = document.getElementById('cp-phone').value.trim();
+      const countryCode = document.getElementById('cp-country-code').value;
+      const fullPhone = countryCode + phoneVal;
+      const alertBox = document.getElementById('cp-alert');
+      
+      if (!name || name.split(' ').filter(n => n).length < 2) {
+        alertBox.textContent = "Please enter your full name (at least 2 names).";
+        alertBox.classList.remove('hidden');
+        alertBox.style.display = 'block';
+        return;
+      }
+      if (!phoneVal) {
+        alertBox.textContent = "Please enter your phone number.";
+        alertBox.classList.remove('hidden');
+        alertBox.style.display = 'block';
+        return;
+      }
+
+      alertBox.style.display = 'none';
+      const btn = document.getElementById('cp-submit-btn');
+      btn.disabled = true;
+      btn.textContent = "SAVING...";
+
+      try {
+        const { error } = await supabaseClient
+          .from('profiles')
+          .update({
+            full_name: name,
+            phone: fullPhone,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', state.user.id);
+
+        if (error) throw error;
+
+        state.userName = name;
+        state.userFullName = name;
+        state.userPhone = fullPhone;
+        saveState();
+        updateProfileDisplay();
+        
+        document.getElementById('complete-profile-overlay').classList.add('hidden');
+        document.getElementById('app').style.display = 'flex';
+        showToast('success', 'Profile completed!');
+        
+      } catch (err) {
+        alertBox.textContent = "Failed to save profile: " + err.message;
+        alertBox.style.display = 'block';
+        document.getElementById('cp-submit-btn').disabled = false;
+        document.getElementById('cp-submit-btn').textContent = "Save & Continue";
       }
     });
 
