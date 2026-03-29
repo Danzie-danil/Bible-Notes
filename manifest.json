@@ -1,0 +1,18 @@
+{
+  "name": "Bible Notes",
+  "short_name": "Bible Notes",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FDFAF7",
+  "theme_color": "#5C3D2E",
+  "description": "Your personal secure notes and Bible referencing application.",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "app logo.PNG",
+      "type": "image/png",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

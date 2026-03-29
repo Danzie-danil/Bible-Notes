@@ -1,0 +1,4641 @@
+<!DOCTYPE html>
+<!-- saved from url=(0062)file:///C:/Users/DANIEL'S%20PC/Downloads/church-notes-app.html -->
+<html lang="en" data-theme="light">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Bible Notes</title>
+  <meta name="theme-color" content="#5C3D2E">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="app logo.PNG">
+  <link rel="icon" type="image/png" href="app logo.PNG">
+  <link href="./Logos — Church Notes_files/css2" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Inter (Keep for custom components) */
+    @font-face { font-family: 'Inter'; src: url('./fonts/Inter-400.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Inter'; src: url('./fonts/Inter-500.ttf') format('truetype'); font-weight: 500; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Inter'; src: url('./fonts/Inter-600.ttf') format('truetype'); font-weight: 600; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Inter'; src: url('./fonts/Inter-700.ttf') format('truetype'); font-weight: 700; font-style: normal; font-display: swap; }
+  </style>
+  <style>
+    /* ─────────────────────────── TOKENS ─────────────────────────── */
+    :root {
+      --brand: #5C3D2E;
+      --brand-mid: #8B5E3C;
+      --brand-light: #F5EDE3;
+      --brand-glow: rgba(92, 61, 46, 0.12);
+      --gold: #C9963C;
+      --gold-light: #FDF6E8;
+      --bg: #FDFAF7;
+      --surface: #FFFFFF;
+      --surface-2: #F8F4EF;
+      --border: #E8DDD3;
+      --border-soft: #F0E8DE;
+      --text-primary: #1C1410;
+      --text-secondary: #6B5848;
+      --text-muted: #A8907E;
+      --success: #2E7D5C;
+      --success-light: #EAF5EF;
+      --error: #C0392B;
+      --error-light: #FDEDEB;
+      --info-light: #EAF0FB;
+      --info: #2C5FBE;
+      --ref-color: #7B4BA0;
+      --ref-light: #F4EDFA;
+      --shadow-xs: 0 1px 2px rgba(92, 61, 46, 0.06);
+      --shadow-sm: 0 2px 8px rgba(92, 61, 46, 0.08);
+      --shadow-md: 0 4px 16px rgba(92, 61, 46, 0.10);
+      --shadow-lg: 0 8px 32px rgba(92, 61, 46, 0.12);
+      --r-sm: 6px;
+      --r-md: 10px;
+      --r-lg: 14px;
+      --r-xl: 20px;
+      --r-full: 9999px;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --nav-h: 60px;
+      --bottom-nav-h: 68px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --trans: 200ms ease;
+    }
+
+    [data-theme="dark"] {
+      --bg: #141010;
+      --surface: #1E1916;
+      --surface-2: #252018;
+      --border: #3A2E26;
+      --border-soft: #2E2420;
+      --text-primary: #F5EDE3;
+      --text-secondary: #C4A88C;
+      --text-muted: #7A6252;
+      --brand-light: rgba(92, 61, 46, 0.25);
+      --gold-light: rgba(201, 150, 60, 0.12);
+      --ref-light: rgba(123, 75, 160, 0.18);
+      --success-light: rgba(46, 125, 92, 0.15);
+      --error-light: rgba(192, 57, 43, 0.15);
+      --info-light: rgba(44, 95, 190, 0.15);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    /* ─────────────────────────── RESET ─────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 15px;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button {
+      font-family: var(--font-body);
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    input,
+    textarea,
+    select {
+      font-family: var(--font-body);
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    ::selection {
+      background: var(--brand-light);
+      color: var(--brand);
+    }
+
+    /* ─────────────────────────── LAYOUT ─────────────────────────── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .top-nav {
+      height: var(--nav-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      flex-shrink: 0;
+      padding-top: var(--safe-top, env(safe-area-inset-top, 0px));
+      position: relative;
+      z-index: 10;
+    }
+
+    .top-nav__logo {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--brand);
+      letter-spacing: 0.5px;
+      flex: 1;
+    }
+
+    .top-nav__logo span {
+      color: var(--gold);
+    }
+
+    .top-nav__action {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: background var(--trans), color var(--trans);
+    }
+
+    .top-nav__action:hover {
+      background: var(--surface-2);
+      color: var(--brand);
+    }
+
+    .page-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 12px);
+    }
+
+    .bottom-nav {
+      height: calc(var(--bottom-nav-h) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .bottom-nav__items {
+      display: flex;
+      width: 100%;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .bottom-nav__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 16px;
+      border-radius: var(--r-lg);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      transition: color var(--trans), background var(--trans);
+      min-width: 64px;
+      cursor: pointer;
+    }
+
+    .bottom-nav__item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .bottom-nav__item.active {
+      color: var(--brand);
+    }
+
+    .bottom-nav__item.active .nav-icon-wrap {
+      background: var(--brand-light);
+      border-radius: var(--r-md);
+    }
+
+    .nav-icon-wrap {
+      padding: 4px 8px;
+      border-radius: var(--r-md);
+      transition: background var(--trans);
+    }
+
+    /* ─────────────────────────── PAGE TRANSITIONS ─────────────────────────── */
+    .page {
+      display: none;
+      animation: pageFadeIn 220ms ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes pageFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ─────────────────────────── SECTION HEADERS ─────────────────────────── */
+    .section-header {
+      padding: 20px 16px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-header__title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.3px;
+    }
+
+    .section-header__sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .section-header__action {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--brand);
+      color: white;
+      padding: 8px 14px;
+      border-radius: var(--r-full);
+      font-size: 13px;
+      font-weight: 500;
+      transition: opacity var(--trans);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-header__action:hover {
+      opacity: 0.88;
+    }
+
+    .section-header__action svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ─────────────────────────── SEARCH BAR ─────────────────────────── */
+    .search-bar {
+      padding: 0 16px 12px;
+    }
+
+    .search-bar__inner {
+      display: flex;
+      align-items: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-full);
+      padding: 0 14px;
+      gap: 8px;
+      height: 40px;
+      transition: border-color var(--trans), box-shadow var(--trans);
+    }
+
+    .search-bar__inner:focus-within {
+      border-color: var(--brand-mid);
+      box-shadow: 0 0 0 3px var(--brand-glow);
+    }
+
+    .search-bar__inner svg {
+      color: var(--text-muted);
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+    }
+
+    .search-bar__input {
+      flex: 1;
+      border: none;
+      background: none;
+      outline: none;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .search-bar__input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* ─────────────────────────── NOTE CARDS ─────────────────────────── */
+    .notes-list {
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .note-card {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-lg);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color var(--trans), box-shadow var(--trans), transform 150ms ease;
+      box-shadow: var(--shadow-xs);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .note-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--gold);
+      opacity: 1;
+      transition: background var(--trans);
+    }
+
+    .note-card:hover {
+      border-color: var(--brand-mid);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+
+    .note-card.pinned {
+      border-color: var(--gold);
+      background: var(--gold-light);
+    }
+
+    .note-card__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .note-card__title {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .note-card__badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: var(--r-full);
+      white-space: nowrap;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .badge--sermon {
+      background: var(--brand-light);
+      color: var(--brand);
+    }
+
+    .badge--study {
+      background: var(--gold-light);
+      color: #7A5B1A;
+    }
+
+    .badge--prayer {
+      background: var(--info-light);
+      color: var(--info);
+    }
+
+    .badge--ref {
+      background: var(--ref-light);
+      color: var(--ref-color);
+    }
+
+    .badge--general {
+      background: var(--surface-2);
+      color: var(--text-secondary);
+    }
+
+    .note-card__preview {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .note-card__meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .note-card__meta svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .note-card__actions {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .note-card__action-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: background var(--trans), color var(--trans);
+    }
+
+    .note-card__action-btn:hover {
+      background: var(--surface-2);
+      color: var(--brand);
+    }
+
+    .note-card__tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .note-tag {
+      font-size: 11px;
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      border-radius: var(--r-full);
+      padding: 2px 8px;
+      font-weight: 600;
+    }
+
+    /* ─────────────────────────── FAB ─────────────────────────── */
+    .fab {
+      position: fixed;
+      bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 16px);
+      right: 20px;
+      width: 52px;
+      height: 52px;
+      border-radius: var(--r-full);
+      background: var(--brand);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-lg);
+      z-index: 50;
+      transition: transform 150ms ease, opacity var(--trans);
+    }
+
+    .fab:hover {
+      transform: scale(1.06);
+    }
+
+    .fab:active {
+      transform: scale(0.96);
+    }
+
+    .fab svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* ─────────────────────────── NOTE EDITOR ─────────────────────────── */
+    .editor-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .editor-overlay.open {
+      transform: translateY(0);
+    }
+
+    .editor-topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      padding-top: calc(12px + var(--safe-top, env(safe-area-inset-top, 0px)));
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .editor-back-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      background: var(--surface-2);
+      transition: background var(--trans);
+    }
+
+    .editor-back-btn:hover {
+      background: var(--border);
+    }
+
+    .editor-title-input {
+      flex: 1;
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 600;
+      border: none;
+      background: none;
+      outline: none;
+      color: var(--text-primary);
+    }
+
+    .editor-title-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .editor-save-btn {
+      background: var(--brand);
+      color: white;
+      border-radius: var(--r-full);
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: opacity var(--trans);
+    }
+
+    .editor-save-btn:hover {
+      opacity: 0.88;
+    }
+
+    .editor-save-btn.saved {
+      background: var(--success);
+    }
+
+    .editor-meta-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0;
+      overflow: visible;
+      scrollbar-width: none;
+    }
+
+    .editor-meta-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .meta-tag-select {
+      font-family: var(--font-body);
+      font-size: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-full);
+      padding: 4px 10px;
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .meta-tag-btn {
+      font-size: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-full);
+      padding: 4px 10px;
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      white-space: nowrap;
+      transition: background var(--trans), border-color var(--trans);
+      font-weight: 600;
+    }
+
+    .meta-tag-btn.active {
+      background: var(--brand-light);
+      border-color: var(--brand-mid);
+      color: var(--brand);
+    }
+
+    .meta-tag-btn:hover {
+      border-color: var(--brand-mid);
+    }
+
+    .editor-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 6px 12px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .editor-toolbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .toolbar-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--r-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      transition: background var(--trans), color var(--trans);
+      flex-shrink: 0;
+    }
+
+    .toolbar-btn:hover {
+      background: var(--surface-2);
+      color: var(--brand);
+    }
+
+    .toolbar-btn.active {
+      background: var(--brand-light);
+      color: var(--brand);
+    }
+
+    .toolbar-sep {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+
+    .toolbar-ref-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: var(--r-full);
+      background: var(--ref-light);
+      color: var(--ref-color);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: opacity var(--trans);
+    }
+
+    .toolbar-ref-btn:hover {
+      opacity: 0.8;
+    }
+
+    .toolbar-ref-btn svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .editor-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+    }
+
+    .editor-content {
+      width: 100%;
+      min-height: 300px;
+      border: none;
+      background: none;
+      outline: none;
+      font-size: var(--editor-font-size, 15px);
+      line-height: 1.75;
+      color: var(--text-primary);
+      resize: none;
+      font-family: var(--font-body);
+    }
+
+    .editor-content::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Blockquote styles */
+    blockquote {
+      border-left: 3px solid var(--brand-mid);
+      padding-left: 12px;
+      margin: 10px 0;
+      font-style: italic;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    /* Reference highlight */
+    .ref-mark {
+      background: var(--ref-light);
+      color: var(--ref-color);
+      border-radius: 3px;
+      padding: 0 2px;
+      cursor: pointer;
+      border-bottom: 1px dashed var(--ref-color);
+    }
+
+    .editor-verse-preview {
+      margin: 0 16px 12px;
+      padding: 12px 14px;
+      background: var(--gold-light);
+      border: 1px solid rgba(201, 150, 60, 0.3);
+      border-radius: var(--r-lg);
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: none;
+    }
+
+    .editor-verse-preview.visible {
+      display: block;
+    }
+
+    .editor-verse-preview__ref {
+      font-weight: 600;
+      color: var(--gold);
+      font-family: var(--font-display);
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .bible-lang-toggle {
+      display: flex;
+      gap: 4px;
+      background: rgba(201, 150, 60, 0.15);
+      border-radius: 4px;
+      padding: 2px;
+    }
+
+    .bible-lang-btn {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      border: none;
+      background: transparent;
+      color: var(--gold);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .bible-lang-btn.active {
+      background: var(--surface);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+
+    /* ─────────────────────────── COLLECTIONS ─────────────────────────── */
+    .collections-grid {
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .collection-card {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-lg);
+      padding: 16px;
+      cursor: pointer;
+      transition: border-color var(--trans), box-shadow var(--trans), transform 150ms ease;
+      box-shadow: var(--shadow-xs);
+      position: relative;
+      overflow: hidden;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .collection-card:hover {
+      border-color: var(--brand-mid);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
+    }
+
+    .collection-card__icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+
+    .collection-card__name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .collection-card__count {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .collection-card__bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    /* ─────────────────────────── REFERENCES ─────────────────────────── */
+    .refs-list {
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ref-card {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-lg);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-xs);
+      cursor: pointer;
+      transition: border-color var(--trans), box-shadow var(--trans);
+    }
+
+    .ref-card:hover {
+      border-color: var(--ref-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .ref-card__verse {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ref-color);
+    }
+
+    .ref-card__text {
+      font-size: 13px;
+      font-style: italic;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      line-height: 1.6;
+    }
+
+    .ref-card__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .ref-card__from-note {
+      background: var(--ref-light);
+      color: var(--ref-color);
+      padding: 2px 8px;
+      border-radius: var(--r-full);
+      font-size: 11px;
+    }
+
+    /* ─────────────────────────── SETTINGS ─────────────────────────── */
+    .settings-list {
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .settings-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 8px 4px 4px;
+    }
+
+    .settings-item {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-lg);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background var(--trans), border-color var(--trans);
+    }
+
+    .settings-item:hover {
+      background: var(--surface-2);
+      border-color: var(--border);
+    }
+
+    .settings-item__icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .settings-item__text {
+      flex: 1;
+    }
+
+    .settings-item__label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .settings-item__sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .settings-item__right {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .settings-item__right svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Toggle */
+    .toggle-track {
+      width: 40px;
+      height: 22px;
+      border-radius: var(--r-full);
+      background: var(--border);
+      position: relative;
+      transition: background var(--trans);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .toggle-track.on {
+      background: var(--brand);
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: var(--r-full);
+      background: white;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      transition: transform var(--trans);
+    }
+
+    .toggle-track.on .toggle-thumb {
+      transform: translateX(18px);
+    }
+
+    .settings-profile {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-xl);
+      padding: 20px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 4px;
+    }
+
+    .settings-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--r-full);
+      background: var(--brand-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--brand);
+      flex-shrink: 0;
+    }
+
+    .settings-profile__name {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .settings-profile__email {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .settings-profile__edit {
+      margin-left: auto;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* ─────────────────────────── MODALS ─────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 20, 16, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 300;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 20, 16, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-confirm-overlay.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-confirm-card {
+      background: var(--surface);
+      border-radius: var(--r-xl);
+      width: 100%;
+      max-width: 240px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.9);
+      transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .modal-confirm-overlay.open .modal-confirm-card {
+      transform: scale(1);
+    }
+
+    .modal-confirm-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .modal-confirm-msg {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .modal-confirm-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .modal-confirm-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: var(--r-md);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--trans);
+    }
+
+    .modal-confirm-btn--ghost {
+      background: var(--surface-2);
+      color: var(--text-secondary);
+    }
+
+    .modal-confirm-btn--danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .modal-confirm-btn--primary {
+      background: var(--brand);
+      color: white;
+    }
+
+    .modal-sheet {
+      background: var(--surface);
+      border-radius: var(--r-xl) var(--r-xl) 0 0;
+      width: 100%;
+      max-width: 600px;
+      padding: 0 16px calc(24px + var(--safe-bottom));
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: sheetUp 280ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    @keyframes sheetUp {
+      from {
+        transform: translateY(100%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--border);
+      border-radius: var(--r-full);
+      margin: 12px auto 16px;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+
+    .modal-input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 10px 14px;
+      font-size: 15px;
+      background: var(--surface-2);
+      color: var(--text-primary);
+      outline: none;
+      margin-bottom: 10px;
+      transition: border-color var(--trans), box-shadow var(--trans);
+    }
+
+    .modal-input:focus {
+      border-color: var(--brand-mid);
+      box-shadow: 0 0 0 3px var(--brand-glow);
+    }
+
+    .emoji-picker {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .emoji-opt {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--r-md);
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: border-color var(--trans), background var(--trans);
+    }
+
+    .emoji-opt:hover,
+    .emoji-opt.selected {
+      border-color: var(--brand-mid);
+      background: var(--brand-light);
+    }
+
+    .color-picker {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .color-opt {
+      width: 26px;
+      height: 26px;
+      border-radius: var(--r-full);
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color var(--trans), transform 150ms;
+    }
+
+    .color-opt:hover,
+    .color-opt.selected {
+      border-color: var(--brand);
+      transform: scale(1.15);
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--r-lg);
+      font-size: 15px;
+      font-weight: 500;
+      transition: opacity var(--trans);
+    }
+
+    .modal-btn--primary {
+      background: var(--brand);
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .modal-btn--primary:hover {
+      opacity: 0.88;
+    }
+
+    .modal-btn--ghost {
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .modal-btn--danger {
+      background: var(--error-light);
+      color: var(--error);
+      border: 1px solid rgba(192, 57, 43, 0.2);
+    }
+
+    .modal-notes-select {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 14px;
+    }
+
+    .note-select-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--r-md);
+      cursor: pointer;
+      transition: background var(--trans);
+    }
+
+    .note-select-item:hover {
+      background: var(--surface-2);
+    }
+
+    .note-select-item input[type="checkbox"] {
+      accent-color: var(--brand);
+      width: 16px;
+      height: 16px;
+    }
+
+    .note-select-item span {
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    /* ─────────────────────────── TOAST ─────────────────────────── */
+    .toast-container {
+      position: fixed;
+      bottom: calc(var(--bottom-nav-h, 68px) + var(--safe-bottom, 0px) + 16px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      width: fit-content;
+      max-width: 220px;
+    }
+
+    @media (min-width: 768px) {
+      .toast-container {
+        left: auto;
+        right: calc(36px + 48px + 16px);
+        transform: none;
+        bottom: 36px;
+      }
+    }
+
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 10px 16px;
+      box-shadow: var(--shadow-lg);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      animation: toastIn 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      pointer-events: all;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .toast__msg {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    /* Tooltip */
+    .app-tooltip {
+      position: fixed;
+      z-index: 1001;
+      background: var(--brand);
+      color: white;
+      padding: 6px 12px;
+      border-radius: var(--r-md);
+      font-size: 12px;
+      font-weight: 600;
+      pointer-events: none;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transform: translateY(5px);
+      transition: all 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .app-tooltip.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .app-tooltip::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 16px;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid var(--brand);
+    }
+
+    .app-tooltip.placement-bottom {
+      transform: translateY(-5px);
+    }
+
+    .app-tooltip.placement-bottom.show {
+      transform: translateY(0);
+    }
+
+    .app-tooltip.placement-bottom::after {
+      bottom: auto;
+      top: -4px;
+      border-top: none;
+      border-bottom: 5px solid var(--brand);
+    }
+
+    /* Custom Minimalist Select System */
+    .app-select-container {
+      position: relative;
+      width: fit-content;
+      min-width: 120px;
+    }
+
+    .app-select-trigger {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 10px 14px;
+      font-size: 14px;
+      background: var(--surface-2);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all var(--trans);
+      outline: none;
+      text-align: left;
+    }
+
+    .app-select-trigger:focus {
+      border-color: var(--brand-mid);
+      box-shadow: 0 0 0 3px var(--brand-glow);
+    }
+
+    .app-select-trigger svg {
+      width: 14px;
+      height: 14px;
+      color: var(--text-muted);
+      transition: transform var(--trans);
+    }
+
+    .app-select-container.open .app-select-trigger svg {
+      transform: rotate(180deg);
+    }
+
+    .app-select-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      box-shadow: var(--shadow-lg);
+      z-index: 1002;
+      opacity: 0;
+      transform: scale(0.95);
+      transform-origin: top;
+      visibility: hidden;
+      transition: all 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      max-height: 190px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .app-select-container.open .app-select-menu {
+      opacity: 1;
+      transform: scale(1);
+      visibility: visible;
+    }
+
+    .app-select-search-wrap {
+      padding: 4px;
+      border-bottom: 1px solid var(--border-soft);
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 5;
+      margin-bottom: 4px;
+    }
+
+    .app-select-search {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 7px 10px;
+      font-size: 13px;
+      background: var(--surface-2);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .app-select-option {
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--trans);
+    }
+
+    .app-select-option:hover {
+      background: var(--surface-2);
+      color: var(--brand);
+    }
+
+    .app-select-option.selected {
+      background: var(--brand-light);
+      color: var(--brand);
+      font-weight: 600;
+    }
+
+    .app-select-option.hidden {
+      display: none;
+    }
+
+    /* ─────────────────────────── STREAK / STATS WIDGET ─────────────────────────── */
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      padding: 0 16px 16px;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-lg);
+      padding: 12px;
+      text-align: center;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .stat-card__val {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--brand);
+      line-height: 1;
+    }
+
+    .stat-card__lbl {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ─────────────────────────── VERSE OF DAY ─────────────────────────── */
+    .verse-widget {
+      margin: 4px 16px 16px;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-mid) 100%);
+      border-radius: var(--r-xl);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .verse-widget::after {
+      content: '"';
+      position: absolute;
+      right: 12px;
+      top: -8px;
+      font-family: var(--font-display);
+      font-size: 80px;
+      opacity: 0.12;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .verse-widget__label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
+
+    .verse-widget__text {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-style: italic;
+      line-height: 1.55;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    .verse-widget__ref {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    /* ─────────────────────────── EMPTY STATE ─────────────────────────── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 48px 32px;
+      gap: 10px;
+    }
+
+    .empty-state__icon {
+      font-size: 44px;
+      opacity: 0.4;
+    }
+
+    .empty-state__title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .empty-state__msg {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 260px;
+      line-height: 1.5;
+    }
+
+    /* ─────────────────────────── FILTER PILLS ─────────────────────────── */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filter-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-pill {
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: var(--r-full);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-secondary);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background var(--trans), border-color var(--trans), color var(--trans);
+      font-weight: 600;
+    }
+
+    .filter-pill.active {
+      background: var(--brand-light);
+      border-color: var(--brand-mid);
+      color: var(--brand);
+    }
+
+    /* ─────────────────────────── READING PLAN ─────────────────────────── */
+    .reading-plan-card {
+      margin: 0 16px 16px;
+      background: var(--gold-light);
+      border: 1px solid rgba(201, 150, 60, 0.25);
+      border-radius: var(--r-xl);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .reading-plan-card__icon {
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .reading-plan-card__title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .reading-plan-card__sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .reading-plan-card__progress {
+      height: 4px;
+      background: rgba(201, 150, 60, 0.2);
+      border-radius: var(--r-full);
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .reading-plan-card__progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: var(--r-full);
+    }
+
+    /* ─────────────────────────── COLLECTION DETAIL ─────────────────────────── */
+    .collection-detail-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 190;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .collection-detail-overlay.open {
+      transform: translateX(0);
+    }
+
+    /* ─────────────────────────── RESPONSIVE / DESKTOP ─────────────────────────── */
+
+    /* ── Sidebar (desktop only) ── */
+    .side-nav {
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+
+      /* App becomes a horizontal split: sidebar + content */
+      #app {
+        flex-direction: row;
+        height: 100dvh;
+      }
+
+      body {
+        font-size: 17px;
+      }
+
+      /* Hide mobile top bar and bottom nav */
+      .top-nav {
+        display: none;
+      }
+
+      .bottom-nav {
+        display: none;
+      }
+
+      /* Sidebar */
+      .side-nav {
+        display: flex;
+        flex-direction: column;
+        width: 220px;
+        min-width: 220px;
+        height: 100dvh;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 28px 12px 24px;
+        gap: 4px;
+        flex-shrink: 0;
+        overflow-y: auto;
+      }
+
+      .side-nav__logo {
+        font-family: var(--font-display);
+        font-size: 26px;
+        font-weight: 600;
+        color: var(--brand);
+        letter-spacing: 0.5px;
+        padding: 0 8px 24px;
+        flex-shrink: 0;
+      }
+
+      .side-nav__logo span {
+        color: var(--gold);
+      }
+
+      .side-nav__item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: var(--r-lg);
+        color: var(--text-secondary);
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background var(--trans), color var(--trans);
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+      }
+
+      .side-nav__item svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+      }
+
+      .side-nav__item:hover {
+        background: var(--surface-2);
+        color: var(--brand);
+      }
+
+      .side-nav__item.active {
+        background: var(--brand-light);
+        color: var(--brand);
+        font-weight: 600;
+      }
+
+      .side-nav__spacer {
+        flex: 1;
+      }
+
+      .side-nav__bottom {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        border-top: 1px solid var(--border-soft);
+        padding-top: 12px;
+        margin-top: 8px;
+      }
+
+      .side-nav__theme-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: var(--r-lg);
+        color: var(--text-secondary);
+        font-size: 15px;
+        cursor: pointer;
+        transition: background var(--trans);
+        width: 100%;
+        border: none;
+        background: none;
+        text-align: left;
+        font-family: var(--font-body);
+        font-weight: 600;
+      }
+
+      .side-nav__theme-btn:hover {
+        background: var(--surface-2);
+      }
+
+      .side-nav__user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: var(--r-lg);
+        cursor: pointer;
+        transition: background var(--trans);
+      }
+
+      .side-nav__user:hover {
+        background: var(--surface-2);
+      }
+
+      .side-nav__avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--r-full);
+        background: var(--brand-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-display);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--brand);
+        flex-shrink: 0;
+      }
+
+      .side-nav__user-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .side-nav__user-role {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      /* Content area fills remaining space, no bottom padding for bottom nav */
+      .page-area {
+        flex: 1;
+        padding-bottom: 24px;
+        min-width: 0;
+      }
+
+      /* Content width: fill the full available area */
+      .notes-list {
+        max-width: none;
+        margin: 0;
+        padding: 0 28px;
+      }
+
+      .refs-list {
+        max-width: none;
+        margin: 0;
+        padding: 0 28px;
+      }
+
+      .settings-list {
+        max-width: none;
+        margin: 0;
+        padding: 0 28px;
+      }
+
+      .collections-grid {
+        padding: 0 28px;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      }
+
+      .section-header {
+        padding: 24px 28px 10px;
+      }
+
+      .section-header__title {
+        font-size: 30px;
+      }
+
+      .note-card__title {
+        font-size: 19px;
+      }
+
+      .note-card__preview {
+        font-size: 14px;
+      }
+
+      .filter-row {
+        padding: 0 28px 14px;
+      }
+
+      .search-bar {
+        padding: 0 28px 12px;
+      }
+
+      .stats-row {
+        padding: 0 28px 16px;
+      }
+
+      .verse-widget {
+        margin: 12px 28px 16px;
+      }
+
+      .reading-plan-card {
+        margin: 0 28px 16px;
+      }
+
+      /* FAB repositioned for desktop */
+      .fab {
+        right: 36px;
+        bottom: 36px;
+        width: 48px;
+        height: 48px;
+      }
+
+      /* Overlays still go full screen */
+      .editor-overlay,
+      .collection-detail-overlay {
+        left: 0;
+      }
+    }
+
+    @media (min-width: 1100px) {
+      .side-nav {
+        width: 240px;
+        min-width: 240px;
+      }
+
+      .collections-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      ::before,
+      ::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
+    /* ─────────────────────────── AUTH OVERLAY ─────────────────────────── */
+    #auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--brand-light) 100%);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      transition: opacity 300ms ease;
+    }
+    #auth-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .auth-card {
+      background: var(--surface);
+      width: 100%;
+      max-width: 400px;
+      border-radius: var(--r-xl);
+      padding: 40px 32px;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      border: 1px solid var(--border-soft);
+    }
+    .auth-logo {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--brand);
+      margin-bottom: 8px;
+    }
+    .auth-subtitle {
+       color: var(--text-muted);
+       font-size: 15px;
+       margin-bottom: 32px;
+    }
+    .auth-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      margin-bottom: 16px;
+      font-family: inherit;
+      font-size: 15px;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color var(--trans), box-shadow var(--trans);
+    }
+    .auth-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 150, 60, 0.15);
+    }
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    .password-wrapper .auth-input {
+      margin-bottom: 0;
+      padding-right: 48px;
+    }
+    .btn-password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color var(--trans);
+    }
+    .btn-password-toggle:hover {
+      color: var(--text-primary);
+    }
+    .btn-password-toggle svg {
+      width: 20px;
+      height: 20px;
+    }
+    .auth-btn {
+       width: 100%;
+       padding: 14px;
+       border-radius: var(--r-md);
+       background: var(--brand);
+       color: white;
+       font-weight: 600;
+       font-size: 16px;
+       border: none;
+       cursor: pointer;
+       transition: background 0.2s;
+       margin-bottom: 16px;
+    }
+    .auth-btn:hover {
+       background: var(--brand-mid);
+    }
+    .auth-toggle {
+       background: none;
+       border: none;
+       color: var(--brand-mid);
+       font-size: 14px;
+       font-weight: 500;
+       cursor: pointer;
+       padding: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════ AUTH OVERLAY ═══════════ -->
+  <div id="auth-overlay" class="hidden">
+    <div class="auth-card">
+      <div class="auth-logo">Bible Notes<span style="color:var(--text-primary)">.</span></div>
+      <div class="auth-subtitle" id="auth-subtitle">Sign in to sync your notes across devices</div>
+      <form id="auth-form">
+        <input type="email" id="auth-email" name="email" class="auth-input" placeholder="Email address" required autocomplete="username">
+        <div class="password-wrapper" id="auth-password-wrapper">
+          <input type="password" id="auth-password" name="password" class="auth-input" placeholder="Password" required minlength="6" autocomplete="current-password">
+          <button type="button" class="btn-password-toggle" id="toggle-password-btn" aria-label="Toggle password visibility">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </div>
+        <button type="submit" class="auth-btn" id="auth-submit-btn">SIGN IN</button>
+      </form>
+      <button class="auth-toggle" id="auth-toggle-mode">Don't have an account? Create one</button>
+      <div style="text-align: center; margin-top: 12px;">
+        <button type="button" id="auth-forgot-btn" style="background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:4px; transition: color var(--trans);">Forgot password?</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" style="display:none;">
+
+    <!-- SIDEBAR (desktop only, shown via CSS) -->
+    <nav class="side-nav" id="side-nav">
+      <div class="side-nav__logo"><span data-i18n="app_title">Bible Notes</span><span>.</span></div>
+      <button class="side-nav__item active" data-page="notes" id="snav-notes">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <line x1="10" y1="9" x2="8" y2="9"></line>
+        </svg>
+        <span data-i18n="nav_notes">Notes</span>
+      </button>
+      <button class="side-nav__item" data-page="collections" id="snav-collections">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span data-i18n="nav_collections">Collections</span>
+      </button>
+      <button class="side-nav__item" data-page="references" id="snav-references">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          <line x1="12" y1="7" x2="16" y2="7"></line>
+          <line x1="12" y1="11" x2="16" y2="11"></line>
+        </svg>
+        <span data-i18n="nav_references">References</span>
+      </button>
+      <button class="side-nav__item" data-page="settings" id="snav-settings">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
+        <span data-i18n="nav_settings">Settings</span>
+      </button>
+      <div class="side-nav__spacer"></div>
+      <div class="side-nav__bottom">
+        <button class="side-nav__theme-btn" id="snav-lang-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span id="snav-lang-label" style="font-weight: 600;">EN</span>
+        </button>
+        <button class="side-nav__theme-btn" id="snav-theme-btn">
+          <svg id="snav-theme-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span id="snav-theme-label" data-i18n="settings_dark_mode">Dark mode</span>
+        </button>
+        <div class="side-nav__user" id="snav-user">
+          <div class="side-nav__avatar" id="snav-avatar">JD</div>
+          <div>
+            <div class="side-nav__user-name" id="snav-name">John Doe</div>
+            <div class="side-nav__user-role">Member</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- TOP NAV -->
+    <nav class="top-nav">
+      <div class="top-nav__logo"><span data-i18n="app_title">Bible Notes</span><span>.</span></div>
+      <button class="top-nav__action" id="search-toggle-btn" aria-label="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+      <button class="top-nav__action" id="theme-toggle-btn" aria-label="Toggle theme">
+        <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="display:none">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path
+            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41">
+          </path>
+        </svg>
+        <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="display: block;">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+      <button class="top-nav__action" id="top-lang-btn" aria-label="Toggle language" style="font-weight: 700; font-size: 13px; font-family: var(--font-display); width: 28px; height: 28px; line-height: 1;">EN</button>
+    </nav>
+
+    <!-- MAIN SCROLL AREA -->
+    <main class="page-area" id="page-area">
+
+      <!-- ═══════════ NOTES PAGE ═══════════ -->
+      <section class="page active" id="page-notes">
+        <!-- Verse of the day -->
+        <div class="verse-widget">
+          <div class="verse-widget__label">✦ <span data-i18n="daily_verse_title">Verse of the Day</span></div>
+          <div class="verse-widget__text" id="votd-text">Loading...</div>
+          <div class="verse-widget__ref" id="votd-ref"></div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-card__val" id="stat-notes">3</div>
+            <div class="stat-card__lbl">Notes</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__val" id="stat-streak">5</div>
+            <div class="stat-card__lbl">Day Streak 🔥</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__val" id="stat-refs">3</div>
+            <div class="stat-card__lbl">References</div>
+          </div>
+        </div>
+
+        <!-- Reading plan -->
+        <div class="reading-plan-card" id="reading-plan-card">
+          <div class="reading-plan-card__icon">📖</div>
+          <div style="flex:1">
+            <div class="reading-plan-card__title">90-Day Bible Reading Plan</div>
+            <div class="reading-plan-card__sub" id="reading-plan-sub">Day 12 of 90 · Genesis 25</div>
+            <div class="reading-plan-card__progress">
+              <div class="reading-plan-card__progress-fill" id="reading-progress" style="width:13%"></div>
+            </div>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="#C9963C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"></path>
+          </svg>
+        </div>
+
+        <div class="section-header">
+          <div>
+            <div class="section-header__title">My Notes</div>
+            <div class="section-header__sub" id="notes-count-label">3 notes</div>
+          </div>
+          <button class="section-header__action" id="new-note-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+            <span data-i18n="new_note">New Note</span>
+          </button>
+        </div>
+
+        <div class="filter-row" id="notes-filter-row">
+          <button class="filter-pill active" data-filter="all">All</button>
+          <button class="filter-pill" data-filter="sermon" data-i18n="tag_sermon">🎤 Sermon</button>
+          <button class="filter-pill" data-filter="study" data-i18n="tag_study">📚 Bible Study</button>
+          <button class="filter-pill" data-filter="prayer" data-i18n="tag_prayer">🙏 Prayer</button>
+          <button class="filter-pill" data-filter="general" data-i18n="tag_general">📝 General</button>
+          <button class="filter-pill" data-filter="pinned" data-i18n="lbl_pinned">📌 Pinned</button>
+        </div>
+
+        <div class="search-bar" id="notes-search-bar" style="display:none">
+          <div class="search-bar__inner">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input class="search-bar__input" type="text" placeholder="Search notes…" id="notes-search-input" data-i18n-placeholder="search_placeholder">
+          </div>
+        </div>
+
+        <div class="notes-list" id="notes-list">
+          <div class="note-card pinned" data-id="n1">
+            <div class="note-card__top">
+              <div class="note-card__title">Sunday Sermon – Grace &amp; Truth</div>
+              <span class="note-card__badge badge--sermon">Sermon</span>
+            </div>
+            <div class="note-card__preview">Pastor opened with John 1:14. The Word became flesh and made his dwelling
+              among us.
+
+              Key point: Grace without truth beco</div>
+            <div class="note-card__tags"><span class="note-tag">#grace</span><span class="note-tag">#truth</span><span
+                class="note-tag">#john</span></div>
+            <div class="note-card__meta">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              27 Mar
+              <span style="color:var(--ref-color);font-size:11px">📌 2 refs</span>
+              <span style="font-size:11px">📌 Pinned</span>
+              <div class="note-card__actions">
+                <button class="note-card__action-btn pin-note-btn" data-id="n1" title="Pin" aria-label="Pin note">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)"
+                    stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="17" x2="12" y2="22"></line>
+                    <path d="M5 17H19V15L17 10V4H7V10L5 15V17Z"></path>
+                  </svg>
+                </button>
+                <button class="note-card__action-btn delete-note-btn" data-id="n1" title="Delete"
+                  aria-label="Delete note">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="note-card " data-id="n3">
+            <div class="note-card__top">
+              <div class="note-card__title">Morning Prayer – Seeking Guidance</div>
+              <span class="note-card__badge badge--prayer">Prayer</span>
+            </div>
+            <div class="note-card__preview">Lord, I come before You today with a grateful heart.
+
+              Lead my steps today. Let Your Word be a lamp to my feet.
+
+              Praying </div>
+            <div class="note-card__tags"><span class="note-tag">#prayer</span><span class="note-tag">#guidance</span>
+            </div>
+            <div class="note-card__meta">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              28 Mar
+
+
+              <div class="note-card__actions">
+                <button class="note-card__action-btn pin-note-btn" data-id="n3" title="Pin" aria-label="Pin note">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="17" x2="12" y2="22"></line>
+                    <path d="M5 17H19V15L17 10V4H7V10L5 15V17Z"></path>
+                  </svg>
+                </button>
+                <button class="note-card__action-btn delete-note-btn" data-id="n3" title="Delete"
+                  aria-label="Delete note">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="note-card " data-id="n2">
+            <div class="note-card__top">
+              <div class="note-card__title">Psalm 23 – Deep Study</div>
+              <span class="note-card__badge badge--study">Bible Study</span>
+            </div>
+            <div class="note-card__preview">The LORD is my shepherd; I shall not want.
+
+              He makes me lie down in green pastures.
+              He leads me beside still waters.
+              He </div>
+            <div class="note-card__tags"><span class="note-tag">#psalms</span><span
+                class="note-tag">#shepherd</span><span class="note-tag">#peace</span></div>
+            <div class="note-card__meta">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              26 Mar
+              <span style="color:var(--ref-color);font-size:11px">📌 1 ref</span>
+
+              <div class="note-card__actions">
+                <button class="note-card__action-btn pin-note-btn" data-id="n2" title="Pin" aria-label="Pin note">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="17" x2="12" y2="22"></line>
+                    <path d="M5 17H19V15L17 10V4H7V10L5 15V17Z"></path>
+                  </svg>
+                </button>
+                <button class="note-card__action-btn delete-note-btn" data-id="n2" title="Delete"
+                  aria-label="Delete note">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ COLLECTIONS PAGE ═══════════ -->
+      <section class="page" id="page-collections">
+        <div class="section-header">
+          <div>
+            <div class="section-header__title">Collections</div>
+            <div class="section-header__sub">Organise notes by theme or series</div>
+          </div>
+          <button class="section-header__action" id="new-collection-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+            New
+          </button>
+        </div>
+        <div class="collections-grid" id="collections-grid">
+          <div class="collection-card" data-id="c1">
+            <div>
+              <div class="collection-card__icon">🎤</div>
+              <div class="collection-card__name">Sunday Sermons</div>
+              <div class="collection-card__count">1 note</div>
+            </div>
+            <div class="collection-card__bar" style="background:#5C3D2E"></div>
+          </div>
+          <div class="collection-card" data-id="c2">
+            <div>
+              <div class="collection-card__icon">🙏</div>
+              <div class="collection-card__name">Prayer Journal</div>
+              <div class="collection-card__count">1 note</div>
+            </div>
+            <div class="collection-card__bar" style="background:#2C5FBE"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ REFERENCES PAGE ═══════════ -->
+      <section class="page" id="page-references">
+        <div class="section-header">
+          <div>
+            <div class="section-header__title">References</div>
+            <div class="section-header__sub">All your marked scripture &amp; passages</div>
+          </div>
+        </div>
+
+        <div class="filter-row" id="refs-filter-row">
+          <button class="filter-pill active" data-filter="all">All</button>
+          <button class="filter-pill" data-filter="OT">Old Testament</button>
+          <button class="filter-pill" data-filter="NT">New Testament</button>
+          <button class="filter-pill" data-filter="psalms">Psalms</button>
+        </div>
+
+        <div class="search-bar">
+          <div class="search-bar__inner">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input class="search-bar__input" type="text" placeholder="Search references…" id="refs-search-input">
+          </div>
+        </div>
+
+        <div class="refs-list" id="refs-list">
+          <div class="ref-card" data-note-id="n1">
+            <div class="ref-card__verse">John 1:14</div>
+            <div class="ref-card__text">"The Word became flesh and made his dwelling among us."</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:6px">💬 Key verse of the sermon</div>
+            <div class="ref-card__meta">
+              <span class="ref-card__from-note">From: Sunday Sermon – Grace &amp; Truth</span>
+            </div>
+          </div>
+          <div class="ref-card" data-note-id="n1">
+            <div class="ref-card__verse">John 3:16</div>
+            <div class="ref-card__text">"For God so loved the world that he gave his one and only Son..."</div>
+
+            <div class="ref-card__meta">
+              <span class="ref-card__from-note">From: Sunday Sermon – Grace &amp; Truth</span>
+            </div>
+          </div>
+          <div class="ref-card" data-note-id="n2">
+            <div class="ref-card__verse">Psalm 23:1</div>
+            <div class="ref-card__text">"The LORD is my shepherd; I shall not want."</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:6px">💬 Opening verse of the Psalm</div>
+            <div class="ref-card__meta">
+              <span class="ref-card__from-note">From: Psalm 23 – Deep Study</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ SETTINGS PAGE ═══════════ -->
+      <section class="page" id="page-settings">
+        <div class="section-header" style="padding-bottom:4px">
+          <div class="section-header__title">Settings</div>
+        </div>
+        <div class="settings-list">
+          <!-- Profile -->
+          <div class="settings-profile">
+            <div class="settings-avatar" id="settings-avatar">JD</div>
+            <div>
+              <div class="settings-profile__name" id="settings-name">John Doe</div>
+              <div class="settings-profile__email" id="settings-email">john@church.com</div>
+            </div>
+            <button class="settings-profile__edit" id="edit-profile-btn">Edit</button>
+          </div>
+
+          <div class="settings-section-label" data-i18n="settings_appearance">Appearance</div>
+          <div class="settings-item" id="dark-mode-item">
+            <div class="settings-item__icon" style="background:var(--surface-2)">🌙</div>
+            <div class="settings-item__text">
+              <div class="settings-item__label" data-i18n="settings_dark_mode">Dark Mode</div>
+              <div class="settings-item__sub" data-i18n="settings_dark_mode_sub">Switch to dark theme</div>
+            </div>
+            <div class="toggle-track" id="dark-toggle">
+              <div class="toggle-thumb"></div>
+            </div>
+          </div>
+          <div class="settings-item" id="font-size-item">
+            <div class="settings-item__icon" style="background:var(--surface-2)">🔤</div>
+            <div class="settings-item__text">
+              <div class="settings-item__label" data-i18n="settings_font_size">Font Size</div>
+              <div class="settings-item__sub" data-i18n="settings_font_size_sub">Editor text size</div>
+            </div>
+            <div class="settings-item__right"><span id="font-size-val">Medium</span><svg
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6"></path>
+              </svg></div>
+          </div>
+
+          <div class="settings-section-label" data-i18n="settings_notes">Notes</div>
+          <div class="settings-item" id="auto-save-item">
+            <div class="settings-item__icon" style="background:var(--success-light)">💾</div>
+            <div class="settings-item__text">
+              <div class="settings-item__label" data-i18n="settings_autosave">Auto-save</div>
+              <div class="settings-item__sub" data-i18n="settings_autosave_sub">Save notes automatically</div>
+            </div>
+            <div class="toggle-track on" id="autosave-toggle">
+              <div class="toggle-thumb"></div>
+            </div>
+          </div>
+          <div class="settings-item" id="reading-plan-toggle-item">
+            <div class="settings-item__icon" style="background:var(--gold-light)">📖</div>
+            <div class="settings-item__text">
+              <div class="settings-item__label" data-i18n="settings_reading">Reading Plan Reminders</div>
+              <div class="settings-item__sub" data-i18n="settings_reading_sub">Daily reading notifications</div>
+            </div>
+            <div class="toggle-track on" id="reading-toggle">
+              <div class="toggle-thumb"></div>
+            </div>
+          </div>
+
+          <div class="settings-section-label" data-i18n="settings_data">Data</div>
+          <div class="settings-item" id="export-btn">
+            <div class="settings-item__icon" style="background:var(--info-light)">📤</div>
+            <div class="settings-item__text">
+              <div class="settings-item__label" data-i18n="settings_export">Export Notes</div>
+              <div class="settings-item__sub" data-i18n="settings_export_sub">Download as JSON or Markdown</div>
+            </div>
+            <div class="settings-item__right"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6"></path>
+              </svg></div>
+          </div>
+          <div class="settings-item" id="backup-btn">
+            <div class="settings-item__icon" style="background:var(--success-light)">☁️</div>
+            <div class="settings-item__text">
+              <div class="settings-item__label" data-i18n="settings_backup">Cloud Backup</div>
+              <div class="settings-item__sub" data-i18n="settings_backup_sub">Last backup: just now</div>
+            </div>
+            <div class="settings-item__right"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6"></path>
+              </svg></div>
+          </div>
+          <div class="settings-item" id="share-church-btn">
+            <div class="settings-item__icon" style="background:var(--brand-light)">🤝</div>
+            <div class="settings-item__text">
+              <div class="settings-item__label" data-i18n="settings_share">Share with Church Group</div>
+              <div class="settings-item__sub" data-i18n="settings_share_sub">Share selected notes with your group</div>
+            </div>
+            <div class="settings-item__right"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6"></path>
+              </svg></div>
+          </div>
+
+          <div class="settings-section-label" data-i18n="settings_account">Account</div>
+          <div class="settings-item">
+            <div class="settings-item__icon" style="background:var(--surface-2)">🔔</div>
+            <div class="settings-item__text">
+              <div class="settings-item__label" data-i18n="settings_notifications">Notifications</div>
+              <div class="settings-item__sub" data-i18n="settings_notifications_sub">Manage alerts and reminders</div>
+            </div>
+            <div class="settings-item__right"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6"></path>
+              </svg></div>
+          </div>
+          <div class="settings-item" id="logout-btn">
+            <div class="settings-item__icon" style="background:var(--error-light)">🚪</div>
+            <div class="settings-item__text">
+              <div class="settings-item__label" style="color:var(--error)" data-i18n="settings_logout">Log Out</div>
+              <div class="settings-item__sub" data-i18n="settings_logout_sub">Sign out of your account</div>
+            </div>
+            <div class="settings-item__right"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6"></path>
+              </svg></div>
+          </div>
+          <div style="text-align:center; padding: 16px; font-size:12px; color:var(--text-muted)">Bible Notes v1.0 · Made with
+            ✦</div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav__items">
+        <div class="bottom-nav__item active" data-page="notes" id="nav-notes">
+          <div class="nav-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+          </div>
+          <span data-i18n="nav_notes">Notes</span>
+        </div>
+        <div class="bottom-nav__item" data-page="collections" id="nav-collections">
+          <div class="nav-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+            </svg>
+          </div>
+          <span data-i18n="nav_collections">Collections</span>
+        </div>
+        <div class="bottom-nav__item" data-page="references" id="nav-references">
+          <div class="nav-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              <line x1="12" y1="7" x2="16" y2="7"></line>
+            </svg>
+          </div>
+          <span data-i18n="nav_references">References</span>
+        </div>
+        <div class="bottom-nav__item" data-page="settings" id="nav-settings">
+          <div class="nav-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </svg>
+          </div>
+          <span data-i18n="nav_settings">Settings</span>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <!-- FAB (only on notes page) -->
+  <button class="fab" id="fab-btn" aria-label="New note" style="display: none;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+    </svg>
+  </button>
+
+  <!-- ═══════════ NOTE EDITOR OVERLAY ═══════════ -->
+  <div class="editor-overlay" id="editor-overlay">
+    <div class="editor-topbar">
+      <button class="editor-back-btn" id="editor-back-btn" aria-label="Close editor">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+      </button>
+      <input class="editor-title-input" id="editor-title" placeholder="Note title…" data-i18n-placeholder="untitled_note" autocomplete="off">
+      <button class="editor-save-btn" id="editor-save-btn" data-i18n="btn_save">Save</button>
+    </div>
+    <div class="editor-meta-bar">
+      <select class="meta-tag-select" id="editor-type-select">
+        <option value="sermon" data-i18n="tag_sermon">🎤 Sermon</option>
+        <option value="study" data-i18n="tag_study">📚 Bible Study</option>
+        <option value="prayer" data-i18n="tag_prayer">🙏 Prayer</option>
+        <option value="general" data-i18n="tag_general">📝 General</option>
+      </select>
+      <button class="meta-tag-btn" id="pin-btn" data-i18n="btn_pin">📌 Pin</button>
+      <button class="meta-tag-btn" id="reminder-btn" data-i18n="btn_reminder">⏰ Reminder</button>
+      <button class="meta-tag-btn" id="share-btn" data-i18n="btn_share">🔗 Share</button>
+      <button class="meta-tag-btn" id="add-to-collection-btn" data-i18n="btn_collection">📁 Collection</button>
+    </div>
+    <div class="editor-toolbar">
+      <button class="toolbar-btn" id="tb-bold" title="Bold"><b>B</b></button>
+      <button class="toolbar-btn" id="tb-italic" title="Italic"><i>I</i></button>
+      <button class="toolbar-btn" id="tb-underline" title="Underline"><u>U</u></button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" id="tb-h1" title="Heading">H1</button>
+      <button class="toolbar-btn" id="tb-h2" title="Subheading">H2</button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" id="tb-ul" title="List">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+      </button>
+      <button class="toolbar-btn" id="tb-quote" title="Quote">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path
+            d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z">
+          </path>
+          <path
+            d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z">
+          </path>
+        </svg>
+      </button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-ref-btn" id="mark-ref-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span data-i18n="mark_reference">Mark Reference</span>
+      </button>
+      <div class="toolbar-sep"></div>
+      <div class="bible-lang-toggle" id="bible-lang-toggle"
+        style="background:transparent; padding:0; margin-left:auto;">
+        <button class="bible-lang-btn active" data-lang="en">KJV</button>
+        <button class="bible-lang-btn" data-lang="sw">SWA</button>
+      </div>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" id="insert-verse-btn" title="Insert Verse"
+        style="display:flex; color:var(--gold); font-weight:600; width:auto; padding:0 8px; font-size:12px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+          style="margin-right:4px">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span data-i18n="insert_verse">Insert Verse</span>
+      </button>
+    </div>
+    <div class="editor-verse-preview" id="editor-verse-preview">
+      <div class="editor-verse-preview__ref" id="verse-preview-ref" style="margin-bottom:4px;"></div>
+      <div id="verse-preview-text"></div>
+    </div>
+    <div class="editor-body">
+      <div class="editor-content" id="editor-content" contenteditable="true"
+        data-placeholder="Start writing your notes here…" spellcheck="true"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ COLLECTION DETAIL OVERLAY ═══════════ -->
+  <div class="collection-detail-overlay" id="collection-detail-overlay">
+    <div class="editor-topbar">
+      <button class="editor-back-btn" id="collection-back-btn" aria-label="Close collection">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+      </button>
+      <div style="flex:1">
+        <div id="coll-detail-icon" style="display:inline;font-size:18px;margin-right:6px"></div>
+        <span id="coll-detail-title"
+          style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--text-primary)"></span>
+      </div>
+      <button class="meta-tag-btn" id="add-notes-to-coll-btn">+ Add Notes</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:16px">
+      <div class="notes-list" id="coll-detail-notes-list" style="padding:0"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ NEW COLLECTION MODAL ═══════════ -->
+  <div class="modal-overlay" id="new-collection-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">New Collection</div>
+      <input class="modal-input" type="text" id="coll-name-input" placeholder="Collection name…" autocomplete="off">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-weight:600">Choose icon</div>
+      <div class="emoji-picker" id="emoji-picker">
+        <div class="emoji-opt selected" data-emoji="📖">📖</div>
+        <div class="emoji-opt" data-emoji="🙏">🙏</div>
+        <div class="emoji-opt" data-emoji="✝️">✝️</div>
+        <div class="emoji-opt" data-emoji="🕊️">🕊️</div>
+        <div class="emoji-opt" data-emoji="⭐">⭐</div>
+        <div class="emoji-opt" data-emoji="🌿">🌿</div>
+        <div class="emoji-opt" data-emoji="🔥">🔥</div>
+        <div class="emoji-opt" data-emoji="💡">💡</div>
+        <div class="emoji-opt" data-emoji="🎶">🎶</div>
+        <div class="emoji-opt" data-emoji="🏛️">🏛️</div>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-weight:600">Accent colour</div>
+      <div class="color-picker" id="color-picker">
+        <div class="color-opt selected" data-color="#5C3D2E" style="background:#5C3D2E"></div>
+        <div class="color-opt" data-color="#C9963C" style="background:#C9963C"></div>
+        <div class="color-opt" data-color="#2C5FBE" style="background:#2C5FBE"></div>
+        <div class="color-opt" data-color="#2E7D5C" style="background:#2E7D5C"></div>
+        <div class="color-opt" data-color="#7B4BA0" style="background:#7B4BA0"></div>
+        <div class="color-opt" data-color="#C0392B" style="background:#C0392B"></div>
+        <div class="color-opt" data-color="#1B6BA8" style="background:#1B6BA8"></div>
+      </div>
+      <button class="modal-btn modal-btn--primary" id="create-collection-confirm-btn">Create Collection</button>
+      <button class="modal-btn modal-btn--ghost" id="cancel-collection-btn" data-i18n="btn_cancel">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ ADD TO COLLECTION MODAL ═══════════ -->
+  <div class="modal-overlay" id="add-to-collection-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Add to Collection</div>
+      <div class="modal-notes-select" id="collection-list-select">
+        <!-- populated by JS -->
+      </div>
+      <button class="modal-btn modal-btn--primary" id="confirm-add-to-coll-btn" data-i18n="btn_confirm">Confirm</button>
+      <button class="modal-btn modal-btn--ghost" id="cancel-add-to-coll-btn" data-i18n="btn_cancel">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ MARK REFERENCE MODAL ═══════════ -->
+  <div class="modal-overlay" id="mark-ref-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title" data-i18n="modal_mark_title">Mark as Reference</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px" data-i18n="modal_mark_sub">Enter the scripture reference for your
+        selected text.</div>
+      <input class="modal-input" type="text" id="ref-verse-input" placeholder="e.g. John 3:16" data-i18n-placeholder="placeholder_ref_verse" autocomplete="off">
+      <input class="modal-input" type="text" id="ref-note-input" placeholder="Add a note (optional)…" data-i18n-placeholder="placeholder_ref_note"
+        autocomplete="off">
+      <button class="modal-btn modal-btn--primary" id="confirm-ref-btn" data-i18n="btn_save">Save Reference</button>
+      <button class="modal-btn modal-btn--ghost" id="cancel-ref-btn" data-i18n="btn_cancel">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ INSERT VERSE MODAL ═══════════ -->
+  <div class="modal-overlay" id="insert-verse-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div class="modal-title" style="margin-bottom:0;" data-i18n="modal_insert_title">Insert Bible Verse</div>
+        <select class="modal-input" id="insert-verse-lang" style="width:auto; min-width:130px; margin-bottom:0; padding-right:28px; font-size:12px; height:32px; align-self:center;">
+          <option value="" disabled selected hidden data-i18n="select_bible_lang">Select Bible</option>
+          <option value="en">English (KJV)</option>
+          <option value="sw">Swahili</option>
+        </select>
+      </div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px" data-i18n="modal_insert_sub">Select translation, book, chapter, and verse to insert into your notes.</div>
+      <div style="display:flex; gap:10px; margin-bottom:12px;">
+        <select class="modal-input" id="insert-verse-book"
+          style="flex:2; margin-bottom:0; padding-right:24px;"></select>
+        <select class="modal-input" id="insert-verse-chapter"
+          style="flex:1; margin-bottom:0; padding-right:24px;"></select>
+        <select class="modal-input" id="insert-verse-verse"
+          style="flex:1; margin-bottom:0; padding-right:24px;"></select>
+      </div>
+      <div id="insert-verse-preview-box"
+        style="padding:16px; background:var(--gold-light); border:1px solid rgba(201,150,60,0.3); border-radius:var(--r-md); font-size:14px; color:var(--text-secondary); margin-bottom:16px; min-height:80px; font-style:italic;">
+      </div>
+      <button class="modal-btn modal-btn--primary" id="confirm-insert-verse-btn" data-i18n="insert_verse">Insert Verse</button>
+      <button class="modal-btn modal-btn--ghost" id="cancel-insert-verse-btn" data-i18n="btn_cancel">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ CONFIRM MODAL ═══════════ -->
+  <div class="modal-confirm-overlay" id="app-confirm-modal">
+    <div class="modal-confirm-card">
+      <div class="modal-confirm-title" id="confirm-title">Confirm Action</div>
+      <div class="modal-confirm-msg" id="confirm-msg">Are you sure you want to proceed?</div>
+      <div class="modal-confirm-actions">
+        <button class="modal-confirm-btn modal-confirm-btn--ghost" id="confirm-cancel-btn" data-i18n="btn_cancel">Cancel</button>
+        <button class="modal-confirm-btn" id="confirm-ok-btn" data-i18n="btn_confirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ EXPORT MODAL ═══════════ -->
+  <div class="modal-overlay" id="export-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title" data-i18n="modal_export_title">Export Notes</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px" data-i18n="modal_export_sub">Choose your preferred export format.</div>
+      <button class="modal-btn modal-btn--primary" id="export-json-btn" data-i18n="btn_export_json">📄 Export as JSON</button>
+      <button class="modal-btn"
+        style="background:var(--brand-light);color:var(--brand);margin-bottom:8px;width:100%;padding:12px;border-radius:var(--r-lg);font-size:15px;font-weight:500"
+        id="export-md-btn" data-i18n="btn_export_md">📝 Export as Markdown</button>
+      <button class="modal-btn modal-btn--ghost" id="cancel-export-btn" data-i18n="btn_cancel">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ ADD NOTES TO COLLECTION MODAL ═══════════ -->
+  <div class="modal-overlay" id="add-notes-to-coll-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Select Notes</div>
+      <div class="modal-notes-select" id="notes-select-list">
+        <!-- populated by JS -->
+      </div>
+      <button class="modal-btn modal-btn--primary" id="confirm-notes-select-btn" data-i18n="btn_confirm">Add Selected</button>
+      <button class="modal-btn modal-btn--ghost" id="cancel-notes-select-btn" data-i18n="btn_cancel">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ TOAST CONTAINER ═══════════ -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="language.js"></script>
+  <script>
+    /* ═══════════════════════════════════════════════════════
+       SUPABASE CLIENT INITIALIZATION
+    ═══════════════════════════════════════════════════════ */
+    const SUPABASE_URL = 'https://inpsceqswsmcixgxkaad.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlucHNjZXFzd3NtY2l4Z3hrYWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3ODkwNzcsImV4cCI6MjA5MDM2NTA3N30.hevNI_TMu1m6ePiLrIHpi9m24g3jDrIbVnou7iasOvI';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /* ═══════════════════════════════════════════════════════
+       STATE
+    ═══════════════════════════════════════════════════════ */
+    let state = {
+      user: null, // Holds active user session
+      notes: [],
+      collections: [],
+      references: [],
+      currentPage: 'notes',
+      editingNoteId: null,
+      selectedCollectionId: null,
+      filterNotes: 'all',
+      filterRefs: 'all',
+      searchNotes: '',
+      searchRefs: '',
+      autoSave: true,
+      readingDay: 12,
+      fontMode: 'Medium',
+      bibleLang: 'en',
+      appLang: 'en',
+      userName: 'John Doe',
+      userEmail: 'john@church.com',
+    };
+
+    const VOTD_POOL = [
+      { b: 23, c: 28, v: 10 }, { b: 49, c: 3, v: 12 }, { b: 19, c: 2, v: 4 }, { b: 18, c: 22, v: 0 },
+      { b: 42, c: 2, v: 15 }, { b: 18, c: 45, v: 9 }, { b: 18, c: 50, v: 9 }, { b: 44, c: 7, v: 27 },
+      { b: 39, c: 10, v: 27 }, { b: 22, c: 40, v: 9 }, { b: 57, c: 10, v: 0 }, { b: 46, c: 4, v: 16 },
+      { b: 5, c: 0, v: 8 }, { b: 19, c: 3, v: 22 }, { b: 39, c: 5, v: 32 }, { b: 49, c: 3, v: 5 },
+      { b: 19, c: 15, v: 2 }, { b: 44, c: 11, v: 1 }, { b: 18, c: 118, v: 104 }, { b: 59, c: 4, v: 6 }
+    ];
+
+    function getShuffledVotdSequence() {
+      let seq = localStorage.getItem('votd-seq');
+      if (seq) return JSON.parse(seq);
+      return generateNewVotdSequence();
+    }
+
+    function generateNewVotdSequence() {
+      const seq = Array.from({length: VOTD_POOL.length}, (_, i) => i);
+      // Fisher-Yates shuffle
+      for(let i = seq.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [seq[i], seq[j]] = [seq[j], seq[i]];
+      }
+      localStorage.setItem('votd-seq', JSON.stringify(seq));
+      localStorage.setItem('votd-idx', '0');
+      return seq;
+    }
+
+    function getDailyVerseTarget() {
+      const sequence = getShuffledVotdSequence();
+      let idx = parseInt(localStorage.getItem('votd-idx') || '0');
+      
+      const today = new Date().toDateString();
+      const storedDay = localStorage.getItem('votd-date');
+      
+      if (storedDay !== today) {
+        if (storedDay !== null) { 
+          idx++;
+          if (idx >= sequence.length) {
+            const newSeq = generateNewVotdSequence();
+            return VOTD_POOL[newSeq[0]];
+          }
+        }
+        localStorage.setItem('votd-date', today);
+        localStorage.setItem('votd-idx', idx.toString());
+      }
+      
+      return VOTD_POOL[sequence[idx]];
+    }
+
+    /* ─── Load / Save ─── */
+    function loadState() {
+      try {
+        const saved = localStorage.getItem('logos-app-state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = { ...state, ...parsed };
+          if (state.bibleLang === 'kjv') state.bibleLang = 'en';
+          if (state.bibleLang === 'swahili') state.bibleLang = 'sw';
+        }
+      } catch (e) { }
+    }
+    function saveState() {
+      try { localStorage.setItem('logos-app-state', JSON.stringify(state)); } catch (e) { }
+    }
+
+    /* ─── Seeds ─── */
+    function seedData() {
+      if (state.notes.length === 0) {
+        state.notes = [
+          {
+            id: 'n1', title: 'Sunday Sermon – Grace & Truth',
+            content: 'Pastor opened with John 1:14. The Word became flesh and made his dwelling among us.\n\nKey point: Grace without truth becomes permissiveness. Truth without grace becomes legalism.\n\nJohn 3:16 — God so loved the world...',
+            type: 'sermon', tags: ['grace', 'truth', 'john'], pinned: true,
+            collections: ['c1'],
+            created: new Date(Date.now() - 86400000 * 2).toISOString(),
+            updated: new Date(Date.now() - 86400000 * 2).toISOString(),
+          },
+          {
+            id: 'n2', title: 'Psalm 23 – Deep Study',
+            content: 'The LORD is my shepherd; I shall not want.\n\nHe makes me lie down in green pastures.\nHe leads me beside still waters.\nHe restores my soul.\n\nNote: "Valley of the shadow of death" — בְּגֵיא צַלְמָוֶת — means deep darkness, not necessarily death.',
+            type: 'study', tags: ['psalms', 'shepherd', 'peace'], pinned: false,
+            collections: [],
+            created: new Date(Date.now() - 86400000 * 5).toISOString(),
+            updated: new Date(Date.now() - 86400000 * 3).toISOString(),
+          },
+          {
+            id: 'n3', title: 'Morning Prayer – Seeking Guidance',
+            content: 'Lord, I come before You today with a grateful heart.\n\nLead my steps today. Let Your Word be a lamp to my feet.\n\nPraying for clarity on the decision ahead. Trusting Your timing.',
+            type: 'prayer', tags: ['prayer', 'guidance'], pinned: false,
+            collections: ['c2'],
+            created: new Date(Date.now() - 86400000).toISOString(),
+            updated: new Date(Date.now() - 86400000).toISOString(),
+          },
+        ];
+        state.collections = [
+          { id: 'c1', name: 'Sunday Sermons', emoji: '🎤', color: '#5C3D2E', noteIds: ['n1'] },
+          { id: 'c2', name: 'Prayer Journal', emoji: '🙏', color: '#2C5FBE', noteIds: ['n3'] },
+        ];
+        state.references = [
+          { id: 'r1', verse: 'John 1:14', text: 'The Word became flesh and made his dwelling among us.', noteId: 'n1', noteTitle: 'Sunday Sermon – Grace & Truth', note: 'Key verse of the sermon' },
+          { id: 'r2', verse: 'John 3:16', text: 'For God so loved the world that he gave his one and only Son...', noteId: 'n1', noteTitle: 'Sunday Sermon – Grace & Truth', note: '' },
+          { id: 'r3', verse: 'Psalm 23:1', text: 'The LORD is my shepherd; I shall not want.', noteId: 'n2', noteTitle: 'Psalm 23 – Deep Study', note: 'Opening verse of the Psalm' },
+        ];
+        saveState();
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════════════════ */
+    function navigateTo(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.bottom-nav__item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.side-nav__item').forEach(i => i.classList.remove('active'));
+
+      document.getElementById('page-' + page).classList.add('active');
+      document.getElementById('nav-' + page).classList.add('active');
+      const snav = document.getElementById('snav-' + page);
+      if (snav) snav.classList.add('active');
+
+      document.getElementById('fab-btn').style.display = (page === 'notes') ? 'flex' : 'none';
+      state.currentPage = page;
+      document.getElementById('page-area').scrollTop = 0;
+      if (page === 'notes') renderNotes();
+      if (page === 'collections') renderCollections();
+      if (page === 'references') renderRefs();
+      updateStats();
+    }
+
+    document.querySelectorAll('.bottom-nav__item').forEach(item => {
+      item.addEventListener('click', () => navigateTo(item.dataset.page));
+    });
+    document.querySelectorAll('.side-nav__item').forEach(item => {
+      item.addEventListener('click', () => navigateTo(item.dataset.page));
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       THEME
+    ═══════════════════════════════════════════════════════ */
+    function applyTheme(dark) {
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      document.getElementById('theme-icon-sun').style.display = dark ? 'block' : 'none';
+      document.getElementById('theme-icon-moon').style.display = dark ? 'none' : 'block';
+
+      const label = dark ? 'Light mode' : 'Dark mode';
+      const sidebarLabel = document.getElementById('snav-theme-label');
+      if (sidebarLabel) sidebarLabel.textContent = label;
+
+      const sidebarIcon = document.getElementById('snav-theme-icon');
+      if (sidebarIcon) {
+        sidebarIcon.innerHTML = dark ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>' : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+      }
+
+      const toggle = document.getElementById('dark-toggle');
+      if (dark) toggle.classList.add('on'); else toggle.classList.remove('on');
+    }
+    document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      applyTheme(!isDark);
+      showToast('info', isDark ? 'Light mode' : 'Dark mode');
+    });
+    document.getElementById('dark-toggle').addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      applyTheme(!isDark);
+    });
+    document.getElementById('snav-theme-btn').addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      applyTheme(!isDark);
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       LANGUAGE
+    ═══════════════════════════════════════════════════════ */
+    function toggleAppLanguage() {
+      state.appLang = state.appLang === 'en' ? 'sw' : 'en';
+      saveState();
+      updateLangToggles();
+      if (typeof applyTranslations === 'function') applyTranslations(state.appLang);
+      loadDailyVerse(); 
+      renderNotes();
+      renderCollections();
+      renderRefs();
+    }
+
+    function updateLangToggles() {
+      const topBtn = document.getElementById('top-lang-btn');
+      const sideLabel = document.getElementById('snav-lang-label');
+      const txt = state.appLang.toUpperCase();
+      if(topBtn) topBtn.textContent = txt;
+      if(sideLabel) sideLabel.textContent = txt;
+    }
+
+    document.getElementById('snav-lang-btn')?.addEventListener('click', toggleAppLanguage);
+    document.getElementById('top-lang-btn')?.addEventListener('click', toggleAppLanguage);
+
+    /* ═══════════════════════════════════════════════════════
+       STATS
+    ═══════════════════════════════════════════════════════ */
+    function updateStats() {
+      document.getElementById('stat-notes').textContent = state.notes.length;
+      document.getElementById('stat-refs').textContent = state.references.length;
+      // streak: count days with at least 1 note (mock)
+      const streak = Math.min(state.notes.length + 2, 14);
+      document.getElementById('stat-streak').textContent = streak;
+      document.getElementById('notes-count-label').textContent = state.notes.length + ' note' + (state.notes.length !== 1 ? 's' : '');
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       NOTES
+    ═══════════════════════════════════════════════════════ */
+    function getFilteredNotes() {
+      let notes = [...state.notes];
+      if (state.filterNotes !== 'all') {
+        if (state.filterNotes === 'pinned') notes = notes.filter(n => n.pinned);
+        else notes = notes.filter(n => n.type === state.filterNotes);
+      }
+      if (state.searchNotes) {
+        const q = state.searchNotes.toLowerCase();
+        notes = notes.filter(n => n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q));
+      }
+      // Sorting: Pinned first (by pinnedAt), then Unpinned (by updated)
+      notes.sort((a, b) => {
+        if (a.pinned !== b.pinned) return b.pinned ? -1 : 1;
+        if (a.pinned) {
+          return new Date(b.pinnedAt || b.updated) - new Date(a.pinnedAt || a.updated);
+        }
+        return new Date(b.updated) - new Date(a.updated);
+      });
+      return notes;
+    }
+
+    function getBadgeMap() {
+      return { 
+        sermon: [window.t('tag_sermon') || 'Sermon', 'badge--sermon'], 
+        study: [window.t('tag_study') || 'Bible Study', 'badge--study'], 
+        prayer: [window.t('tag_prayer') || 'Prayer', 'badge--prayer'], 
+        general: [window.t('tag_general') || 'General', 'badge--general'] 
+      };
+    }
+
+    function renderNotes() {
+      const list = document.getElementById('notes-list');
+      const notes = getFilteredNotes();
+      if (notes.length === 0) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-state__icon">📝</div><div class="empty-state__title">No notes yet</div><div class="empty-state__msg">Tap the + button to create your first note.</div></div>`;
+        return;
+      }
+      list.innerHTML = notes.map(n => {
+        const m = getBadgeMap();
+        const [badgeTxt, badgeCls] = m[n.type] || [window.t('tag_general') || 'General', 'badge--general'];
+        const date = new Date(n.updated).toLocaleDateString((state.appLang==='sw'?'sw-KE':'en-GB'), { day: 'numeric', month: 'short' });
+        const refCount = state.references.filter(r => r.noteId === n.id).length;
+        return `
+    <div class="note-card ${n.pinned ? 'pinned' : ''}" data-id="${n.id}">
+      <div class="note-card__top">
+        <div class="note-card__title">${escHtml(n.title)}</div>
+        <span class="note-card__badge ${badgeCls}">${badgeTxt}</span>
+      </div>
+      <div class="note-card__preview">${escHtml(n.content.slice(0, 120))}</div>
+      ${n.tags && n.tags.length ? `<div class="note-card__tags">${n.tags.map(t => `<span class="note-tag">#${t}</span>`).join('')}</div>` : ''}
+      <div class="note-card__meta">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ${date}
+        ${refCount ? `<span style="color:var(--ref-color);font-size:11px">📌 ${refCount} ref${refCount > 1 ? 's' : ''}</span>` : ''}
+        ${n.pinned ? `<span style="font-size:11px">📌 ${window.t('lbl_pinned') || 'Pinned'}</span>` : ''}
+        <div class="note-card__actions">
+          <button class="note-card__action-btn pin-note-btn" data-id="${n.id}" title="Pin" aria-label="Pin note">
+            ${n.pinned ? '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17H19V15L17 10V4H7V10L5 15V17Z"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17H19V15L17 10V4H7V10L5 15V17Z"/></svg>'}
+          </button>
+          <button class="note-card__action-btn delete-note-btn" data-id="${n.id}" title="Delete" aria-label="Delete note">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`;
+      }).join('');
+
+      // Event delegation
+      list.querySelectorAll('.note-card').forEach(card => {
+        card.addEventListener('click', e => {
+          if (e.target.closest('.pin-note-btn') || e.target.closest('.delete-note-btn')) return;
+          openEditor(card.dataset.id);
+        });
+      });
+      list.querySelectorAll('.pin-note-btn').forEach(btn => {
+        btn.addEventListener('click', e => { e.stopPropagation(); togglePin(btn.dataset.id); });
+      });
+      list.querySelectorAll('.delete-note-btn').forEach(btn => {
+        btn.addEventListener('click', e => { e.stopPropagation(); deleteNote(btn.dataset.id); });
+      });
+    }
+
+    function togglePin(id) {
+      const note = state.notes.find(n => n.id === id);
+      if (!note) return;
+      note.pinned = !note.pinned;
+      if (note.pinned) note.pinnedAt = new Date().toISOString();
+      saveState(); renderNotes(); updateStats();
+      showToast('success', note.pinned ? 'Note pinned' : 'Note unpinned');
+    }
+
+    async function deleteNote(id) {
+      const confirmed = await showConfirm({
+        title: 'Delete Note',
+        message: 'This is irreversible. confirm?',
+        confirmText: 'Delete',
+        isDanger: true
+      });
+      if (!confirmed) return;
+      state.notes = state.notes.filter(n => n.id !== id);
+      state.references = state.references.filter(r => r.noteId !== id);
+      state.collections.forEach(c => { c.noteIds = c.noteIds.filter(nid => nid !== id); });
+      saveState(); renderNotes(); updateStats();
+      showToast('info', 'Note deleted');
+    }
+
+    /* Filter pills */
+    document.querySelectorAll('#notes-filter-row .filter-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('#notes-filter-row .filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        state.filterNotes = pill.dataset.filter;
+        renderNotes();
+      });
+    });
+
+    /* Search toggle */
+    document.getElementById('search-toggle-btn').addEventListener('click', () => {
+      const bar = document.getElementById('notes-search-bar');
+      const isVisible = bar.style.display !== 'none';
+      bar.style.display = isVisible ? 'none' : 'block';
+      if (!isVisible) document.getElementById('notes-search-input').focus();
+    });
+    document.getElementById('notes-search-input').addEventListener('input', e => {
+      state.searchNotes = e.target.value;
+      renderNotes();
+    });
+    document.getElementById('refs-search-input').addEventListener('input', e => {
+      state.searchRefs = e.target.value;
+      renderRefs();
+    });
+
+    /* New note */
+    function openEditor(noteId) {
+      state.editingNoteId = noteId || null;
+      const editor = document.getElementById('editor-overlay');
+      const titleInp = document.getElementById('editor-title');
+      const content = document.getElementById('editor-content');
+      const typeSelect = document.getElementById('editor-type-select');
+      const pinBtn = document.getElementById('pin-btn');
+
+      if (noteId) {
+        const note = state.notes.find(n => n.id === noteId);
+        if (!note) return;
+        titleInp.value = note.title;
+        content.innerHTML = markdownToHtml(note.content);
+        typeSelect.value = note.type;
+        pinBtn.classList.toggle('active', note.pinned);
+      } else {
+        titleInp.value = '';
+        content.innerHTML = '';
+        typeSelect.value = 'sermon';
+        pinBtn.classList.remove('active');
+      }
+
+      initCustomSelect('editor-type-select');
+
+      const saveBtn = document.getElementById('editor-save-btn');
+      saveBtn.textContent = 'Save';
+      saveBtn.classList.remove('saved');
+      document.getElementById('editor-verse-preview').classList.remove('visible');
+      editor.classList.add('open');
+
+      // async pre-load bible data
+      loadBibleData(state.bibleLang);
+
+      setTimeout(() => {
+        titleInp.focus();
+        if (!noteId) {
+          showTooltip(titleInp, "Please write your title", 2000);
+        } else if (titleInp.value === 'Untitled Note') {
+          showTooltip(titleInp, "Please Edit your Title", 2000);
+        }
+      }, 350);
+    }
+
+    function closeEditor() {
+      document.getElementById('editor-overlay').classList.remove('open');
+      state.editingNoteId = null;
+      renderNotes(); updateStats();
+    }
+
+    document.getElementById('editor-back-btn').addEventListener('click', () => {
+      saveNote(false);
+    });
+
+    document.getElementById('editor-save-btn').addEventListener('click', () => saveNote(false));
+
+    function saveNote(silent) {
+      const titleRaw = document.getElementById('editor-title').value.trim();
+      const content = document.getElementById('editor-content').innerText.trim();
+
+      if (!titleRaw && !content) {
+        closeEditor();
+        return;
+      }
+
+      const title = titleRaw || 'Untitled Note';
+      const type = document.getElementById('editor-type-select').value;
+      const pinned = document.getElementById('pin-btn').classList.contains('active');
+
+      if (state.editingNoteId) {
+        const note = state.notes.find(n => n.id === state.editingNoteId);
+        if (note) {
+          if (pinned && !note.pinned) note.pinnedAt = new Date().toISOString();
+          note.title = title; note.content = content; note.type = type; note.pinned = pinned; note.updated = new Date().toISOString();
+        }
+      } else {
+        const newNote = {
+          id: 'n' + Date.now(), title, content, type, pinned,
+          pinnedAt: pinned ? new Date().toISOString() : null,
+          tags: [], collections: [], created: new Date().toISOString(), updated: new Date().toISOString()
+        };
+        state.notes.unshift(newNote);
+        state.editingNoteId = newNote.id;
+      }
+
+      saveState();
+      if (!silent) {
+        showToast('success', 'Note saved');
+      }
+      closeEditor();
+    }
+
+    document.getElementById('new-note-btn').addEventListener('click', () => openEditor(null));
+    document.getElementById('fab-btn').addEventListener('click', () => openEditor(null));
+
+    /* Pin btn in editor */
+    document.getElementById('pin-btn').addEventListener('click', () => {
+      document.getElementById('pin-btn').classList.toggle('active');
+    });
+
+    /* Share btn */
+    document.getElementById('share-btn').addEventListener('click', () => {
+      const title = document.getElementById('editor-title').value || 'Note';
+      const text = document.getElementById('editor-content').innerText;
+      if (navigator.share) {
+        navigator.share({ title, text }).catch(() => { });
+      } else {
+        navigator.clipboard.writeText(text).then(() => showToast('success', 'Copied to clipboard!'));
+      }
+    });
+
+    /* Reminder btn */
+    document.getElementById('reminder-btn').addEventListener('click', () => {
+      showToast('info', 'Reminder set for tomorrow morning');
+    });
+
+    /* Toolbar */
+    document.getElementById('tb-bold').addEventListener('click', () => { document.execCommand('bold'); });
+    document.getElementById('tb-italic').addEventListener('click', () => { document.execCommand('italic'); });
+    document.getElementById('tb-underline').addEventListener('click', () => { document.execCommand('underline'); });
+    document.getElementById('tb-h1').addEventListener('click', () => { document.execCommand('formatBlock', false, 'h2'); });
+    document.getElementById('tb-h2').addEventListener('click', () => { document.execCommand('formatBlock', false, 'h3'); });
+    document.getElementById('tb-ul').addEventListener('click', () => { document.execCommand('insertUnorderedList'); });
+    document.getElementById('tb-quote').addEventListener('click', () => { document.execCommand('formatBlock', false, 'blockquote'); });
+
+    /* Style the content area */
+    const editorContent = document.getElementById('editor-content');
+    editorContent.addEventListener('focus', () => {
+      if (!editorContent.innerText.trim()) editorContent.innerHTML = '';
+    });
+    // Placeholder behaviour & Smart Formatting
+    editorContent.addEventListener('input', function (e) {
+      if (!this.innerText.trim()) this.innerHTML = '';
+
+      // auto-detect scripture references inside the active text node only
+      const selection = window.getSelection();
+      let activeText = '';
+      if (selection.rangeCount > 0 && selection.getRangeAt(0).startContainer.nodeType === 3) {
+        activeText = selection.getRangeAt(0).startContainer.nodeValue;
+      }
+      
+      const bibleRefGen = activeText.match(/\b([123]?\s?[A-Za-z]+(?:\s+[A-Za-z]+){0,2})\s+(\d+:\d+(?:-\d+)?)\b/ig);
+
+      if (bibleRefGen) {
+        const lastRef = bibleRefGen[bibleRefGen.length - 1];
+        const previewRef = document.getElementById('verse-preview-ref');
+        const previewText = document.getElementById('verse-preview-text');
+        if (previewRef && previewText) {
+          previewRef.textContent = lastRef;
+          previewText.textContent = getBibleVerse(lastRef, state.bibleLang);
+          document.getElementById('editor-verse-preview').classList.add('visible');
+        }
+      } else {
+        const preview = document.getElementById('editor-verse-preview');
+        if (preview) preview.classList.remove('visible');
+      }
+    });
+
+    document.getElementById('insert-verse-btn').addEventListener('click', async () => {
+      const previewBox = document.getElementById('editor-verse-preview');
+
+      // If the auto-preview is visible, just insert that immediately.
+      if (previewBox.classList.contains('visible')) {
+        let text = document.getElementById('verse-preview-text').textContent;
+        const ref = document.getElementById('verse-preview-ref').textContent;
+        
+        // Force refresh if stuck in legacy 'Loading...' view
+        if (text === 'Loading...') {
+          await loadBibleData(state.bibleLang);
+          text = getBibleVerse(ref, state.bibleLang);
+        }
+
+        if (text && text !== 'Verse not found in selected translation.' && text !== 'Loading...') {
+          const htmlToInsert = `<br><blockquote>${text}<br><cite style="font-size: 0.9em; opacity: 0.8; font-style: normal; display: block; margin-top: 4px;">— ${ref}</cite></blockquote><br>`;
+          editorContent.focus();
+          document.execCommand('insertHTML', false, htmlToInsert);
+          previewBox.classList.remove('visible');
+          return;
+        }
+      }
+
+      // Otherwise open the new insertion modal
+      if (!bibleData[state.bibleLang]) {
+        await loadBibleData(state.bibleLang);
+      }
+
+      if (!bibleData[state.bibleLang]) {
+        alert("Could not load Bible data at this time.");
+        return;
+      }
+
+      populateInsertVerseModal();
+      openModal('insert-verse-modal');
+    });
+
+    // Insert Verse Modal Logic
+    const inLangSel = document.getElementById('insert-verse-lang');
+    const inBookSel = document.getElementById('insert-verse-book');
+    const inChapSel = document.getElementById('insert-verse-chapter');
+    const inVersSel = document.getElementById('insert-verse-verse');
+    const inPreviewText = document.getElementById('insert-verse-preview-box');
+
+    function populateInsertVerseModal() {
+      // If we already have a language, set it. Otherwise show placeholder.
+      if (state.bibleLang) {
+        inLangSel.value = state.bibleLang;
+      } else {
+        inLangSel.selectedIndex = 0;
+      }
+      initCustomSelect('insert-verse-lang', true);
+
+      const data = bibleData[state.bibleLang];
+      if (!data) return; // Should not happen if loaded correctly
+      inBookSel.innerHTML = '';
+      data.books.forEach((b, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = b.name;
+        inBookSel.appendChild(opt);
+      });
+
+      inBookSel.selectedIndex = 0;
+      initCustomSelect('insert-verse-book', true);
+      initCustomSelect('insert-verse-chapter', true);
+      initCustomSelect('insert-verse-verse', true);
+      populateInsertVerseChapters();
+    }
+
+    function populateInsertVerseChapters() {
+      const data = bibleData[state.bibleLang];
+      const bIdx = parseInt(inBookSel.value);
+      const book = data.books[bIdx];
+
+      inChapSel.innerHTML = '';
+      book.chapters.forEach((c, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `Ch ${c.chapter}`;
+        inChapSel.appendChild(opt);
+      });
+
+      inChapSel.selectedIndex = 0;
+      updateCustomSelect('insert-verse-chapter');
+      populateInsertVerseVerses();
+    }
+
+    function populateInsertVerseVerses() {
+      const data = bibleData[state.bibleLang];
+      const bIdx = parseInt(inBookSel.value);
+      const cIdx = parseInt(inChapSel.value);
+      const chap = data.books[bIdx].chapters[cIdx];
+
+      inVersSel.innerHTML = '';
+      chap.verses.forEach((v, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `v ${v.verse}`;
+        inVersSel.appendChild(opt);
+      });
+
+      inVersSel.selectedIndex = 0;
+      updateCustomSelect('insert-verse-verse');
+      updateInsertVersePreview();
+    }
+
+    function updateInsertVersePreview() {
+      const data = bibleData[state.bibleLang];
+      const bIdx = parseInt(inBookSel.value);
+      const cIdx = parseInt(inChapSel.value);
+      const vIdx = parseInt(inVersSel.value);
+      const verse = data.books[bIdx].chapters[cIdx].verses[vIdx];
+      inPreviewText.innerHTML = `<strong>${verse.name}</strong><br/>"${verse.text}"`;
+      inPreviewText.dataset.vtext = verse.text;
+      inPreviewText.dataset.vref = verse.name;
+    }
+
+    inLangSel.addEventListener('change', async () => {
+      state.bibleLang = inLangSel.value;
+      saveState();
+      if (!bibleData[state.bibleLang]) {
+        inPreviewText.textContent = "Loading translation...";
+        await loadBibleData(state.bibleLang);
+      }
+      populateInsertVerseModal();
+    });
+
+    inBookSel.addEventListener('change', populateInsertVerseChapters);
+    inChapSel.addEventListener('change', populateInsertVerseVerses);
+    inVersSel.addEventListener('change', updateInsertVersePreview);
+
+    document.getElementById('cancel-insert-verse-btn').addEventListener('click', () => {
+      closeModal('insert-verse-modal');
+    });
+
+    document.getElementById('confirm-insert-verse-btn').addEventListener('click', () => {
+      const text = inPreviewText.dataset.vtext;
+      const ref = inPreviewText.dataset.vref;
+      if (text) {
+        const htmlToInsert = `<br><blockquote>${text}<br><cite style="font-size: 0.9em; opacity: 0.8; font-style: normal; display: block; margin-top: 4px;">— ${ref}</cite></blockquote><br>`;
+        editorContent.focus();
+        document.execCommand('insertHTML', false, htmlToInsert);
+      }
+      closeModal('insert-verse-modal');
+    });
+
+    // Smart Editor Features: Auto-Capitalize & Auto-Lists
+    editorContent.addEventListener('keydown', function (e) {
+      if (e.key === ' ') {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+        const range = selection.getRangeAt(0);
+        const node = range.startContainer;
+        const offset = range.startOffset;
+
+        // 1. Auto-Lists
+        // Check if we are at the start of a line/paragraph
+        const lineText = node.textContent.substring(0, offset);
+        const listTriggers = [
+          { reg: /^[-*•]$/, type: 'insertUnorderedList' },
+          { reg: /^\d+\.$/, type: 'insertOrderedList' },
+          { reg: /^[a-zA-Z]\.$/, type: 'insertOrderedList' },
+          { reg: /^[ivxIVX]+\.$/, type: 'insertOrderedList' }
+        ];
+
+        for (const trigger of listTriggers) {
+          if (trigger.reg.test(lineText.trim())) {
+            e.preventDefault();
+            // Clear the trigger text
+            document.execCommand('delete', false, null);
+            for (let i = 0; i < lineText.trim().length; i++) {
+              document.execCommand('delete', false, null);
+            }
+            // Trigger list
+            document.execCommand(trigger.type);
+            return;
+          }
+        }
+      }
+    });
+
+    editorContent.addEventListener('beforeinput', function (e) {
+      // 2. Auto-Capitalization
+      if (e.data && e.data.length === 1 && /[a-z]/i.test(e.data)) {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+        const range = selection.getRangeAt(0);
+        const node = range.startContainer;
+        const offset = range.startOffset;
+
+        const textBefore = node.textContent.substring(0, offset);
+
+        // Sentence end check: . ! ? (optionally followed by whitespace)
+        const matchesSentenceEnd = /[.?!](\s+)?$/.test(textBefore);
+        const isNodeStart = offset === 0 || /^\s*$/.test(textBefore);
+
+        if (matchesSentenceEnd || isNodeStart) {
+          // Email check: don't capitalize if the word before the punctuation was an email
+          // We look at the word ending at the punctuation
+          const beforeMatch = textBefore.match(/(\S+)?[.?!](\s+)?$/);
+          const lastWord = beforeMatch ? beforeMatch[1] : '';
+          const isEmail = lastWord && lastWord.includes('@');
+
+          if (!isEmail) {
+            e.preventDefault();
+            // If there was no space after the punctuation, add one
+            const needsSpace = /[.?!]$/.test(textBefore);
+            const textToInsert = (needsSpace ? ' ' : '') + e.data.toUpperCase();
+            document.execCommand('insertText', false, textToInsert);
+          }
+        }
+      }
+    });
+
+    let bibleData = { en: null, sw: null };
+    let bibleIndexes = { en: new Map(), sw: new Map() };
+
+    async function loadBibleData(lang) {
+      if (bibleData[lang]) return;
+      try {
+        const fileMap = { 'en': 'bible_kjv.json', 'sw': 'bible_swahili.json' };
+        const fileName = fileMap[lang] || `bible_${lang}.json`;
+        const res = await fetch(fileName + '?v=2', { cache: 'force-cache' });
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+        bibleData[lang] = data;
+
+        // Index for fast O(1) lookups
+        data.books.forEach((b, bIdx) => {
+          b.chapters.forEach((c, cIdx) => {
+            c.verses.forEach((v, vIdx) => {
+              // Store lowercased references like "yohane 3:16" or "1 mambo ya nyakati 2:3"
+              bibleIndexes[lang].set(v.name.toLowerCase(), v.text);
+            });
+          });
+        });
+      } catch (err) {
+        console.error(`Failed to load ${lang} bible`, err);
+      }
+    }
+
+    async function loadDailyVerse() {
+      const vTextEl = document.getElementById('votd-text');
+      const vRefEl = document.getElementById('votd-ref');
+      try {
+        await loadBibleData(state.appLang); // Ensure the app language DB is loaded
+        const vt = getDailyVerseTarget();
+        const data = bibleData[state.appLang];
+        
+        if (data && data.books[vt.b] && data.books[vt.b].chapters[vt.c] && data.books[vt.b].chapters[vt.c].verses[vt.v]) {
+          const verse = data.books[vt.b].chapters[vt.c].verses[vt.v];
+          vTextEl.textContent = `"${verse.text}"`;
+          vRefEl.textContent = `— ${verse.name}`;
+        } else {
+          vTextEl.textContent = "Loading error.";
+        }
+      } catch (err) {
+        vTextEl.textContent = "Could not load verse.";
+      }
+    }
+
+    function getBibleVerse(ref, lang) {
+      if (!bibleIndexes[lang] || bibleIndexes[lang].size === 0) return 'Loading...';
+      const text = bibleIndexes[lang].get(ref.toLowerCase().trim().replace(/\s+/g, ' '));
+      return text || 'Verse not found in selected translation.';
+    }
+
+    document.getElementById('bible-lang-toggle').addEventListener('click', async (e) => {
+      if (e.target.tagName !== 'BUTTON') return;
+      const lang = e.target.dataset.lang;
+      state.bibleLang = lang;
+      saveState();
+
+      // Update active pill
+      document.querySelectorAll('.bible-lang-btn').forEach(btn => btn.classList.remove('active'));
+      e.target.classList.add('active');
+
+      await loadBibleData(lang);
+
+      // Refresh preview if open
+      const preview = document.getElementById('editor-verse-preview');
+      if (preview.classList.contains('visible')) {
+        const ref = document.getElementById('verse-preview-ref').textContent;
+        document.getElementById('verse-preview-text').textContent = getBibleVerse(ref, lang);
+      }
+    });
+
+    /* Mark Reference */
+    let pendingRefText = '';
+    document.getElementById('mark-ref-btn').addEventListener('click', () => {
+      const sel = window.getSelection();
+      pendingRefText = sel ? sel.toString().trim() : '';
+      if (!pendingRefText) { showToast('info', 'Select some text first to mark as reference.'); return; }
+      document.getElementById('ref-verse-input').value = '';
+      document.getElementById('ref-note-input').value = '';
+      openModal('mark-ref-modal');
+    });
+    document.getElementById('confirm-ref-btn').addEventListener('click', () => {
+      const verse = document.getElementById('ref-verse-input').value.trim();
+      if (!verse) { showToast('error', 'Please enter a verse reference.'); return; }
+      const noteTitle = document.getElementById('editor-title').value || 'Untitled';
+      const noteId = state.editingNoteId || ('n-temp-' + Date.now());
+      state.references.unshift({
+        id: 'r' + Date.now(), verse,
+        text: pendingRefText,
+        noteId, noteTitle,
+        note: document.getElementById('ref-note-input').value.trim(),
+      });
+      saveState();
+      closeModal('mark-ref-modal');
+      showToast('success', 'Reference saved: ' + verse);
+      updateStats();
+    });
+    document.getElementById('cancel-ref-btn').addEventListener('click', () => closeModal('mark-ref-modal'));
+
+    /* ═══════════════════════════════════════════════════════
+       COLLECTIONS
+    ═══════════════════════════════════════════════════════ */
+    function renderCollections() {
+      const grid = document.getElementById('collections-grid');
+      if (state.collections.length === 0) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state__icon">📁</div><div class="empty-state__title">No collections</div><div class="empty-state__msg">Create a collection to organise your notes by sermon series or topic.</div></div>`;
+        return;
+      }
+      grid.innerHTML = state.collections.map(c => {
+        const count = c.noteIds.length;
+        return `
+    <div class="collection-card" data-id="${c.id}">
+      <div>
+        <div class="collection-card__icon">${c.emoji || '📁'}</div>
+        <div class="collection-card__name">${escHtml(c.name)}</div>
+        <div class="collection-card__count">${count} note${count !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="collection-card__bar" style="background:${c.color || 'var(--brand)'}"></div>
+    </div>`;
+      }).join('');
+      grid.querySelectorAll('.collection-card').forEach(card => {
+        card.addEventListener('click', () => openCollectionDetail(card.dataset.id));
+      });
+    }
+
+    function openCollectionDetail(id) {
+      const coll = state.collections.find(c => c.id === id);
+      if (!coll) return;
+      state.selectedCollectionId = id;
+      document.getElementById('coll-detail-icon').textContent = coll.emoji || '📁';
+      document.getElementById('coll-detail-title').textContent = coll.name;
+      renderCollDetailNotes(coll);
+      document.getElementById('collection-detail-overlay').classList.add('open');
+    }
+
+    function renderCollDetailNotes(coll) {
+      const list = document.getElementById('coll-detail-notes-list');
+      const notes = state.notes.filter(n => coll.noteIds.includes(n.id));
+      if (notes.length === 0) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-state__icon">📝</div><div class="empty-state__title">No notes in this collection</div><div class="empty-state__msg">Tap "Add Notes" to include notes here.</div></div>`;
+        return;
+      }
+      list.innerHTML = notes.map(n => {
+        const [badgeTxt, badgeCls] = badgeMap[n.type] || ['General', 'badge--general'];
+        return `
+    <div class="note-card" data-id="${n.id}" style="cursor:pointer">
+      <div class="note-card__top">
+        <div class="note-card__title">${escHtml(n.title)}</div>
+        <span class="note-card__badge ${badgeCls}">${badgeTxt}</span>
+      </div>
+      <div class="note-card__preview">${escHtml(n.content.slice(0, 80))}</div>
+    </div>`;
+      }).join('');
+      list.querySelectorAll('.note-card').forEach(card => {
+        card.addEventListener('click', () => openEditor(card.dataset.id));
+      });
+    }
+
+    document.getElementById('collection-back-btn').addEventListener('click', () => {
+      document.getElementById('collection-detail-overlay').classList.remove('open');
+      state.selectedCollectionId = null;
+    });
+
+    document.getElementById('add-notes-to-coll-btn').addEventListener('click', () => {
+      const coll = state.collections.find(c => c.id === state.selectedCollectionId);
+      if (!coll) return;
+      const listEl = document.getElementById('notes-select-list');
+      listEl.innerHTML = state.notes.map(n => `
+    <div class="note-select-item">
+      <input type="checkbox" id="ns-${n.id}" value="${n.id}" ${coll.noteIds.includes(n.id) ? 'checked' : ''} />
+      <span>${escHtml(n.title)}</span>
+    </div>`).join('');
+      openModal('add-notes-to-coll-modal');
+    });
+    document.getElementById('confirm-notes-select-btn').addEventListener('click', () => {
+      const coll = state.collections.find(c => c.id === state.selectedCollectionId);
+      if (!coll) return;
+      const checked = [...document.querySelectorAll('#notes-select-list input:checked')].map(i => i.value);
+      coll.noteIds = checked;
+      saveState();
+      renderCollDetailNotes(coll);
+      closeModal('add-notes-to-coll-modal');
+      showToast('success', 'Collection updated');
+    });
+    document.getElementById('cancel-notes-select-btn').addEventListener('click', () => closeModal('add-notes-to-coll-modal'));
+
+    /* New collection */
+    let selectedEmoji = '📖';
+    let selectedColor = '#5C3D2E';
+
+    document.getElementById('new-collection-btn').addEventListener('click', () => {
+      document.getElementById('coll-name-input').value = '';
+      selectedEmoji = '📖';
+      selectedColor = '#5C3D2E';
+      document.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected'));
+      document.querySelector('[data-emoji="📖"]').classList.add('selected');
+      document.querySelectorAll('.color-opt').forEach(c => c.classList.remove('selected'));
+      document.querySelector('[data-color="#5C3D2E"]').classList.add('selected');
+      openModal('new-collection-modal');
+    });
+
+    document.querySelectorAll('.emoji-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected'));
+        opt.classList.add('selected');
+        selectedEmoji = opt.dataset.emoji;
+      });
+    });
+    document.querySelectorAll('.color-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.color-opt').forEach(c => c.classList.remove('selected'));
+        opt.classList.add('selected');
+        selectedColor = opt.dataset.color;
+      });
+    });
+
+    document.getElementById('create-collection-confirm-btn').addEventListener('click', () => {
+      const name = document.getElementById('coll-name-input').value.trim();
+      if (!name) { showToast('error', 'Please enter a collection name'); return; }
+      state.collections.push({ id: 'c' + Date.now(), name, emoji: selectedEmoji, color: selectedColor, noteIds: [] });
+      saveState();
+      closeModal('new-collection-modal');
+      renderCollections();
+      showToast('success', 'Collection created: ' + name);
+    });
+    document.getElementById('cancel-collection-btn').addEventListener('click', () => closeModal('new-collection-modal'));
+
+    /* Add to collection from editor */
+    document.getElementById('add-to-collection-btn').addEventListener('click', () => {
+      const listEl = document.getElementById('collection-list-select');
+      listEl.innerHTML = state.collections.map(c => {
+        const inColl = state.editingNoteId && c.noteIds.includes(state.editingNoteId);
+        return `<div class="note-select-item">
+      <input type="checkbox" id="cl-${c.id}" value="${c.id}" ${inColl ? 'checked' : ''} />
+      <span>${c.emoji} ${escHtml(c.name)}</span>
+    </div>`;
+      }).join('') || '<div style="padding:12px;font-size:13px;color:var(--text-muted)">No collections yet. Create one first.</div>';
+      openModal('add-to-collection-modal');
+    });
+    document.getElementById('confirm-add-to-coll-btn').addEventListener('click', () => {
+      const nid = state.editingNoteId;
+      if (!nid) { closeModal('add-to-collection-modal'); return; }
+      const checked = [...document.querySelectorAll('#collection-list-select input:checked')].map(i => i.value);
+      state.collections.forEach(c => {
+        if (checked.includes(c.id)) { if (!c.noteIds.includes(nid)) c.noteIds.push(nid); }
+        else c.noteIds = c.noteIds.filter(id => id !== nid);
+      });
+      saveState();
+      closeModal('add-to-collection-modal');
+      showToast('success', 'Added to collection');
+    });
+    document.getElementById('cancel-add-to-coll-btn').addEventListener('click', () => closeModal('add-to-collection-modal'));
+
+    /* ═══════════════════════════════════════════════════════
+       REFERENCES
+    ═══════════════════════════════════════════════════════ */
+    function getFilteredRefs() {
+      let refs = [...state.references];
+      const OT = ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth', 'Samuel', 'Kings', 'Chronicles', 'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalm', 'Proverbs', 'Ecclesiastes', 'Song', 'Isaiah', 'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel', 'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum', 'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi'];
+      if (state.filterRefs === 'OT') refs = refs.filter(r => OT.some(b => r.verse.startsWith(b)));
+      else if (state.filterRefs === 'NT') refs = refs.filter(r => !OT.some(b => r.verse.startsWith(b)));
+      else if (state.filterRefs === 'psalms') refs = refs.filter(r => r.verse.startsWith('Psalm'));
+      if (state.searchRefs) {
+        const q = state.searchRefs.toLowerCase();
+        refs = refs.filter(r => r.verse.toLowerCase().includes(q) || r.text.toLowerCase().includes(q) || r.noteTitle.toLowerCase().includes(q));
+      }
+      return refs;
+    }
+
+    function renderRefs() {
+      const list = document.getElementById('refs-list');
+      const refs = getFilteredRefs();
+      if (refs.length === 0) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-state__icon">📌</div><div class="empty-state__title">No references yet</div><div class="empty-state__msg">Select text in the note editor and tap "Mark Reference" to save scripture here.</div></div>`;
+        return;
+      }
+      list.innerHTML = refs.map(r => `
+    <div class="ref-card" data-note-id="${r.noteId}">
+      <div class="ref-card__verse">${escHtml(r.verse)}</div>
+      ${r.text ? `<div class="ref-card__text">"${escHtml(r.text)}"</div>` : ''}
+      ${r.note ? `<div style="font-size:12px;color:var(--text-secondary);margin-top:6px">💬 ${escHtml(r.note)}</div>` : ''}
+      <div class="ref-card__meta">
+        <span class="ref-card__from-note">From: ${escHtml(r.noteTitle || 'Note')}</span>
+      </div>
+    </div>`).join('');
+      list.querySelectorAll('.ref-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const nid = card.dataset.noteId;
+          const note = state.notes.find(n => n.id === nid);
+          if (note) { openEditor(nid); }
+        });
+      });
+    }
+
+    document.querySelectorAll('#refs-filter-row .filter-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('#refs-filter-row .filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        state.filterRefs = pill.dataset.filter;
+        renderRefs();
+      });
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       SETTINGS
+    ═══════════════════════════════════════════════════════ */
+    document.getElementById('autosave-toggle').addEventListener('click', () => {
+      const tog = document.getElementById('autosave-toggle');
+      tog.classList.toggle('on');
+      state.autoSave = tog.classList.contains('on');
+      saveState();
+      showToast('info', state.autoSave ? 'Auto-save enabled' : 'Auto-save disabled');
+    });
+
+    document.getElementById('reading-toggle').addEventListener('click', () => {
+      document.getElementById('reading-toggle').classList.toggle('on');
+      showToast('info', 'Reading reminders updated');
+    });
+
+    // Centralized Font size changer
+    document.getElementById('font-size-item').addEventListener('click', () => {
+      const modes = ['Small', 'Medium', 'Large'];
+      let currentIdx = modes.indexOf(state.fontMode || 'Medium');
+      let nextIdx = (currentIdx + 1) % modes.length;
+      state.fontMode = modes[nextIdx];
+      
+      applyFontMode(state.fontMode);
+      saveState();
+      
+      showToast('success', 'Font size: ' + state.fontMode);
+    });
+
+    document.getElementById('export-btn').addEventListener('click', () => openModal('export-modal'));
+    document.getElementById('export-json-btn').addEventListener('click', () => {
+      const data = JSON.stringify({ notes: state.notes, collections: state.collections, references: state.references }, null, 2);
+      downloadFile(data, 'logos-notes.json', 'application/json');
+      closeModal('export-modal');
+      showToast('success', 'JSON exported!');
+    });
+    document.getElementById('export-md-btn').addEventListener('click', () => {
+      const md = state.notes.map(n => `# ${n.title}\n*Type: ${n.type} | ${new Date(n.updated).toLocaleDateString()}*\n\n${n.content}\n\n---`).join('\n\n');
+      downloadFile(md, 'logos-notes.md', 'text/markdown');
+      closeModal('export-modal');
+      showToast('success', 'Markdown exported!');
+    });
+    document.getElementById('cancel-export-btn').addEventListener('click', () => closeModal('export-modal'));
+
+    document.getElementById('backup-btn').addEventListener('click', () => {
+      saveState();
+      showToast('success', 'Backed up successfully!');
+    });
+
+    document.getElementById('share-church-btn').addEventListener('click', () => {
+      showToast('info', 'Church group sharing coming soon!');
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      const confirmed = await showConfirm({
+        title: 'Log Out',
+        message: 'Are you sure you want to log out from this session? Your notes remain synced.',
+        confirmText: 'Log Out',
+        isDanger: true
+      });
+      if (confirmed) {
+        await supabaseClient.auth.signOut();
+        state.user = null;
+        saveState();
+        showToast('info', 'Successfully logged out');
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('auth-overlay').classList.remove('hidden');
+        document.getElementById('auth-email').value = '';
+        document.getElementById('auth-password').value = '';
+      }
+    });
+
+    document.getElementById('auth-toggle-mode').addEventListener('click', (e) => {
+      e.preventDefault();
+      const btn = e.target;
+      const subtitle = document.getElementById('auth-subtitle');
+      const submit = document.getElementById('auth-submit-btn');
+      
+      if (btn.textContent.includes('Create one')) {
+        btn.textContent = 'Already have an account? Sign in';
+        subtitle.textContent = 'Create an account to backup your notes';
+        submit.textContent = 'CREATE ACCOUNT';
+        document.getElementById('auth-forgot-btn').style.display = 'none';
+      } else {
+        btn.textContent = 'Don\'t have an account? Create one';
+        subtitle.textContent = 'Sign in to sync your notes across devices';
+        submit.textContent = 'SIGN IN';
+        document.getElementById('auth-forgot-btn').style.display = 'inline-block';
+      }
+    });
+
+    document.getElementById('auth-forgot-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const wrapper = document.getElementById('auth-password-wrapper');
+      const isResetting = wrapper.style.display === 'none';
+      const submit = document.getElementById('auth-submit-btn');
+      const pass = document.getElementById('auth-password');
+      const forgotBtn = e.target;
+      const subtitle = document.getElementById('auth-subtitle');
+
+      if (!isResetting) {
+        wrapper.style.display = 'none';
+        forgotBtn.textContent = 'Back to Sign In';
+        submit.textContent = 'SEND RESET LINK';
+        subtitle.textContent = 'Enter your email to receive a password reset link';
+        pass.removeAttribute('required');
+        document.getElementById('auth-toggle-mode').style.display = 'none';
+      } else {
+        wrapper.style.display = 'block';
+        forgotBtn.textContent = 'Forgot password?';
+        submit.textContent = 'SIGN IN';
+        subtitle.textContent = 'Sign in to sync your notes across devices';
+        pass.setAttribute('required', 'true');
+        document.getElementById('auth-toggle-mode').style.display = 'inline-block';
+      }
+    });
+
+    document.getElementById('toggle-password-btn').addEventListener('click', function() {
+      const input = document.getElementById('auth-password');
+      if (input.type === 'password') {
+        input.type = 'text';
+        this.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>`;
+      } else {
+        input.type = 'password';
+        this.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+      }
+    });
+
+    document.getElementById('auth-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value.trim();
+      const btn = document.getElementById('auth-submit-btn');
+      
+      const isResetting = document.getElementById('auth-password-wrapper').style.display === 'none';
+      if (isResetting) {
+        if (!email) return;
+        btn.textContent = 'Sending...';
+        btn.disabled = true;
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+        btn.disabled = false;
+        btn.textContent = 'SEND RESET LINK';
+        
+        if (error) {
+          showToast('error', error.message);
+        } else {
+          showToast('success', 'Reset link sent to ' + email);
+          document.getElementById('auth-forgot-btn').click(); // Revert back to login form
+        }
+        return;
+      }
+      
+      const pass = document.getElementById('auth-password').value.trim();
+      if (!email || pass.length < 6) return; // Basic validation handled by HTML5
+      
+      const isSignUp = document.getElementById('auth-subtitle').textContent.includes('Create');
+      btn.textContent = 'Processing...';
+      btn.disabled = true;
+
+      try {
+        if (isSignUp) {
+          const { data, error } = await supabaseClient.auth.signUp({
+            email: email,
+            password: pass,
+          });
+          if (error) throw error;
+          
+          if (data.session) {
+             showToast('success', 'Account created successfully!');
+          } else {
+             showToast('success', 'Registration successful! Check your email to confirm.');
+          }
+        } else {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: pass,
+          });
+          if (error) throw error;
+          showToast('success', 'Logged in successfully!');
+        }
+      } catch (err) {
+        showToast('error', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN';
+      }
+    });
+
+    document.getElementById('edit-profile-btn').addEventListener('click', () => {
+      const newName = prompt('Edit your name:', state.userName);
+      if (newName && newName.trim()) {
+        state.userName = newName.trim();
+        document.getElementById('settings-name').textContent = state.userName;
+        const initials = state.userName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('settings-avatar').textContent = initials;
+
+        // Sync with sidebar
+        const sn = document.getElementById('snav-name'); if (sn) sn.textContent = state.userName;
+        const sa = document.getElementById('snav-avatar'); if (sa) sa.textContent = initials;
+
+        saveState();
+        showToast('success', 'Profile updated');
+      }
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       MODAL HELPERS
+    ═══════════════════════════════════════════════════════ */
+    function openModal(id) {
+      const el = document.getElementById(id);
+      el.style.display = 'flex';
+      requestAnimationFrame(() => el.classList.add('open'));
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      el.classList.remove('open');
+      setTimeout(() => el.style.display = 'none', 300);
+    }
+    // Close modal on backdrop click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) closeModal(overlay.id);
+      });
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════════════════════ */
+    function showToast(type, message) {
+      const container = document.getElementById('toast-container');
+      container.innerHTML = '';
+      const toast = document.createElement('div');
+      toast.className = `toast toast--${type}`;
+      toast.innerHTML = `<span class="toast__msg">${escHtml(message)}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(20px)';
+        toast.style.transition = 'all 300ms ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 2800);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       CONFIRM DIALOG
+    ═══════════════════════════════════════════════════════ */
+    function showConfirm({ title, message, confirmText = 'Confirm', cancelText = 'Cancel', isDanger = false }) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('app-confirm-modal');
+        const titleEl = document.getElementById('confirm-title');
+        const msgEl = document.getElementById('confirm-msg');
+        const okBtn = document.getElementById('confirm-ok-btn');
+        const cancelBtn = document.getElementById('confirm-cancel-btn');
+
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        okBtn.textContent = confirmText;
+        cancelBtn.textContent = cancelText;
+
+        okBtn.className = 'modal-confirm-btn ' + (isDanger ? 'modal-confirm-btn--danger' : 'modal-confirm-btn--primary');
+
+        const cleanup = (val) => {
+          modal.classList.remove('open');
+          setTimeout(() => {
+            modal.style.display = 'none';
+            okBtn.onclick = null;
+            cancelBtn.onclick = null;
+            resolve(val);
+          }, 200);
+        };
+
+        okBtn.onclick = () => cleanup(true);
+        cancelBtn.onclick = () => cleanup(false);
+        modal.onclick = (e) => { if (e.target === modal) cleanup(false); };
+
+        modal.style.display = 'flex';
+        requestAnimationFrame(() => modal.classList.add('open'));
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       UTILS
+    ═══════════════════════════════════════════════════════ */
+    function initCustomSelect(selectId, searchable = false) {
+      const select = document.getElementById(selectId);
+      if (!select || select.dataset.customInit === 'true') {
+        if (select && select.dataset.customInit === 'true') updateCustomSelect(selectId);
+        return;
+      }
+
+      const container = document.createElement('div');
+      container.className = 'app-select-container';
+
+      // Transfer specific styles from original select to custom container
+      if (select.style.flex) container.style.flex = select.style.flex;
+      if (select.style.width) container.style.width = select.style.width;
+      if (select.style.height) container.style.height = select.style.height;
+      if (select.style.alignSelf) container.style.alignSelf = select.style.alignSelf;
+      if (select.style.marginLeft) container.style.marginLeft = select.style.marginLeft;
+      if (select.style.marginRight) container.style.marginRight = select.style.marginRight;
+      
+      // Only apply the default modal-input margin if it's not a special small header select
+      if (select.className.includes('modal-input') && !select.style.height) {
+        container.style.marginBottom = '12px';
+      }
+
+      select.parentNode.insertBefore(container, select);
+      container.appendChild(select);
+      select.style.display = 'none';
+
+      const trigger = document.createElement('button');
+      trigger.className = 'app-select-trigger';
+      trigger.type = 'button';
+
+      // Transfer trigger-specific styles
+      if (select.style.height) {
+        trigger.style.height = select.style.height;
+        trigger.style.paddingTop = '0';
+        trigger.style.paddingBottom = '0';
+      }
+      if (select.style.fontSize) trigger.style.fontSize = select.style.fontSize;
+
+      container.appendChild(trigger);
+
+      const menu = document.createElement('div');
+      menu.className = 'app-select-menu';
+      container.appendChild(menu);
+
+      if (searchable) {
+        const sWrap = document.createElement('div');
+        sWrap.className = 'app-select-search-wrap';
+        const sInp = document.createElement('input');
+        sInp.className = 'app-select-search';
+        sInp.placeholder = 'Search...';
+        sWrap.appendChild(sInp);
+        menu.appendChild(sWrap);
+
+        sInp.addEventListener('input', e => {
+          const val = e.target.value.toLowerCase();
+          menu.querySelectorAll('.app-select-option').forEach(opt => {
+            opt.classList.toggle('hidden', !opt.textContent.toLowerCase().includes(val));
+          });
+        });
+
+        sInp.addEventListener('click', e => e.stopPropagation());
+      }
+
+      const listWrap = document.createElement('div');
+      listWrap.className = 'app-select-list';
+      menu.appendChild(listWrap);
+
+      const updateTrigger = () => {
+        const selected = select.options[select.selectedIndex];
+        const text = selected ? selected.textContent : '';
+        trigger.innerHTML = `<span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:inherit; color:inherit;">${text}</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:16px; height:16px; flex-shrink:0; margin-left:4px;"><path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" /></svg>`;
+      };
+
+      const buildOptions = () => {
+        listWrap.innerHTML = '';
+        Array.from(select.options).forEach((opt, idx) => {
+          if (opt.disabled || opt.hidden) return; // Skip placeholders
+          const div = document.createElement('div');
+          div.className = 'app-select-option' + (select.selectedIndex === idx ? ' selected' : '');
+          div.textContent = opt.textContent;
+          div.addEventListener('click', (e) => {
+            e.stopPropagation();
+            select.selectedIndex = idx;
+            select.dispatchEvent(new Event('change'));
+            container.classList.remove('open');
+            updateTrigger();
+            buildOptions();
+          });
+          listWrap.appendChild(div);
+        });
+      };
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = container.classList.contains('open');
+        document.querySelectorAll('.app-select-container.open').forEach(c => c.classList.remove('open'));
+        if (!isOpen) {
+          container.classList.add('open');
+          if (searchable) {
+            const si = menu.querySelector('.app-select-search');
+            si.value = '';
+            menu.querySelectorAll('.app-select-option').forEach(o => o.classList.remove('hidden'));
+            setTimeout(() => si.focus(), 50);
+          }
+        }
+      });
+
+      document.addEventListener('click', () => container.classList.remove('open'));
+
+      select.dataset.customInit = 'true';
+      updateTrigger();
+      buildOptions();
+    }
+
+    function updateCustomSelect(selectId) {
+      const select = document.getElementById(selectId);
+      if (!select || !select.parentNode.classList.contains('app-select-container')) return;
+      const container = select.parentNode;
+      const trigger = container.querySelector('.app-select-trigger');
+      const listWrap = container.querySelector('.app-select-list');
+
+      const updateTrigger = () => {
+        const selected = select.options[select.selectedIndex];
+        const text = selected ? selected.textContent : '';
+        trigger.innerHTML = `<span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:inherit; color:inherit;">${text}</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:16px; height:16px; flex-shrink:0; margin-left:4px;"><path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" /></svg>`;
+      };
+
+      listWrap.innerHTML = '';
+      Array.from(select.options).forEach((opt, idx) => {
+        if (opt.disabled || opt.hidden) return; 
+        const div = document.createElement('div');
+        div.className = 'app-select-option' + (select.selectedIndex === idx ? ' selected' : '');
+        div.textContent = opt.textContent;
+        div.addEventListener('click', (e) => {
+          e.stopPropagation();
+          select.selectedIndex = idx;
+          select.dispatchEvent(new Event('change'));
+          container.classList.remove('open');
+          updateTrigger();
+          updateCustomSelect(selectId);
+        });
+        listWrap.appendChild(div);
+      });
+      updateTrigger();
+    }
+    function showTooltip(target, message, duration = 1500) {
+      if (!target) return;
+      const tooltip = document.createElement('div');
+      tooltip.className = 'app-tooltip';
+      tooltip.textContent = message;
+      document.body.appendChild(tooltip);
+
+      const rect = target.getBoundingClientRect();
+      const scrollY = window.scrollY || window.pageYOffset;
+
+      const spaceAbove = rect.top;
+      const useBottom = spaceAbove < 60;
+
+      if (useBottom) {
+        tooltip.classList.add('placement-bottom');
+      }
+
+      // Initial positioning
+      const updatePosition = () => {
+        const h = tooltip.offsetHeight;
+        tooltip.style.left = `${rect.left}px`;
+        if (useBottom) {
+          tooltip.style.top = `${rect.bottom + scrollY + 8}px`;
+        } else {
+          tooltip.style.top = `${rect.top + scrollY - (h + 8)}px`;
+        }
+      };
+
+      updatePosition();
+      // Re-run after one frame to catch layout changes
+      requestAnimationFrame(updatePosition);
+
+      requestAnimationFrame(() => tooltip.classList.add('show'));
+
+      setTimeout(() => {
+        tooltip.classList.remove('show');
+        setTimeout(() => tooltip.remove(), 300);
+      }, duration);
+    }
+
+    function escHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function markdownToHtml(text) {
+      return escHtml(text);
+    }
+    function downloadFile(content, filename, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       INIT
+    ═══════════════════════════════════════════════════════ */
+    function init() {
+      loadState();
+      seedData();
+      if (typeof updateLangToggles === 'function') updateLangToggles();
+      if (typeof applyTranslations === 'function') applyTranslations(state.appLang);
+      loadDailyVerse();
+
+      // Set initial bible language UI state
+      document.querySelectorAll('.bible-lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === state.bibleLang);
+      });
+
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark');
+      navigateTo('notes');
+      updateStats();
+
+      // Update avatar and name from saved state
+      const initials = state.userName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+      // Settings view
+      document.getElementById('settings-avatar').textContent = initials;
+      document.getElementById('settings-name').textContent = state.userName;
+      
+      // Fallback email if no user session
+      const userEmailDisplay = state.user ? state.user.email : state.userEmail;
+      document.getElementById('settings-email').textContent = userEmailDisplay;
+
+      // Sidebar sync
+      const sn = document.getElementById('snav-name'); if (sn) sn.textContent = state.userName;
+      const sa = document.getElementById('snav-avatar'); if (sa) sa.textContent = initials;
+
+      // FAB visible only on notes
+      document.getElementById('fab-btn').style.display = 'flex';
+      
+      // AUTHENTICATION GUARD
+      if (!state.user) {
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('auth-overlay').classList.remove('hidden');
+      } else {
+        document.getElementById('auth-overlay').classList.add('hidden');
+        document.getElementById('app').style.display = 'flex';
+      }
+      
+      // Font settings
+      applyFontMode(state.fontMode || 'Medium');
+
+      // Register PWA Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').then(
+          (reg) => console.log('PWA ServiceWorker Active:', reg.scope)
+        ).catch(err => console.log('SW Error:', err));
+      }
+    }
+    
+    function applyFontMode(mode) {
+      const sizes = { 'Small': '14px', 'Medium': '15px', 'Large': '18px' };
+      document.documentElement.style.setProperty('--editor-font-size', sizes[mode] || '15px');
+      const el = document.getElementById('font-size-val');
+      if (el) el.textContent = mode;
+    }
+
+    // Connect Supabase active session state to internal router
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        state.user = session.user;
+        state.userEmail = session.user.email;
+        saveState();
+        document.getElementById('auth-overlay').classList.add('hidden');
+        document.getElementById('app').style.display = 'flex';
+      } else {
+        state.user = null;
+        saveState();
+        document.getElementById('auth-overlay').classList.remove('hidden');
+        document.getElementById('app').style.display = 'none';
+      }
+    });
+
+    init();
+  </script>
+
+
+</body>
+
+</html>
