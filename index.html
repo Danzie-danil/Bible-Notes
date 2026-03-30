@@ -596,6 +596,16 @@
       transform: translateY(0);
     }
 
+    .editor-sticky-controls {
+      position: sticky;
+      top: 0;
+      z-index: 150;
+      background: var(--surface);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
     .editor-topbar {
       display: flex;
       align-items: center;
@@ -604,7 +614,6 @@
       padding-top: calc(12px + var(--safe-top, env(safe-area-inset-top, 0px)));
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
     }
 
     .editor-back-btn {
@@ -726,8 +735,6 @@
     }
 
     .editor-header {
-      position: relative;
-      z-index: 100;
       background: var(--surface);
       display: flex;
       flex-direction: column;
@@ -3367,7 +3374,7 @@
 
   <!-- ═══════════ NOTE EDITOR OVERLAY ═══════════ -->
   <div class="editor-overlay" id="editor-overlay">
-    <div class="editor-header">
+    <div class="editor-sticky-controls">
       <div class="editor-topbar">
         <button class="editor-back-btn" id="editor-back-btn" aria-label="Close editor">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -3379,19 +3386,22 @@
           data-i18n-placeholder="untitled_note" autocomplete="off">
         <button class="editor-save-btn" id="editor-save-btn" data-i18n="btn_save">Save</button>
       </div>
-      <div class="editor-meta-bar">
-        <select class="meta-tag-select" id="editor-type-select">
-          <option value="sermon" data-i18n="tag_sermon">🎤 Sermon</option>
-          <option value="study" data-i18n="tag_study">📚 Bible Study</option>
-          <option value="prayer" data-i18n="tag_prayer">🙏 Prayer</option>
-          <option value="general" data-i18n="tag_general">📝 General</option>
-        </select>
-        <button class="meta-tag-btn" id="pin-btn" data-i18n="btn_pin">📌 Pin</button>
-        <button class="meta-tag-btn" id="reminder-btn" data-i18n="btn_reminder">⏰ Reminder</button>
-        <button class="meta-tag-btn" id="share-btn" data-i18n="btn_share">🔗 Share</button>
-        <button class="meta-tag-btn" id="add-to-collection-btn" data-i18n="btn_collection">📁 Collection</button>
-      </div>
-      <div class="editor-toolbar">
+
+      <div class="editor-header">
+        <div class="editor-meta-bar">
+          <select class="meta-tag-select" id="editor-type-select">
+            <option value="sermon" data-i18n="tag_sermon">🎤 Sermon</option>
+            <option value="study" data-i18n="tag_study">📚 Bible Study</option>
+            <option value="prayer" data-i18n="tag_prayer">🙏 Prayer</option>
+            <option value="general" data-i18n="tag_general">📝 General</option>
+          </select>
+          <button class="meta-tag-btn" id="pin-btn" data-i18n="btn_pin">📌 Pin</button>
+          <button class="meta-tag-btn" id="reminder-btn" data-i18n="btn_reminder">⏰ Reminder</button>
+          <button class="meta-tag-btn" id="share-btn" data-i18n="btn_share">🔗 Share</button>
+          <button class="meta-tag-btn" id="add-to-collection-btn" data-i18n="btn_collection">📁 Collection</button>
+        </div>
+
+        <div class="editor-toolbar">
         <button class="toolbar-btn" id="tb-bold" title="Bold"><b>B</b></button>
         <button class="toolbar-btn" id="tb-italic" title="Italic"><i>I</i></button>
         <button class="toolbar-btn" id="tb-underline" title="Underline"><u>U</u></button>
