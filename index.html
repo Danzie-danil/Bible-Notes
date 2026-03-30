@@ -580,8 +580,8 @@
     .editor-overlay {
       position: fixed;
       inset: 0;
-      /* Do NOT use 100dvh — let inset:0 define the bounds so the overlay
-         resizes correctly when the mobile keyboard opens/closes */
+      height: 100dvh;
+      /* Modern viewport height that accounts for mobile address bars */
       background: var(--bg);
       z-index: 200;
       display: flex;
@@ -589,10 +589,32 @@
       transform: translateY(100%);
       transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
       overflow: hidden;
+      /* Prevents the whole overlay from scrolling */
     }
 
     .editor-overlay.open {
       transform: translateY(0);
+    }
+
+    /* ── Editor header: fixed to viewport like .top-nav, keyboard-proof ── */
+    .editor-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      transform: translateY(-100%);
+      transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
+      pointer-events: none;
+    }
+
+    .editor-overlay.open .editor-header {
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .editor-topbar {
@@ -603,7 +625,6 @@
       padding-top: calc(12px + var(--safe-top, env(safe-area-inset-top, 0px)));
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
     }
 
     .editor-back-btn {
@@ -665,7 +686,6 @@
       padding: 8px 16px;
       background: var(--surface);
       border-bottom: 1px solid var(--border-soft);
-      flex-shrink: 0;
       overflow: visible;
       scrollbar-width: none;
     }
@@ -715,24 +735,12 @@
       padding: 6px 12px;
       background: var(--surface);
       border-bottom: 1px solid var(--border-soft);
-      flex-shrink: 0;
       overflow-x: auto;
       scrollbar-width: none;
     }
 
     .editor-toolbar::-webkit-scrollbar {
       display: none;
-    }
-
-    .editor-header {
-      /* Treated exactly like .top-nav — a flex-shrink:0 column header
-         that never scrolls. Only .editor-body scrolls beneath it. */
-      flex-shrink: 0;
-      z-index: 100;
-      background: var(--surface);
-      display: flex;
-      flex-direction: column;
-      border-bottom: 1px solid var(--border);
     }
 
     .toolbar-btn {
@@ -793,11 +801,10 @@
 
     .editor-body {
       flex: 1;
-      min-height: 0;
-      /* Critical: without this, flex children can overflow and push the header */
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 16px;
+      padding-top: calc(var(--editor-header-h, 130px) + 16px);
     }
 
     .editor-content {
@@ -4388,6 +4395,15 @@
       saveBtn.textContent = 'Save';
       saveBtn.classList.remove('saved');
       editor.classList.add('open');
+
+      // Measure the fixed editor-header height so editor-body pads correctly
+      const syncHeaderHeight = () => {
+        const h = editor.querySelector('.editor-header');
+        if (h) document.documentElement.style.setProperty('--editor-header-h', h.offsetHeight + 'px');
+      };
+      requestAnimationFrame(syncHeaderHeight);
+      // Re-measure if fonts/layout shift slightly after transition
+      setTimeout(syncHeaderHeight, 350);
 
       // async pre-load bible data
       loadBibleData(state.bibleLang);
