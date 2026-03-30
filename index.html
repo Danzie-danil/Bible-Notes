@@ -310,6 +310,9 @@
       font-weight: 600;
       color: var(--text-primary);
       letter-spacing: 0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .section-header__sub {
@@ -439,6 +442,9 @@
       font-weight: 600;
       color: var(--text-primary);
       line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .note-card__badge {
@@ -626,6 +632,9 @@
       background: none;
       outline: none;
       color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .editor-title-input::placeholder {
@@ -717,11 +726,7 @@
     }
 
     .editor-header {
-      position: absolute;
-      /* Absolute within the overlay, unaffected by viewport shifts */
-      top: 0;
-      left: 0;
-      right: 0;
+      position: relative;
       z-index: 100;
       background: var(--surface);
       display: flex;
@@ -790,8 +795,6 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 16px;
-      padding-top: 175px; /* Further reduced to eliminate the excess gap shown in screenshot */
-      /* Offset for absolute header (approx 220px height) + breathing room */
     }
 
     .editor-content {
@@ -829,29 +832,6 @@
       padding: 0 2px;
       cursor: pointer;
       border-bottom: 1px dashed var(--ref-color);
-    }
-
-    .editor-verse-preview {
-      margin: 0 16px 12px;
-      padding: 12px 14px;
-      background: var(--gold-light);
-      border: 1px solid rgba(201, 150, 60, 0.3);
-      border-radius: var(--r-lg);
-      font-size: 13px;
-      color: var(--text-secondary);
-      display: none;
-    }
-
-    .editor-verse-preview.visible {
-      display: block;
-    }
-
-    .editor-verse-preview__ref {
-      font-weight: 600;
-      color: var(--gold);
-      font-family: var(--font-display);
-      font-size: 14px;
-      margin-bottom: 2px;
     }
 
     .bible-lang-toggle {
@@ -922,6 +902,9 @@
       font-weight: 600;
       color: var(--text-primary);
       line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .collection-card__count {
@@ -1214,6 +1197,9 @@
       font-weight: 600;
       color: var(--text-primary);
       margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .modal-confirm-msg {
@@ -1260,7 +1246,7 @@
       border-radius: var(--r-xl) var(--r-xl) 0 0;
       width: 100%;
       max-width: 600px;
-      padding: 0 16px calc(24px + var(--safe-bottom));
+      padding: 0 24px calc(32px + var(--safe-bottom));
       max-height: 85vh;
       overflow-y: auto;
       animation: sheetUp 280ms cubic-bezier(0.32, 0.72, 0, 1);
@@ -1290,6 +1276,9 @@
       font-weight: 600;
       color: var(--text-primary);
       margin-bottom: 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .modal-input {
@@ -1535,8 +1524,9 @@
     /* Custom Minimalist Select System */
     .app-select-container {
       position: relative;
-      width: fit-content;
-      min-width: 120px;
+      width: 100%;
+      min-width: 0;
+      /* Allow shrinking in flex layouts */
     }
 
     .app-select-trigger {
@@ -1844,6 +1834,387 @@
 
     .collection-detail-overlay.open {
       transform: translateX(0);
+    }
+
+    .actions-dropdown {
+      position: relative;
+    }
+
+    .actions-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      min-width: 140px;
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      animation: menuFadeIn 180ms ease;
+    }
+
+    .actions-menu.open {
+      display: flex;
+    }
+
+    .actions-menu-item {
+      padding: 10px 12px;
+      border-radius: var(--r-md);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-secondary);
+      transition: background var(--trans), color var(--trans);
+      cursor: pointer;
+    }
+
+    .actions-menu-item:hover {
+      background: var(--surface-2);
+      color: var(--brand);
+    }
+
+    .actions-menu-item.danger {
+      color: var(--error);
+    }
+
+    .actions-menu-item.danger:hover {
+      background: var(--error-light);
+    }
+
+    @keyframes menuFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* ─────────────────────────── STUDY / READING PLANS ─────────────────────────── */
+    .study-plans-list {
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .study-plan-card {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-xl);
+      padding: 16px;
+      cursor: pointer;
+      transition: border-color var(--trans), box-shadow var(--trans), transform 150ms ease;
+      box-shadow: var(--shadow-xs);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .study-plan-card:hover {
+      border-color: var(--gold);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
+    }
+
+    .study-plan-card__header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .study-plan-card__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--r-md);
+      background: var(--gold-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .study-plan-card__meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .study-plan-card__title {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .study-plan-card__sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .study-plan-card__deadline {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--r-full);
+      background: var(--gold-light);
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .study-plan-card__deadline.urgent {
+      background: var(--error-light);
+      color: var(--error);
+    }
+
+    .study-plan-card__deadline.done {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .study-plan-card__progress-wrap {
+      margin-bottom: 8px;
+    }
+
+    .study-plan-card__progress-bar {
+      height: 6px;
+      background: var(--border-soft);
+      border-radius: var(--r-full);
+      overflow: hidden;
+    }
+
+    .study-plan-card__progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold) 0%, var(--brand-mid) 100%);
+      border-radius: var(--r-full);
+      transition: width 400ms ease;
+    }
+
+    .study-plan-card__progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .study-plan-card__next {
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--surface-2);
+      border-radius: var(--r-md);
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Plan Detail Overlay */
+    .plan-detail-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 195;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .plan-detail-overlay.open {
+      transform: translateX(0);
+    }
+
+    .plan-progress-ring-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--brand-light) 100%);
+      border-radius: var(--r-xl);
+      margin-bottom: 16px;
+      gap: 8px;
+    }
+
+    .plan-progress-ring {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+
+    .plan-progress-ring svg {
+      transform: rotate(-90deg);
+    }
+
+    .plan-progress-ring__bg {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 6;
+    }
+
+    .plan-progress-ring__fill {
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 600ms ease;
+    }
+
+    .plan-progress-ring__label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--brand);
+    }
+
+    .plan-info-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .plan-info-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--r-full);
+      background: var(--surface);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Plan Entries List */
+    .plan-entries-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 240px;
+      /* Fits exactly ~5 items */
+      overflow-y: auto;
+      padding-right: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--gold-light) transparent;
+    }
+
+    .plan-entries-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .plan-entries-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .plan-entries-list::-webkit-scrollbar-thumb {
+      background: var(--gold-light);
+      border-radius: 10px;
+    }
+
+    .plan-entry-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--border-soft);
+      background: var(--surface);
+      transition: background var(--trans), border-color var(--trans);
+      cursor: pointer;
+    }
+
+    .plan-entry-item:hover {
+      background: var(--surface-2);
+    }
+
+    .ref-preview-modal {
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      max-width: 400px !important; /* Slightly wider than standard confirm cards for scripture */
+      text-align: left; /* Reset confirm-card text-align */
+    }
+    .bible-text-display {
+      font-family: 'Lora', 'Georgia', serif;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      padding: 16px;
+      background: var(--bg-app);
+      border-radius: 12px;
+      border-left: 4px solid var(--brand);
+    }
+    .ref-source-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 10px;
+    }
+
+    .plan-entry-item.completed {
+      opacity: 0.55;
+    }
+
+    .plan-entry-item.completed .plan-entry-item__label {
+      text-decoration: line-through;
+    }
+
+    .plan-entry-item__check {
+      width: 20px;
+      height: 20px;
+      border-radius: var(--r-sm);
+      border: 2px solid var(--border);
+      background: transparent;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--trans);
+    }
+
+    .plan-entry-item.completed .plan-entry-item__check {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .plan-entry-item__label {
+      font-size: 14px;
+      color: var(--text-primary);
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .plan-entry-item__date {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .plan-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 12px 0 6px;
     }
 
     /* ─────────────────────────── RESPONSIVE / DESKTOP ─────────────────────────── */
@@ -2349,13 +2720,16 @@
       gap: 24px;
       transition: opacity 400ms ease;
     }
+
     #loading-overlay.hidden {
       opacity: 0;
       pointer-events: none;
     }
+
     #loading-overlay.removed {
       display: none !important;
     }
+
     .loading-logo {
       font-family: var(--font-display);
       font-size: 32px;
@@ -2363,7 +2737,11 @@
       color: var(--brand);
       letter-spacing: 0.5px;
     }
-    .loading-logo span { color: var(--gold); }
+
+    .loading-logo span {
+      color: var(--gold);
+    }
+
     .loading-spinner {
       width: 36px;
       height: 36px;
@@ -2372,9 +2750,13 @@
       border-radius: 50%;
       animation: loadSpin 0.8s linear infinite;
     }
+
     @keyframes loadSpin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
+
     .loading-text {
       font-size: 13px;
       color: var(--text-muted);
@@ -2491,6 +2873,31 @@
     </div>
   </div>
 
+  <!-- ═══════════ REFERENCE PREVIEW MODAL (Floating) ═══════════ -->
+  <div class="modal-confirm-overlay" id="ref-preview-modal">
+    <div class="modal-confirm-card ref-preview-modal">
+      <div class="modal-header">
+        <h2 id="ref-preview-title" style="font-family:'Outfit',sans-serif; font-weight:600; color:var(--primary);">Verse</h2>
+        <button class="modal-close" onclick="closeModal('ref-preview-modal')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding-top:0;">
+        <div id="ref-preview-scripture" class="bible-text-display" style="margin-bottom:20px;"></div>
+        
+        <div class="ref-source-box">
+          <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Captured in Note</div>
+          <div id="ref-preview-note-title" style="font-weight:600; color:var(--text-primary); margin-bottom:4px;"></div>
+          <div id="ref-preview-snippet" style="font-style:italic; color:var(--text-secondary); font-size:14px; border-left:3px solid var(--primary-light); padding-left:12px; margin-top:8px;"></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding-top:10px;">
+        <button class="modal-btn modal-btn--secondary" style="background:var(--error-light); color:var(--error);" id="ref-delete-btn">Delete</button>
+        <div style="flex:1;"></div>
+        <button class="modal-btn modal-btn--secondary" onclick="closeModal('ref-preview-modal')" data-i18n="btn_close">Close</button>
+        <button class="modal-btn" id="ref-go-to-note-btn">Go to Note</button>
+      </div>
+    </div>
+  </div>
+
   <div id="app" style="display:none;">
 
     <!-- SIDEBAR (desktop only, shown via CSS) -->
@@ -2526,6 +2933,14 @@
           <line x1="12" y1="11" x2="16" y2="11"></line>
         </svg>
         <span data-i18n="nav_references">References</span>
+      </button>
+      <button class="side-nav__item" data-page="study" id="snav-study">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        <span data-i18n="nav_study">Study</span>
       </button>
       <button class="side-nav__item" data-page="settings" id="snav-settings">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -2622,14 +3037,14 @@
           </div>
         </div>
 
-        <!-- Reading plan -->
-        <div class="reading-plan-card" id="reading-plan-card">
+        <!-- Reading plan (dynamic) -->
+        <div class="reading-plan-card" id="reading-plan-card" style="cursor:pointer">
           <div class="reading-plan-card__icon">📖</div>
           <div style="flex:1">
-            <div class="reading-plan-card__title">90-Day Bible Reading Plan</div>
-            <div class="reading-plan-card__sub" id="reading-plan-sub">Day 12 of 90 · Genesis 25</div>
+            <div class="reading-plan-card__title" id="home-plan-title">No active plans</div>
+            <div class="reading-plan-card__sub" id="home-plan-sub">Tap to create a reading plan</div>
             <div class="reading-plan-card__progress">
-              <div class="reading-plan-card__progress-fill" id="reading-progress" style="width:13%"></div>
+              <div class="reading-plan-card__progress-fill" id="home-plan-progress" style="width:0%"></div>
             </div>
           </div>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -2841,7 +3256,7 @@
               </svg></div>
           </div>
           <button class="settings-item" id="logout-btn"
-            style="width:100%; border:none; cursor:pointer; background:none; padding:0; text-align:left;">
+            style="width:100%; cursor:pointer; text-align:left; border:1px solid var(--border-soft);">
             <div class="settings-item__icon" style="background:var(--error-light)">🚪</div>
             <div class="settings-item__text">
               <div class="settings-item__label" style="color:var(--error)" data-i18n="settings_logout">Log Out</div>
@@ -2852,9 +3267,27 @@
                 <path d="m9 18 6-6-6-6"></path>
               </svg></div>
           </button>
-          <div style="text-align:center; padding: 16px; font-size:12px; color:var(--text-muted)">Bible Notes v1.0 · Made
-            with
-            ✦</div>
+          <div style="text-align:center; padding: 16px; font-size:12px; color:var(--text-muted)">Bible Notes v1.0</div>
+        </div>
+      </section>
+
+      <!-- ═══════════ STUDY PAGE ═══════════ -->
+      <section class="page" id="page-study">
+        <div class="section-header">
+          <div>
+            <div class="section-header__title" data-i18n="study_plan_title">Study</div>
+            <div class="section-header__sub" data-i18n="study_plan_sub">Bible reading & study plans</div>
+          </div>
+          <button class="section-header__action" id="new-plan-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+            <span data-i18n="new_plan">New Plan</span>
+          </button>
+        </div>
+        <div class="study-plans-list" id="study-plans-list">
+          <!-- Populated by JS -->
         </div>
       </section>
 
@@ -2893,9 +3326,20 @@
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
               <line x1="12" y1="7" x2="16" y2="7"></line>
+              <line x1="12" y1="17" x2="16" y2="17"></line>
             </svg>
           </div>
           <span data-i18n="nav_references">References</span>
+        </div>
+        <div class="bottom-nav__item" data-page="study" id="nav-study">
+          <div class="nav-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+          </div>
+          <span data-i18n="nav_study">Study</span>
         </div>
         <div class="bottom-nav__item" data-page="settings" id="nav-settings">
           <div class="nav-icon-wrap">
@@ -2977,37 +3421,23 @@
             </path>
           </svg>
         </button>
-        <div class="toolbar-sep"></div>
-        <button class="toolbar-ref-btn" id="mark-ref-btn">
+        <button class="toolbar-ref-btn" id="insert-verse-btn"
+          style="background: var(--gold-light); color: var(--gold); border-color: rgba(201, 150, 60, 0.3);">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-          </svg>
-          <span data-i18n="mark_reference">Mark Reference</span>
-        </button>
-        <div class="toolbar-sep"></div>
-        <div class="bible-lang-toggle" id="bible-lang-toggle"
-          style="background:transparent; padding:0; margin-left:auto;">
-          <button class="bible-lang-btn active" data-lang="en">KJV</button>
-          <button class="bible-lang-btn" data-lang="sw">SWA</button>
-        </div>
-        <div class="toolbar-sep"></div>
-        <button class="toolbar-btn" id="insert-verse-btn" title="Insert Verse"
-          style="display:flex; color:var(--gold); font-weight:600; width:auto; padding:0 8px; font-size:12px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-            style="margin-right:4px">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
           <span data-i18n="insert_verse">Insert Verse</span>
         </button>
-      </div>
-      <div class="editor-verse-preview" id="editor-verse-preview">
-        <div class="editor-verse-preview__ref" id="verse-preview-ref" style="margin-bottom:4px;"></div>
-        <div id="verse-preview-text"></div>
+        <button class="toolbar-btn" id="mark-ref-btn" title="Mark Reference">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </button>
       </div>
     </div>
     <div class="editor-body">
@@ -3025,15 +3455,189 @@
           <path d="m15 18-6-6 6-6"></path>
         </svg>
       </button>
-      <div style="flex:1">
-        <div id="coll-detail-icon" style="display:inline;font-size:18px;margin-right:6px"></div>
+      <div style="flex:1; display:flex; align-items:center; min-width:0; margin-right:8px;">
+        <div id="coll-detail-icon" style="font-size:18px; margin-right:8px; flex-shrink:0;"></div>
         <span id="coll-detail-title"
-          style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--text-primary)"></span>
+          style="font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></span>
       </div>
-      <button class="meta-tag-btn" id="add-notes-to-coll-btn">+ Add Notes</button>
     </div>
     <div style="flex:1;overflow-y:auto;padding:16px">
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:16px; align-items:center;">
+        <div class="actions-dropdown">
+          <button class="meta-tag-btn" id="coll-actions-btn" style="display:flex; align-items:center; gap:6px;">
+            Actions
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+          <div class="actions-menu" id="coll-actions-menu">
+            <div class="actions-menu-item" id="edit-coll-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              Edit Collection
+            </div>
+            <div class="actions-menu-item danger" id="delete-coll-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+              </svg>
+              Delete
+            </div>
+          </div>
+        </div>
+        <button class="meta-tag-btn" id="add-notes-to-coll-btn">+ Add Notes</button>
+      </div>
       <div class="notes-list" id="coll-detail-notes-list" style="padding:0"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PLAN DETAIL OVERLAY ═══════════ -->
+  <div class="plan-detail-overlay" id="plan-detail-overlay">
+    <div class="editor-topbar">
+      <button class="editor-back-btn" id="plan-back-btn" aria-label="Close plan">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+      </button>
+      <div style="flex:1; display:flex; align-items:center; min-width:0; margin-right:8px;">
+        <span id="plan-detail-title"
+          style="font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></span>
+      </div>
+      <div class="actions-dropdown">
+        <button class="meta-tag-btn" id="plan-actions-btn" style="display:flex; align-items:center; gap:6px;">
+          Actions
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+        <div class="actions-menu" id="plan-actions-menu">
+          <div class="actions-menu-item" id="edit-plan-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Edit Plan
+          </div>
+          <div class="actions-menu-item danger" id="delete-plan-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            </svg>
+            Delete Plan
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="flex:1; overflow-y:auto; padding:16px;">
+      <!-- Progress Ring -->
+      <div class="plan-progress-ring-wrap" id="plan-progress-wrap">
+        <div class="plan-progress-ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle class="plan-progress-ring__bg" cx="40" cy="40" r="34" />
+            <circle class="plan-progress-ring__fill" id="plan-ring-fill" cx="40" cy="40" r="34" stroke-dasharray="213.6"
+              stroke-dashoffset="213.6" />
+          </svg>
+          <div class="plan-progress-ring__label" id="plan-ring-label">0%</div>
+        </div>
+        <div class="plan-info-badges" id="plan-info-badges">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <!-- Quick Mark Button -->
+      <button class="modal-btn modal-btn--primary" id="mark-today-btn" style="margin-bottom:16px;"
+        data-i18n="mark_complete">
+        ✓ Mark Next Reading Complete
+      </button>
+      <!-- Chapter Entries -->
+      <div class="plan-section-label" data-i18n="plan_readings">Readings</div>
+      <div class="plan-entries-list" id="plan-entries-list">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ CREATE / EDIT PLAN MODAL ═══════════ -->
+  <div class="modal-overlay" id="study-plan-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div class="modal-title" id="plan-modal-title" data-i18n="new_plan" style="margin-bottom:0;">New Study Plan
+        </div>
+        <div style="width:130px;">
+          <select class="modal-input" id="plan-lang-select"
+            style="margin-bottom:0; font-size:12px; height:34px; padding:0 8px;">
+            <option value="en">English (KJV)</option>
+            <option value="sw">Kiswahili</option>
+          </select>
+        </div>
+      </div>
+      <input class="modal-input" type="text" id="plan-title-input" placeholder="Plan title…" autocomplete="off"
+        data-i18n-placeholder="placeholder_plan_title">
+      <input class="modal-input" type="text" id="plan-desc-input" placeholder="Description (optional)…"
+        autocomplete="off" data-i18n-placeholder="placeholder_plan_desc">
+
+      <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:4px;"
+        data-i18n="plan_target_date">Target Date</div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <select class="modal-input" id="plan-day-select" style="flex:1; margin-bottom:0; font-size:14px;"></select>
+        <select class="modal-input" id="plan-month-select" style="flex:2; margin-bottom:0; font-size:14px;"></select>
+        <select class="modal-input" id="plan-year-select" style="flex:1.5; margin-bottom:0; font-size:14px;"></select>
+      </div>
+
+      <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:4px;" data-i18n="plan_reminder">
+        Daily Reminder</div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <select class="modal-input" id="plan-hour-select" style="flex:1; margin-bottom:0; font-size:14px;"></select>
+        <select class="modal-input" id="plan-min-select" style="flex:1; margin-bottom:0; font-size:14px;"></select>
+        <select class="modal-input" id="plan-period-select" style="flex:1.2; margin-bottom:0; font-size:14px;"></select>
+      </div>
+
+      <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:8px;margin-top:4px;"
+        data-i18n="plan_readings">Add Bible Readings</div>
+
+      <!-- Quick Presets -->
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
+        <button class="filter-pill" id="preset-ot-btn" style="font-size:12px;">📜 Old Testament</button>
+        <button class="filter-pill" id="preset-nt-btn" style="font-size:12px;">✝️ New Testament</button>
+        <button class="filter-pill active" id="preset-custom-btn" style="font-size:12px;">📖 Custom Books</button>
+      </div>
+
+      <!-- Custom book picker (shown in custom mode) -->
+      <div id="custom-book-picker">
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <select class="modal-input" id="plan-book-select" style="flex:2; margin-bottom:0; font-size:14px;"></select>
+          <select class="modal-input" id="plan-ch-from" style="flex:1; margin-bottom:0; font-size:14px;"></select>
+          <select class="modal-input" id="plan-ch-to" style="flex:1; margin-bottom:0; font-size:14px;"></select>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="modal-btn modal-btn--ghost" id="add-readings-btn" style="margin-bottom:10px; flex:1;"
+            data-i18n="btn_add_chapters">+ Add Chapters</button>
+          <button class="modal-btn modal-btn--ghost" id="add-book-btn" style="margin-bottom:10px; flex:1;"
+            data-i18n="btn_add_entire_book">+ Add Entire Book</button>
+        </div>
+      </div>
+
+      <div id="plan-entries-preview"
+        style="max-height:140px; overflow-y:auto; margin-bottom:14px; display:flex; flex-direction:column; gap:4px;">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button class="modal-btn modal-btn--primary" id="save-plan-btn" data-i18n="btn_save"
+          style="margin-bottom:0; flex:1;">Create Plan</button>
+        <button class="modal-btn modal-btn--ghost" id="cancel-plan-btn" style="flex:1;"
+          data-i18n="btn_cancel">Cancel</button>
+      </div>
     </div>
   </div>
 
@@ -3041,7 +3645,7 @@
   <div class="modal-overlay" id="new-collection-modal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <div class="modal-title">New Collection</div>
+      <div class="modal-title" id="coll-modal-title">New Collection</div>
       <input class="modal-input" type="text" id="coll-name-input" placeholder="Collection name…" autocomplete="off">
       <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-weight:600">Choose icon</div>
       <div class="emoji-picker" id="emoji-picker">
@@ -3222,6 +3826,9 @@
       userFullName: '',
       userPhone: '',
       userEmail: '',
+      editingCollectionId: null,
+      studyPlans: [],
+      editingPlanId: null,
     };
 
     const VOTD_POOL = [
@@ -3311,7 +3918,7 @@
 
       // 2. Sync Collections
       if ((state.collections || []).length > 0) {
-        const cols = state.collections.map(c => ({ id: c.id, user_id: uid, name: c.name, icon: c.icon }));
+        const cols = state.collections.map(c => ({ id: c.id, user_id: uid, name: c.name, icon: c.icon || c.emoji || '📁' }));
         await supabaseClient.from('collections').upsert(cols);
       }
 
@@ -3332,6 +3939,16 @@
           id: r.id, user_id: uid, note_id: r.note_id, verse: r.verse, text: r.text
         }));
         await supabaseClient.from('references').upsert(refs);
+      }
+
+      // 5. Sync Study Plans
+      if ((state.studyPlans || []).length > 0) {
+        const plans = state.studyPlans.map(p => ({
+          id: p.id, user_id: uid, title: p.title, description: p.description || '',
+          target_date: p.targetDate || null, reminder_time: p.reminderTime || null,
+          entries: p.entries || []
+        }));
+        await supabaseClient.from('bible_plans').upsert(plans);
       }
     }, 2000);
 
@@ -3402,8 +4019,18 @@
       // Apply References
       const refs = refsRes.data;
       if (refs) state.references = refs.map(r => ({
-        id: r.id, note_id: r.note_id, verse: r.verse, text: r.text
+        id: r.id, noteId: r.note_id, verse: r.verse, text: r.text
       }));
+
+      // Apply Study Plans
+      const plansRes = await supabaseClient.from('bible_plans').select('*').eq('user_id', uid);
+      if (plansRes.data) {
+        state.studyPlans = plansRes.data.map(p => ({
+          id: p.id, title: p.title, description: p.description || '',
+          targetDate: p.target_date || null, reminderTime: p.reminder_time || null,
+          entries: p.entries || [], created: p.created_at
+        }));
+      }
 
       saveState();
       renderNotes();
@@ -3500,7 +4127,9 @@
       if (page === 'notes') renderNotes();
       if (page === 'collections') renderCollections();
       if (page === 'references') renderRefs();
+      if (page === 'study') renderStudyPage();
       updateStats();
+      updateHomePlanWidget();
     }
 
     document.querySelectorAll('.bottom-nav__item').forEach(item => {
@@ -3632,12 +4261,12 @@
         <div class="note-card__title">${escHtml(n.title)}</div>
         <span class="note-card__badge ${badgeCls}">${badgeTxt}</span>
       </div>
-      <div class="note-card__preview">${escHtml(n.content.slice(0, 120))}</div>
+      <div class="note-card__preview">${escHtml(stripHtml(n.content).slice(0, 120))}</div>
       ${n.tags && n.tags.length ? `<div class="note-card__tags">${n.tags.map(t => `<span class="note-tag">#${t}</span>`).join('')}</div>` : ''}
       <div class="note-card__meta">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         ${date}
-        ${refCount ? `<span style="color:var(--ref-color);font-size:11px">📌 ${refCount} ref${refCount > 1 ? 's' : ''}</span>` : ''}
+        <span style="color:var(--ref-color);font-size:11px">📌 ${refCount} ref${refCount > 1 ? 's' : ''}</span>
         ${n.pinned ? `<span style="font-size:11px">📌 ${window.t('lbl_pinned') || 'Pinned'}</span>` : ''}
         <div class="note-card__actions">
           <button class="note-card__action-btn pin-note-btn" data-id="${n.id}" title="Pin" aria-label="Pin note">
@@ -3729,7 +4358,7 @@
         const note = state.notes.find(n => n.id === noteId);
         if (!note) return;
         titleInp.value = note.title;
-        content.innerHTML = markdownToHtml(note.content);
+        content.innerHTML = note.content || "";
         typeSelect.value = note.type;
         pinBtn.classList.toggle('active', note.pinned);
       } else {
@@ -3744,7 +4373,6 @@
       const saveBtn = document.getElementById('editor-save-btn');
       saveBtn.textContent = 'Save';
       saveBtn.classList.remove('saved');
-      document.getElementById('editor-verse-preview').classList.remove('visible');
       editor.classList.add('open');
 
       // async pre-load bible data
@@ -3774,7 +4402,7 @@
 
     function saveNote(silent) {
       const titleRaw = document.getElementById('editor-title').value.trim();
-      const content = document.getElementById('editor-content').innerText.trim();
+      const content = document.getElementById('editor-content').innerHTML.trim();
 
       if (!titleRaw && !content) {
         closeEditor();
@@ -3839,7 +4467,20 @@
     document.getElementById('tb-h1').addEventListener('click', () => { document.execCommand('formatBlock', false, 'h2'); });
     document.getElementById('tb-h2').addEventListener('click', () => { document.execCommand('formatBlock', false, 'h3'); });
     document.getElementById('tb-ul').addEventListener('click', () => { document.execCommand('insertUnorderedList'); });
-    document.getElementById('tb-quote').addEventListener('click', () => { document.execCommand('formatBlock', false, 'blockquote'); });
+    document.getElementById('tb-quote').addEventListener('click', () => {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      let node = sel.anchorNode;
+      if (node.nodeType === 3) node = node.parentNode;
+      const bq = node.closest('blockquote');
+      if (bq) {
+        document.execCommand('formatBlock', false, 'P');
+        // fallback for some browsers if P doesn't unwrap
+        if (node.closest('blockquote')) document.execCommand('outdent');
+      } else {
+        document.execCommand('formatBlock', false, 'blockquote');
+      }
+    });
 
     /* Style the content area */
     const editorContent = document.getElementById('editor-content');
@@ -3849,55 +4490,19 @@
     // Placeholder behaviour & Smart Formatting
     editorContent.addEventListener('input', function (e) {
       if (!this.innerText.trim()) this.innerHTML = '';
-
-      // auto-detect scripture references inside the active text node only
-      const selection = window.getSelection();
-      let activeText = '';
-      if (selection.rangeCount > 0 && selection.getRangeAt(0).startContainer.nodeType === 3) {
-        activeText = selection.getRangeAt(0).startContainer.nodeValue;
-      }
-
-      const bibleRefGen = activeText.match(/\b([123]?\s?[A-Za-z]+(?:\s+[A-Za-z]+){0,2})\s+(\d+:\d+(?:-\d+)?)\b/ig);
-
-      if (bibleRefGen) {
-        const lastRef = bibleRefGen[bibleRefGen.length - 1];
-        const previewRef = document.getElementById('verse-preview-ref');
-        const previewText = document.getElementById('verse-preview-text');
-        if (previewRef && previewText) {
-          previewRef.textContent = lastRef;
-          previewText.textContent = getBibleVerse(lastRef, state.bibleLang);
-          document.getElementById('editor-verse-preview').classList.add('visible');
-        }
-      } else {
-        const preview = document.getElementById('editor-verse-preview');
-        if (preview) preview.classList.remove('visible');
-      }
     });
 
+    let savedInsertRange = null;
+
     document.getElementById('insert-verse-btn').addEventListener('click', async () => {
-      const previewBox = document.getElementById('editor-verse-preview');
-
-      // If the auto-preview is visible, just insert that immediately.
-      if (previewBox.classList.contains('visible')) {
-        let text = document.getElementById('verse-preview-text').textContent;
-        const ref = document.getElementById('verse-preview-ref').textContent;
-
-        // Force refresh if stuck in legacy 'Loading...' view
-        if (text === 'Loading...') {
-          await loadBibleData(state.bibleLang);
-          text = getBibleVerse(ref, state.bibleLang);
-        }
-
-        if (text && text !== 'Verse not found in selected translation.' && text !== 'Loading...') {
-          const htmlToInsert = `<br><blockquote>${text}<br><cite style="font-size: 0.9em; opacity: 0.8; font-style: normal; display: block; margin-top: 4px;">— ${ref}</cite></blockquote><br>`;
-          editorContent.focus();
-          document.execCommand('insertHTML', false, htmlToInsert);
-          previewBox.classList.remove('visible');
-          return;
-        }
+      const sel = window.getSelection();
+      if (sel.rangeCount > 0) {
+        savedInsertRange = sel.getRangeAt(0);
+      } else {
+        savedInsertRange = null;
       }
 
-      // Otherwise open the new insertion modal
+      // Open the new insertion modal
       if (!bibleData[state.bibleLang]) {
         await loadBibleData(state.bibleLang);
       }
@@ -4014,8 +4619,19 @@
       const text = inPreviewText.dataset.vtext;
       const ref = inPreviewText.dataset.vref;
       if (text) {
-        const htmlToInsert = `<br><blockquote>${text}<br><cite style="font-size: 0.9em; opacity: 0.8; font-style: normal; display: block; margin-top: 4px;">— ${ref}</cite></blockquote><br>`;
-        editorContent.focus();
+        const htmlToInsert = `<div><br></div><blockquote style="margin: 16px 0; border-left: 3px solid var(--brand-mid); padding-left: 16px; font-style: italic; color: var(--text-secondary);">
+          ${text}
+          <cite style="font-size: 0.85em; opacity: 0.8; font-style: normal; display: block; margin-top: 8px; font-weight: 600;">— ${ref}</cite>
+        </blockquote><div><br></div>`;
+
+        if (savedInsertRange) {
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(savedInsertRange);
+        } else {
+          editorContent.focus();
+        }
+
         document.execCommand('insertHTML', false, htmlToInsert);
       }
       closeModal('insert-verse-modal');
@@ -4148,25 +4764,6 @@
       return text || 'Verse not found in selected translation.';
     }
 
-    document.getElementById('bible-lang-toggle').addEventListener('click', async (e) => {
-      if (e.target.tagName !== 'BUTTON') return;
-      const lang = e.target.dataset.lang;
-      state.bibleLang = lang;
-      saveState();
-
-      // Update active pill
-      document.querySelectorAll('.bible-lang-btn').forEach(btn => btn.classList.remove('active'));
-      e.target.classList.add('active');
-
-      await loadBibleData(lang);
-
-      // Refresh preview if open
-      const preview = document.getElementById('editor-verse-preview');
-      if (preview.classList.contains('visible')) {
-        const ref = document.getElementById('verse-preview-ref').textContent;
-        document.getElementById('verse-preview-text').textContent = getBibleVerse(ref, lang);
-      }
-    });
 
     /* Mark Reference */
     let pendingRefText = '';
@@ -4206,11 +4803,12 @@
         return;
       }
       grid.innerHTML = state.collections.map(c => {
-        const count = (c.noteIds || []).length;
+        // Source of truth is note.collections
+        const count = state.notes.filter(n => n.collections && n.collections.includes(c.id)).length;
         return `
     <div class="collection-card" data-id="${c.id}">
       <div>
-        <div class="collection-card__icon">${c.icon || c.emoji || '📁'}</div>
+        <div class="collection-card__icon">${c.icon || '📁'}</div>
         <div class="collection-card__name">${escHtml(c.name)}</div>
         <div class="collection-card__count">${count} note${count !== 1 ? 's' : ''}</div>
       </div>
@@ -4226,7 +4824,11 @@
       const coll = state.collections.find(c => c.id === id);
       if (!coll) return;
       state.selectedCollectionId = id;
-      document.getElementById('coll-detail-icon').textContent = coll.icon || coll.emoji || '📁';
+
+      // Ensure noteIds is accurate for the detail view logic if needed
+      coll.noteIds = state.notes.filter(n => n.collections && n.collections.includes(id)).map(n => n.id);
+
+      document.getElementById('coll-detail-icon').textContent = coll.icon || '📁';
       document.getElementById('coll-detail-title').textContent = coll.name;
       renderCollDetailNotes(coll);
       document.getElementById('collection-detail-overlay').classList.add('open');
@@ -4234,7 +4836,8 @@
 
     function renderCollDetailNotes(coll) {
       const list = document.getElementById('coll-detail-notes-list');
-      const notes = state.notes.filter(n => coll.noteIds.includes(n.id));
+      // Calculate from notes list directly
+      const notes = state.notes.filter(n => n.collections && n.collections.includes(coll.id));
       if (notes.length === 0) {
         list.innerHTML = `<div class="empty-state"><div class="empty-state__icon">📝</div><div class="empty-state__title">No notes in this collection</div><div class="empty-state__msg">Tap "Add Notes" to include notes here.</div></div>`;
         return;
@@ -4253,6 +4856,25 @@
       }).join('');
       list.querySelectorAll('.note-card').forEach(card => {
         card.addEventListener('click', () => openEditor(card.dataset.id));
+      });
+    }
+
+    const collActionsBtn = document.getElementById('coll-actions-btn');
+    const collActionsMenu = document.getElementById('coll-actions-menu');
+
+    collActionsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      collActionsMenu.classList.toggle('open');
+    });
+
+    document.addEventListener('click', () => {
+      if (collActionsMenu) collActionsMenu.classList.remove('open');
+    });
+
+    // Close when menu item clicked
+    if (collActionsMenu) {
+      collActionsMenu.addEventListener('click', () => {
+        collActionsMenu.classList.remove('open');
       });
     }
 
@@ -4277,6 +4899,17 @@
       if (!coll) return;
       const checked = [...document.querySelectorAll('#notes-select-list input:checked')].map(i => i.value);
       coll.noteIds = checked;
+
+      // Update EACH note's collections list to include/exclude this collection
+      state.notes.forEach(note => {
+        if (!note.collections) note.collections = [];
+        if (checked.includes(note.id)) {
+          if (!note.collections.includes(coll.id)) note.collections.push(coll.id);
+        } else {
+          note.collections = note.collections.filter(cid => cid !== coll.id);
+        }
+      });
+
       saveState();
       renderCollDetailNotes(coll);
       closeModal('add-notes-to-coll-modal');
@@ -4289,6 +4922,9 @@
     let selectedColor = '#5C3D2E';
 
     document.getElementById('new-collection-btn').addEventListener('click', () => {
+      state.editingCollectionId = null;
+      document.getElementById('coll-modal-title').textContent = 'New Collection';
+      document.getElementById('create-collection-confirm-btn').textContent = 'Create Collection';
       document.getElementById('coll-name-input').value = '';
       selectedEmoji = '📖';
       selectedColor = '#5C3D2E';
@@ -4297,6 +4933,53 @@
       document.querySelectorAll('.color-opt').forEach(c => c.classList.remove('selected'));
       document.querySelector('[data-color="#5C3D2E"]').classList.add('selected');
       openModal('new-collection-modal');
+    });
+
+    document.getElementById('edit-coll-btn').addEventListener('click', () => {
+      const coll = state.collections.find(c => c.id === state.selectedCollectionId);
+      if (!coll) return;
+      state.editingCollectionId = coll.id;
+      document.getElementById('coll-modal-title').textContent = 'Edit Collection';
+      document.getElementById('create-collection-confirm-btn').textContent = 'Save Changes';
+      document.getElementById('coll-name-input').value = coll.name;
+      selectedEmoji = coll.icon || '📖';
+      selectedColor = coll.color || '#5C3D2E';
+
+      document.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected'));
+      const emojiEl = document.querySelector(`[data-emoji="${selectedEmoji}"]`);
+      if (emojiEl) emojiEl.classList.add('selected');
+
+      document.querySelectorAll('.color-opt').forEach(c => c.classList.remove('selected'));
+      const colorEl = document.querySelector(`[data-color="${selectedColor}"]`);
+      if (colorEl) colorEl.classList.add('selected');
+
+      openModal('new-collection-modal');
+    });
+
+    document.getElementById('delete-coll-btn').addEventListener('click', async () => {
+      const coll = state.collections.find(c => c.id === state.selectedCollectionId);
+      if (!coll) return;
+
+      const confirmed = await showConfirm({
+        title: 'Delete Collection',
+        message: `Are you sure you want to delete "${coll.name}"? This will not delete the notes inside.`,
+        confirmText: 'Delete',
+        isDanger: true
+      });
+
+      if (confirmed) {
+        state.collections = state.collections.filter(c => c.id !== coll.id);
+        // Clean up notes
+        state.notes.forEach(note => {
+          if (note.collections) {
+            note.collections = note.collections.filter(cid => cid !== coll.id);
+          }
+        });
+        saveState();
+        document.getElementById('collection-detail-overlay').classList.remove('open');
+        renderCollections();
+        showToast('success', 'Collection deleted');
+      }
     });
 
     document.querySelectorAll('.emoji-opt').forEach(opt => {
@@ -4317,11 +5000,28 @@
     document.getElementById('create-collection-confirm-btn').addEventListener('click', () => {
       const name = document.getElementById('coll-name-input').value.trim();
       if (!name) { showToast('error', 'Please enter a collection name'); return; }
-      state.collections.push({ id: 'c' + Date.now(), name, emoji: selectedEmoji, color: selectedColor, noteIds: [] });
+
+      if (state.editingCollectionId) {
+        const coll = state.collections.find(c => c.id === state.editingCollectionId);
+        if (coll) {
+          coll.name = name;
+          coll.icon = selectedEmoji;
+          coll.color = selectedColor;
+          // Update Detail Overlay if open
+          if (state.selectedCollectionId === coll.id) {
+            document.getElementById('coll-detail-icon').textContent = coll.icon;
+            document.getElementById('coll-detail-title').textContent = coll.name;
+          }
+          showToast('success', 'Collection updated');
+        }
+      } else {
+        state.collections.push({ id: 'c' + Date.now(), name, icon: selectedEmoji, color: selectedColor, noteIds: [] });
+        showToast('success', 'Collection created: ' + name);
+      }
+
       saveState();
       closeModal('new-collection-modal');
       renderCollections();
-      showToast('success', 'Collection created: ' + name);
     });
     document.getElementById('cancel-collection-btn').addEventListener('click', () => closeModal('new-collection-modal'));
 
@@ -4332,7 +5032,7 @@
         const inColl = state.editingNoteId && c.noteIds.includes(state.editingNoteId);
         return `<div class="note-select-item">
       <input type="checkbox" id="cl-${c.id}" value="${c.id}" ${inColl ? 'checked' : ''} />
-      <span>${c.emoji} ${escHtml(c.name)}</span>
+      <span>${c.icon || '📁'} ${escHtml(c.name)}</span>
     </div>`;
       }).join('') || '<div style="padding:12px;font-size:13px;color:var(--text-muted)">No collections yet. Create one first.</div>';
       openModal('add-to-collection-modal');
@@ -4341,10 +5041,19 @@
       const nid = state.editingNoteId;
       if (!nid) { closeModal('add-to-collection-modal'); return; }
       const checked = [...document.querySelectorAll('#collection-list-select input:checked')].map(i => i.value);
+
+      // Update local noteIds (for UI convenience)
       state.collections.forEach(c => {
         if (checked.includes(c.id)) { if (!c.noteIds.includes(nid)) c.noteIds.push(nid); }
         else c.noteIds = c.noteIds.filter(id => id !== nid);
       });
+
+      // KEY FIX: Update the note's collections array (which is what gets synced to Supabase)
+      const note = state.notes.find(n => n.id === nid);
+      if (note) {
+        note.collections = checked;
+      }
+
       saveState();
       closeModal('add-to-collection-modal');
       showToast('success', 'Added to collection');
@@ -4354,8 +5063,29 @@
     /* ═══════════════════════════════════════════════════════
        REFERENCES
     ═══════════════════════════════════════════════════════ */
+    async function deleteReference(id) {
+      state.references = state.references.filter(r => r.id !== id);
+      if (state.user) {
+        try {
+          await supabaseClient.from('references').delete().eq('id', id);
+        } catch (e) {
+          console.error("Error deleting reference:", e);
+        }
+      }
+      saveState();
+      updateStats();
+      showToast('info', 'Reference removed');
+    }
+
     function getFilteredRefs() {
-      let refs = [...state.references];
+      let refs = state.references.map(r => {
+        const note = state.notes.find(n => n.id === r.noteId);
+        return {
+          ...r,
+          noteTitle: note ? note.title : 'Deleted Note',
+          noteComment: r.note || '' // Use existing note/comment if present
+        };
+      });
       const OT = ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth', 'Samuel', 'Kings', 'Chronicles', 'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalm', 'Proverbs', 'Ecclesiastes', 'Song', 'Isaiah', 'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel', 'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum', 'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi'];
       if (state.filterRefs === 'OT') refs = refs.filter(r => OT.some(b => r.verse.startsWith(b)));
       else if (state.filterRefs === 'NT') refs = refs.filter(r => !OT.some(b => r.verse.startsWith(b)));
@@ -4375,21 +5105,60 @@
         return;
       }
       list.innerHTML = refs.map(r => `
-    <div class="ref-card" data-note-id="${r.noteId}">
+    <div class="ref-card" data-ref-id="${r.id}">
       <div class="ref-card__verse">${escHtml(r.verse)}</div>
       ${r.text ? `<div class="ref-card__text">"${escHtml(r.text)}"</div>` : ''}
-      ${r.note ? `<div style="font-size:12px;color:var(--text-secondary);margin-top:6px">💬 ${escHtml(r.note)}</div>` : ''}
       <div class="ref-card__meta">
-        <span class="ref-card__from-note">From: ${escHtml(r.noteTitle || 'Note')}</span>
+        <span class="ref-card__from-note">From: ${escHtml(r.noteTitle)}</span>
       </div>
     </div>`).join('');
       list.querySelectorAll('.ref-card').forEach(card => {
         card.addEventListener('click', () => {
-          const nid = card.dataset.noteId;
-          const note = state.notes.find(n => n.id === nid);
-          if (note) { openEditor(nid); }
+          openReferencePreview(card.dataset.refId);
         });
       });
+    }
+
+    function openReferencePreview(refId) {
+      const allRefs = getFilteredRefs();
+      const ref = allRefs.find(r => r.id === refId);
+      if (!ref) return;
+
+      document.getElementById('ref-preview-title').textContent = ref.verse;
+      const fullVerse = getBibleVerse(ref.verse, state.bibleLang);
+      document.getElementById('ref-preview-scripture').textContent = fullVerse;
+      document.getElementById('ref-preview-note-title').textContent = ref.noteTitle;
+      document.getElementById('ref-preview-snippet').textContent = ref.text ? `"${ref.text}"` : 'No text snippet';
+
+      const goBtn = document.getElementById('ref-go-to-note-btn');
+      if (ref.noteId) {
+        goBtn.style.display = 'block';
+        goBtn.onclick = () => {
+          closeModal('ref-preview-modal');
+          openEditor(ref.noteId);
+        };
+      } else {
+        goBtn.style.display = 'none';
+      }
+
+      const delBtn = document.getElementById('ref-delete-btn');
+      if (delBtn) {
+        delBtn.onclick = async () => {
+          const confirmed = await showConfirm({
+            title: 'Delete Reference',
+            message: 'Are you sure you want to delete this scripture reference?',
+            confirmText: 'Delete',
+            isDanger: true
+          });
+          if (confirmed) {
+            await deleteReference(ref.id);
+            closeModal('ref-preview-modal');
+            renderRefs();
+          }
+        };
+      }
+
+      openModal('ref-preview-modal');
     }
 
     document.querySelectorAll('#refs-filter-row .filter-pill').forEach(pill => {
@@ -4676,7 +5445,7 @@
       setTimeout(() => el.style.display = 'none', 300);
     }
     // Close modal on backdrop click
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    document.querySelectorAll('.modal-overlay, .modal-confirm-overlay').forEach(overlay => {
       overlay.addEventListener('click', e => {
         if (e.target === overlay) closeModal(overlay.id);
       });
@@ -4805,6 +5574,15 @@
         });
 
         sInp.addEventListener('click', e => e.stopPropagation());
+
+        // ENTER to select first result
+        sInp.addEventListener('keydown', e => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const firstOpt = listWrap.querySelector('.app-select-option:not(.hidden)');
+            if (firstOpt) firstOpt.click();
+          }
+        });
       }
 
       const listWrap = document.createElement('div');
@@ -4932,8 +5710,13 @@
     function escHtml(str) {
       return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
+    function stripHtml(html) {
+      const tmp = document.createElement("DIV");
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || "";
+    }
     function markdownToHtml(text) {
-      return escHtml(text);
+      return text;
     }
     function downloadFile(content, filename, type) {
       const blob = new Blob([content], { type });
@@ -5067,6 +5850,7 @@
         document.getElementById('auth-overlay').classList.add('hidden');
         document.getElementById('complete-profile-overlay').classList.remove('hidden');
         initCustomSelect('cp-country-code');
+        initCustomSelect('auth-country-code');
         return;
       }
 
@@ -5242,6 +6026,640 @@
     });
 
     init();
+
+    /* ═══════════════════════════════════════════════════════
+       STUDY PLANS
+    ═══════════════════════════════════════════════════════ */
+
+    const BIBLE_BOOKS_EN = [
+      'Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth',
+      '1 Samuel', '2 Samuel', '1 Kings', '2 Kings', '1 Chronicles', '2 Chronicles', 'Ezra',
+      'Nehemiah', 'Esther', 'Job', 'Psalms', 'Proverbs', 'Ecclesiastes', 'Song of Solomon',
+      'Isaiah', 'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel', 'Amos',
+      'Obadiah', 'Jonah', 'Micah', 'Nahum', 'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah',
+      'Malachi', 'Matthew', 'Mark', 'Luke', 'John', 'Acts', 'Romans', '1 Corinthians',
+      '2 Corinthians', 'Galatians', 'Ephesians', 'Philippians', 'Colossians',
+      '1 Thessalonians', '2 Thessalonians', '1 Timothy', '2 Timothy', 'Titus', 'Philemon',
+      'Hebrews', 'James', '1 Peter', '2 Peter', '1 John', '2 John', '3 John', 'Jude', 'Revelation'
+    ];
+
+    const BIBLE_BOOKS_SW = [
+      'Mwanzo', 'Kutoka', 'Lawi', 'Hesabu', 'Kumbukumbu la Torati', 'Yoshua', 'Waamuzi', 'Ruthi',
+      '1 Samweli', '2 Samweli', '1 Wafalme', '2 Wafalme', '1 Nyakati', '2 Nyakati', 'Ezra',
+      'Nehemia', 'Esta', 'Ayubu', 'Zaburi', 'Mithali', 'Mhubiri', 'Wimbo Ulio Bora',
+      'Isaya', 'Yeremia', 'Maombolezo', 'Ezekieli', 'Danieli', 'Hosea', 'Yoeli', 'Amosi',
+      'Obadia', 'Yona', 'Mika', 'Nahumu', 'Habakuki', 'Sefania', 'Hagai', 'Zekaria',
+      'Malaki', 'Mathayo', 'Marko', 'Luka', 'Yohana', 'Matendo ya Mitume', 'Warumi', '1 Wakorintho',
+      '2 Wakorintho', 'Wagalatia', 'Waefeso', 'Wafilipi', 'Wakolosai',
+      '1 Wathesalonike', '2 Wathesalonike', '1 Timotheo', '2 Timotheo', 'Tito', 'Filemoni',
+      'Waebrania', 'Yakobo', '1 Petro', '2 Petro', '1 Yohana', '2 Yohana', '3 Yohana', 'Yuda', 'Ufunuo wa Yohana'
+    ];
+
+    // Rough chapter counts per book
+    const BOOK_CHAPTERS = [
+      50, 40, 27, 36, 34, 24, 21, 4, 31, 24, 22, 25, 29, 36, 10, 13, 10, 42, 150, 31, 12, 8,
+      66, 52, 5, 48, 12, 14, 3, 9, 1, 4, 7, 3, 3, 3, 2, 14, 4, 28, 16, 24, 21, 28, 16, 16, 13,
+      6, 6, 4, 4, 5, 3, 6, 4, 3, 1, 13, 5, 5, 3, 5, 1, 1, 1, 22
+    ];
+
+    function getBookChapters(bookName, lang = 'en') {
+      const list = lang === 'sw' ? BIBLE_BOOKS_SW : BIBLE_BOOKS_EN;
+      const idx = list.indexOf(bookName);
+      return idx !== -1 ? (BOOK_CHAPTERS[idx] || 50) : 50;
+    }
+
+    function getPlanProgress(plan) {
+      const total = (plan.entries || []).length;
+      const done = (plan.entries || []).filter(e => e.completed).length;
+      return { total, done, pct: total > 0 ? Math.round((done / total) * 100) : 0 };
+    }
+
+    function getDaysLeft(targetDate) {
+      if (!targetDate) return null;
+      const diff = new Date(targetDate) - new Date();
+      return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    }
+
+    function renderStudyPage() {
+      const list = document.getElementById('study-plans-list');
+      if (!state.studyPlans || state.studyPlans.length === 0) {
+        list.innerHTML = `<div class="empty-state">
+          <div class="empty-state__icon">📚</div>
+          <div class="empty-state__title">No study plans</div>
+          <div class="empty-state__msg">Create a reading plan to track your Bible study journey chapter by chapter.</div>
+        </div>`;
+        return;
+      }
+      list.innerHTML = state.studyPlans.map(plan => {
+        const { total, done, pct } = getPlanProgress(plan);
+        const daysLeft = getDaysLeft(plan.targetDate);
+        const nextEntry = (plan.entries || []).find(e => !e.completed);
+        let deadlineBadge = '';
+        if (pct === 100) {
+          deadlineBadge = `<span class="study-plan-card__deadline done">✓ Complete</span>`;
+        } else if (daysLeft !== null) {
+          const cls = daysLeft <= 7 ? 'urgent' : '';
+          deadlineBadge = `<span class="study-plan-card__deadline ${cls}">${daysLeft > 0 ? daysLeft + 'd left' : 'Overdue!'}</span>`;
+        }
+        return `
+          <div class="study-plan-card" data-id="${plan.id}">
+            <div class="study-plan-card__header">
+              <div class="study-plan-card__icon">📚</div>
+              <div class="study-plan-card__meta">
+                <div class="study-plan-card__title">${escHtml(plan.title)}</div>
+                <div class="study-plan-card__sub">${done} of ${total} chapters done</div>
+              </div>
+              ${deadlineBadge}
+            </div>
+            <div class="study-plan-card__progress-wrap">
+              <div class="study-plan-card__progress-bar">
+                <div class="study-plan-card__progress-fill" style="width:${pct}%"></div>
+              </div>
+              <div class="study-plan-card__progress-label">
+                <span>${pct}% complete</span>
+                ${plan.reminderTime ? `<span>🔔 ${plan.reminderTime}</span>` : ''}
+              </div>
+            </div>
+            ${nextEntry ? `<div class="study-plan-card__next">📖 Up next: <strong>${nextEntry.book} ${nextEntry.chapter}</strong></div>` : ''}
+          </div>`;
+      }).join('');
+      list.querySelectorAll('.study-plan-card').forEach(card => {
+        card.addEventListener('click', () => openPlanDetail(card.dataset.id));
+      });
+    }
+
+    function openPlanDetail(id) {
+      const plan = state.studyPlans.find(p => p.id === id);
+      if (!plan) return;
+      state.currentPlanId = id;
+      document.getElementById('plan-detail-title').textContent = plan.title;
+      renderPlanDetail(plan);
+      document.getElementById('plan-detail-overlay').classList.add('open');
+    }
+
+    function renderPlanDetail(plan) {
+      const { total, done, pct } = getPlanProgress(plan);
+      const circumference = 213.6;
+      const offset = circumference - (pct / 100) * circumference;
+      document.getElementById('plan-ring-fill').style.strokeDashoffset = offset;
+      document.getElementById('plan-ring-label').textContent = pct + '%';
+
+      const daysLeft = getDaysLeft(plan.targetDate);
+      const badges = [];
+      if (plan.targetDate) {
+        const d = new Date(plan.targetDate);
+        badges.push(`<div class="plan-info-badge">📅 ${d.toLocaleDateString()}</div>`);
+        if (daysLeft !== null) badges.push(`<div class="plan-info-badge">${daysLeft > 0 ? daysLeft + ' days left' : 'Past deadline'}</div>`);
+      }
+      if (plan.reminderTime) badges.push(`<div class="plan-info-badge">🔔 ${plan.reminderTime}</div>`);
+      const langLabel = (plan.bibleLang === 'sw' ? 'SW' : 'EN');
+      badges.push(`<div class="plan-info-badge" style="background:var(--gold-light);color:var(--gold)">${langLabel}</div>`);
+      badges.push(`<div class="plan-info-badge">${done}/${total} chapters</div>`);
+      document.getElementById('plan-info-badges').innerHTML = badges.join('');
+
+      renderPlanEntries(plan);
+    }
+
+    function renderPlanEntries(plan) {
+      const list = document.getElementById('plan-entries-list');
+      if (!plan.entries || plan.entries.length === 0) {
+        list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">No readings added yet.</div>';
+        return;
+      }
+      list.innerHTML = plan.entries.map((entry, idx) => {
+        const completedDate = entry.completedAt ? new Date(entry.completedAt).toLocaleDateString() : '';
+        return `<div class="plan-entry-item ${entry.completed ? 'completed' : ''}" data-idx="${idx}">
+          <div class="plan-entry-item__check">${entry.completed ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}</div>
+          <div class="plan-entry-item__label">${entry.book} ${entry.chapter}</div>
+          ${completedDate ? `<div class="plan-entry-item__date">${completedDate}</div>` : ''}
+        </div>`;
+      }).join('');
+      list.querySelectorAll('.plan-entry-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const plan = state.studyPlans.find(p => p.id === state.currentPlanId);
+          if (!plan) return;
+          const idx = parseInt(item.dataset.idx);
+          plan.entries[idx].completed = !plan.entries[idx].completed;
+          plan.entries[idx].completedAt = plan.entries[idx].completed ? new Date().toISOString() : null;
+          saveState();
+          renderPlanDetail(plan);
+          renderStudyPage();
+          updateHomePlanWidget();
+        });
+      });
+    }
+
+    document.getElementById('plan-back-btn').addEventListener('click', () => {
+      document.getElementById('plan-detail-overlay').classList.remove('open');
+      state.currentPlanId = null;
+    });
+
+    document.getElementById('mark-today-btn').addEventListener('click', () => {
+      const plan = state.studyPlans.find(p => p.id === state.currentPlanId);
+      if (!plan) return;
+      const next = plan.entries.find(e => !e.completed);
+      if (!next) { showToast('info', t('all_readings_complete') || 'All readings complete! 🎉'); return; }
+      next.completed = true;
+      next.completedAt = new Date().toISOString();
+      saveState();
+      renderPlanDetail(plan);
+      renderStudyPage();
+      updateHomePlanWidget();
+      showToast('success', `${t('marked') || 'Marked'}: ${next.book} ${next.chapter}`);
+    });
+
+    // Plan Actions Dropdown
+    const planActionsBtn = document.getElementById('plan-actions-btn');
+    const planActionsMenu = document.getElementById('plan-actions-menu');
+    planActionsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      planActionsMenu.classList.toggle('open');
+    });
+    planActionsMenu.addEventListener('click', () => planActionsMenu.classList.remove('open'));
+
+    document.getElementById('edit-plan-btn').addEventListener('click', () => {
+      const plan = state.studyPlans.find(p => p.id === state.currentPlanId);
+      if (!plan) return;
+      state.editingPlanId = plan.id;
+      document.getElementById('plan-modal-title').textContent = 'Edit Plan';
+      document.getElementById('save-plan-btn').textContent = 'Save Changes';
+      document.getElementById('plan-title-input').value = plan.title;
+      document.getElementById('plan-desc-input').value = plan.description || '';
+      document.getElementById('plan-date-input').value = plan.targetDate || '';
+      document.getElementById('plan-reminder-input').value = plan.reminderTime || '';
+      const langSel = document.getElementById('plan-lang-select');
+      if (langSel) {
+        langSel.value = plan.bibleLang || state.bibleLang;
+        if (langSel.dataset.customInit === 'true') {
+          updateCustomSelect('plan-lang-select');
+        } else {
+          initCustomSelect('plan-lang-select', true);
+        }
+        const container = langSel.parentNode;
+        if (container && container.classList.contains('app-select-container')) {
+          container.style.marginBottom = '0';
+        }
+      }
+
+      // Populate and set Date/Time
+      populatePlanPickers();
+      if (plan.targetDate) {
+        const [y, m, d] = plan.targetDate.split('-');
+        document.getElementById('plan-year-select').value = y;
+        document.getElementById('plan-month-select').value = parseInt(m) - 1;
+        document.getElementById('plan-day-select').value = parseInt(d);
+      }
+      if (plan.reminderTime) {
+        let [h, m] = plan.reminderTime.split(':');
+        h = parseInt(h);
+        const period = h >= 12 ? 'PM' : 'AM';
+        const displayH = h % 12 || 12;
+        document.getElementById('plan-hour-select').value = displayH;
+        document.getElementById('plan-min-select').value = m;
+        document.getElementById('plan-period-select').value = period;
+      }
+      ['plan-day-select', 'plan-month-select', 'plan-year-select', 'plan-hour-select', 'plan-min-select', 'plan-period-select'].forEach(id => {
+        updateCustomSelect(id);
+      });
+
+      renderModalEntryPreview(plan.entries);
+      pendingEntries = [...plan.entries];
+      setActivePreset('custom', true);
+      openModal('study-plan-modal');
+    });
+
+    document.getElementById('delete-plan-btn').addEventListener('click', async () => {
+      const plan = state.studyPlans.find(p => p.id === state.currentPlanId);
+      if (!plan) return;
+      const confirmed = await showConfirm({
+        title: t('delete_plan'),
+        message: `${t('delete_plan_confirm') || 'Delete plan'} "${plan.title}"?`,
+        confirmText: t('btn_delete'),
+        isDanger: true
+      });
+      if (!confirmed) return;
+      // Delete from Supabase
+      if (state.user) await supabaseClient.from('bible_plans').delete().eq('id', plan.id);
+      state.studyPlans = state.studyPlans.filter(p => p.id !== plan.id);
+      document.getElementById('plan-detail-overlay').classList.remove('open');
+      renderStudyPage();
+      updateHomePlanWidget();
+      showToast('success', t('plan_deleted') || 'Plan deleted');
+    });
+
+    // New Plan button
+    let pendingEntries = [];
+
+    function renderModalEntryPreview(entries) {
+      pendingEntries = entries ? [...entries] : [];
+      const preview = document.getElementById('plan-entries-preview');
+      if (pendingEntries.length === 0) { preview.innerHTML = ''; return; }
+      preview.innerHTML = pendingEntries.map((e, i) =>
+        `<div style="display:flex; align-items:center; justify-content:space-between; padding:6px 10px; background:var(--surface-2); border-radius:var(--r-md); font-size:13px;">
+          <span>${e.book} ${e.chapter}</span>
+          <button onclick="pendingEntries.splice(${i},1); renderModalEntryPreview(pendingEntries)" style="color:var(--error); font-size:12px; font-weight:600;">✕</button>
+        </div>`).join('');
+    }
+
+    function populatePlanPickers() {
+      // Date Pickers
+      const daySel = document.getElementById('plan-day-select');
+      const monthSel = document.getElementById('plan-month-select');
+      const yearSel = document.getElementById('plan-year-select');
+
+      const days = [];
+      for (let i = 1; i <= 31; i++) days.push(`<option value="${i}">${i}</option>`);
+      daySel.innerHTML = days.join('');
+
+      const mRes = t('months');
+      const monthNames = Array.isArray(mRes) ? mRes : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      monthSel.innerHTML = monthNames.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+
+      const currYear = new Date().getFullYear();
+      const years = [];
+      for (let i = 0; i < 6; i++) years.push(`<option value="${currYear + i}">${currYear + i}</option>`);
+      yearSel.innerHTML = years.join('');
+
+      // Time Pickers
+      const hourSel = document.getElementById('plan-hour-select');
+      const minSel = document.getElementById('plan-min-select');
+      const periodSel = document.getElementById('plan-period-select');
+
+      const hours = [];
+      for (let i = 1; i <= 12; i++) hours.push(`<option value="${i}">${i}</option>`);
+      hourSel.innerHTML = hours.join('');
+
+      const mins = [];
+      for (let i = 0; i < 60; i += 5) {
+        const val = i.toString().padStart(2, '0');
+        mins.push(`<option value="${val}">${val}</option>`);
+      }
+      minSel.innerHTML = mins.join('');
+
+      periodSel.innerHTML = `<option value="AM">AM</option><option value="PM">PM</option>`;
+
+      // Init or Update
+      ['plan-day-select', 'plan-month-select', 'plan-year-select', 'plan-hour-select', 'plan-min-select', 'plan-period-select'].forEach((id, idx) => {
+        const sel = document.getElementById(id);
+        if (sel.dataset.customInit === 'true') {
+          updateCustomSelect(id);
+        } else {
+          initCustomSelect(id, true);
+          const container = sel.parentNode;
+          if (container && container.classList.contains('app-select-container')) {
+            container.style.marginBottom = '0';
+            // Custom flex distribution
+            if (id.includes('day')) container.style.flex = '1';
+            if (id.includes('month')) container.style.flex = '2';
+            if (id.includes('year')) container.style.flex = '1.5';
+            if (id.includes('hour') || id.includes('min')) container.style.flex = '1';
+            if (id.includes('period')) container.style.flex = '1.2';
+          }
+        }
+      });
+    }
+
+    function populatePlanBookSelect() {
+      const lang = document.getElementById('plan-lang-select').value || 'en';
+      const books = lang === 'sw' ? BIBLE_BOOKS_SW : BIBLE_BOOKS_EN;
+      const sel = document.getElementById('plan-book-select');
+      sel.innerHTML = books.map(b => `<option value="${b}">${b}</option>`).join('');
+      // If already initialized, just refresh options. Otherwise initialize fresh.
+      if (sel.dataset.customInit === 'true') {
+        updateCustomSelect('plan-book-select');
+      } else {
+        // Remove bottom margin since we handle layout manually
+        sel.style.marginBottom = '0';
+        initCustomSelect('plan-book-select', true);
+        // Remove extra margin and set flex
+        const container = sel.parentNode;
+        if (container && container.classList.contains('app-select-container')) {
+          container.style.marginBottom = '0';
+          container.style.flex = '2';
+          container.style.width = 'auto'; // Let flex take over
+        }
+      }
+      populatePlanChapters();
+    }
+
+    function populatePlanChapters() {
+      const lang = document.getElementById('plan-lang-select').value || 'en';
+      const book = document.getElementById('plan-book-select').value;
+      const count = getBookChapters(book, lang);
+      const fromSel = document.getElementById('plan-ch-from');
+      const toSel = document.getElementById('plan-ch-to');
+
+      const options = [];
+      for (let i = 1; i <= count; i++) {
+        options.push(`<option value="${i}">${i}</option>`);
+      }
+      fromSel.innerHTML = options.join('');
+      toSel.innerHTML = options.join('');
+
+      // Select first and last by default for convenience
+      fromSel.value = 1;
+      toSel.value = count;
+
+      if (fromSel.dataset.customInit === 'true') {
+        updateCustomSelect('plan-ch-from');
+        updateCustomSelect('plan-ch-to');
+      } else {
+        initCustomSelect('plan-ch-from', true);
+        initCustomSelect('plan-ch-to', true);
+        // Compact layout
+        [fromSel.parentNode, toSel.parentNode].forEach(c => {
+          if (c && c.classList.contains('app-select-container')) {
+            c.style.marginBottom = '0';
+            c.style.flex = '1';
+            c.style.width = 'auto'; // Let flex take over
+          }
+        });
+      }
+    }
+
+    // Listen for book change to refresh chapters
+    document.getElementById('plan-book-select').addEventListener('change', populatePlanChapters);
+    document.getElementById('plan-lang-select').addEventListener('change', populatePlanBookSelect);
+
+    // OT = first 39 books, NT = last 27 books
+    function generateEntriesForBooks(books, lang = 'en') {
+      const entries = [];
+      books.forEach(book => {
+        const chapCount = getBookChapters(book, lang);
+        for (let ch = 1; ch <= chapCount; ch++) {
+          entries.push({ id: 'pe' + Date.now() + book + ch, book, chapter: ch, completed: false, completedAt: null });
+        }
+      });
+      return entries;
+    }
+
+    function setActivePreset(preset, skipReset = false) {
+      const otBtn = document.getElementById('preset-ot-btn');
+      const ntBtn = document.getElementById('preset-nt-btn');
+      const customBtn = document.getElementById('preset-custom-btn');
+      const picker = document.getElementById('custom-book-picker');
+      const lang = document.getElementById('plan-lang-select').value || 'en';
+      const books_en = BIBLE_BOOKS_EN;
+      const books_sw = BIBLE_BOOKS_SW;
+      const ot_books = (lang === 'sw' ? books_sw : books_en).slice(0, 39);
+      const nt_books = (lang === 'sw' ? books_sw : books_en).slice(39);
+
+      [otBtn, ntBtn, customBtn].forEach(b => b && b.classList.remove('active'));
+      if (preset === 'ot') {
+        otBtn.classList.add('active');
+        picker.style.display = 'none';
+        pendingEntries = generateEntriesForBooks(ot_books, lang);
+        renderModalEntryPreview(pendingEntries);
+      } else if (preset === 'nt') {
+        ntBtn.classList.add('active');
+        picker.style.display = 'none';
+        pendingEntries = generateEntriesForBooks(nt_books, lang);
+        renderModalEntryPreview(pendingEntries);
+      } else {
+        customBtn.classList.add('active');
+        picker.style.display = '';
+        if (!skipReset) {
+          pendingEntries = [];
+          renderModalEntryPreview(pendingEntries);
+        }
+      }
+    }
+
+    document.getElementById('preset-ot-btn').addEventListener('click', () => setActivePreset('ot'));
+    document.getElementById('preset-nt-btn').addEventListener('click', () => setActivePreset('nt'));
+    document.getElementById('preset-custom-btn').addEventListener('click', () => setActivePreset('custom'));
+
+    document.getElementById('new-plan-btn').addEventListener('click', () => {
+      state.editingPlanId = null;
+      const titleEl = document.getElementById('plan-modal-title');
+      if (titleEl) {
+        titleEl.textContent = t('new_plan');
+        titleEl.setAttribute('data-i18n', 'new_plan');
+      }
+      const saveBtn = document.getElementById('save-plan-btn');
+      if (saveBtn) {
+        saveBtn.textContent = t('btn_save');
+        saveBtn.setAttribute('data-i18n', 'btn_save');
+      }
+      document.getElementById('plan-title-input').value = '';
+      document.getElementById('plan-desc-input').value = '';
+
+      populatePlanPickers();
+      // Set some defaults (e.g. today, 8:00 AM)
+      const now = new Date();
+      document.getElementById('plan-year-select').value = now.getFullYear();
+      document.getElementById('plan-month-select').value = now.getMonth();
+      document.getElementById('plan-day-select').value = now.getDate();
+      document.getElementById('plan-hour-select').value = 8;
+      document.getElementById('plan-min-select').value = '00';
+      document.getElementById('plan-period-select').value = 'AM';
+      ['plan-day-select', 'plan-month-select', 'plan-year-select', 'plan-hour-select', 'plan-min-select', 'plan-period-select'].forEach(id => updateCustomSelect(id));
+
+      const langSel = document.getElementById('plan-lang-select');
+      if (langSel) {
+        langSel.value = state.bibleLang;
+        if (langSel.dataset.customInit === 'true') {
+          updateCustomSelect('plan-lang-select');
+        } else {
+          initCustomSelect('plan-lang-select', true);
+        }
+        const container = langSel.parentNode;
+        if (container && container.classList.contains('app-select-container')) {
+          container.style.marginBottom = '0';
+        }
+      }
+      renderModalEntryPreview([]);
+      setActivePreset('custom');
+      populatePlanBookSelect();
+      openModal('study-plan-modal');
+    });
+
+    document.getElementById('add-book-btn').addEventListener('click', () => {
+      const book = document.getElementById('plan-book-select').value;
+      const chaps = generateEntriesForBooks([book]);
+      chaps.forEach(c => {
+        if (!pendingEntries.find(e => e.book === c.book && e.chapter === c.chapter)) {
+          pendingEntries.push(c);
+        }
+      });
+      renderModalEntryPreview(pendingEntries);
+      showToast('success', `${t('added') || 'Added'} ${book}`);
+    });
+
+
+    document.getElementById('add-readings-btn').addEventListener('click', () => {
+      const book = document.getElementById('plan-book-select').value;
+      const from = parseInt(document.getElementById('plan-ch-from').value) || 1;
+      const maxCh = getBookChapters(book);
+      const to = Math.min(parseInt(document.getElementById('plan-ch-to').value) || from, maxCh);
+      for (let ch = from; ch <= to; ch++) {
+        if (!pendingEntries.find(e => e.book === book && e.chapter === ch)) {
+          pendingEntries.push({ id: 'pe' + Date.now() + ch, book, chapter: ch, completed: false, completedAt: null });
+        }
+      }
+      renderModalEntryPreview(pendingEntries);
+      document.getElementById('plan-ch-from').value = '';
+      document.getElementById('plan-ch-to').value = '';
+    });
+
+    document.getElementById('save-plan-btn').addEventListener('click', () => {
+      const title = document.getElementById('plan-title-input').value.trim();
+      if (!title) { showToast('error', t('error_plan_title') || 'Please enter a plan title'); return; }
+
+      // Construct date YYYY-MM-DD
+      const year = document.getElementById('plan-year-select').value;
+      const month = (parseInt(document.getElementById('plan-month-select').value) + 1).toString().padStart(2, '0');
+      const day = document.getElementById('plan-day-select').value.padStart(2, '0');
+      const targetDate = `${year}-${month}-${day}`;
+
+      // Construct time HH:MM (24h)
+      let hour = parseInt(document.getElementById('plan-hour-select').value);
+      const min = document.getElementById('plan-min-select').value;
+      const period = document.getElementById('plan-period-select').value;
+      if (period === 'PM' && hour < 12) hour += 12;
+      if (period === 'AM' && hour === 12) hour = 0;
+      const reminderTime = `${hour.toString().padStart(2, '0')}:${min}`;
+
+      const bibleLang = document.getElementById('plan-lang-select').value || state.bibleLang;
+      const description = document.getElementById('plan-desc-input').value.trim();
+
+      if (state.editingPlanId) {
+        const plan = state.studyPlans.find(p => p.id === state.editingPlanId);
+        if (plan) {
+          plan.title = title;
+          plan.description = description;
+          plan.targetDate = targetDate;
+          plan.reminderTime = reminderTime;
+          plan.bibleLang = bibleLang;
+          plan.entries = pendingEntries;
+          document.getElementById('plan-detail-title').textContent = title;
+          renderPlanDetail(plan);
+          showToast('success', t('plan_updated') || 'Plan updated');
+        }
+      } else {
+        const newPlan = {
+          id: 'bp' + Date.now(), title, description, targetDate, reminderTime, bibleLang,
+          entries: pendingEntries, created: new Date().toISOString()
+        };
+        state.studyPlans.push(newPlan);
+        showToast('success', `${t('plan_created') || 'Plan created'}: ${title}`);
+      }
+      saveState();
+      closeModal('study-plan-modal');
+      renderStudyPage();
+      updateHomePlanWidget();
+      scheduleStudyReminders();
+    });
+
+    document.getElementById('cancel-plan-btn').addEventListener('click', () => closeModal('study-plan-modal'));
+
+    // Home widget
+    function updateHomePlanWidget() {
+      const plans = (state.studyPlans || []).filter(p => getPlanProgress(p).pct < 100);
+      const titleEl = document.getElementById('home-plan-title');
+      const subEl = document.getElementById('home-plan-sub');
+      const progressEl = document.getElementById('home-plan-progress');
+      if (!titleEl) return;
+      if (plans.length === 0) {
+        titleEl.textContent = 'No active plans';
+        subEl.textContent = 'Tap to create a reading plan';
+        progressEl.style.width = '0%';
+        return;
+      }
+      // Pick the plan with the nearest target date, or first
+      const sorted = plans.sort((a, b) => {
+        if (!a.targetDate) return 1;
+        if (!b.targetDate) return -1;
+        return new Date(a.targetDate) - new Date(b.targetDate);
+      });
+      const plan = sorted[0];
+      const { done, total, pct } = getPlanProgress(plan);
+      const next = plan.entries.find(e => !e.completed);
+      titleEl.textContent = plan.title;
+      subEl.textContent = next ? `Up next: ${next.book} ${next.chapter} · ${done}/${total} done` : 'All caught up!';
+      progressEl.style.width = pct + '%';
+    }
+
+    document.getElementById('reading-plan-card').addEventListener('click', () => navigateTo('study'));
+
+    // Browser Notification Reminders
+    function scheduleStudyReminders() {
+      if (!('Notification' in window)) return;
+      const now = new Date();
+      const plansWithReminders = (state.studyPlans || []).filter(p => p.reminderTime && getPlanProgress(p).pct < 100);
+      plansWithReminders.forEach(plan => {
+        const [hh, mm] = plan.reminderTime.split(':').map(Number);
+        const fire = new Date();
+        fire.setHours(hh, mm, 0, 0);
+        let delay = fire - now;
+        if (delay < 0) delay += 86400000; // tomorrow
+        if (delay > 86400000) return; // only schedule within 24h
+        setTimeout(async () => {
+          if (getPlanProgress(plan).pct >= 100) return;
+          if (Notification.permission === 'granted') {
+            new Notification('📖 Bible Notes — Study Reminder', {
+              body: `Time to read: ${plan.title}`,
+              icon: 'app logo.PNG'
+            });
+          } else if (Notification.permission !== 'denied') {
+            const perm = await Notification.requestPermission();
+            if (perm === 'granted') {
+              new Notification('📖 Bible Notes — Study Reminder', {
+                body: `Time to read: ${plan.title}`,
+                icon: 'app logo.PNG'
+              });
+            }
+          }
+        }, delay);
+      });
+    }
+
+    // Populate book select on modal open and schedule reminders on init
+    populatePlanBookSelect();
+    setTimeout(() => {
+      updateHomePlanWidget();
+      scheduleStudyReminders();
+    }, 2000); // Wait for syncPull to finish
   </script>
 
 
