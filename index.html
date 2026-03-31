@@ -596,27 +596,6 @@
       transform: translateY(0);
     }
 
-    /* ── Editor header: fixed to viewport like .top-nav, keyboard-proof ── */
-    .editor-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 300;
-      display: flex;
-      flex-direction: column;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      transform: translateY(-100%);
-      transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
-      pointer-events: none;
-    }
-
-    .editor-overlay.open .editor-header {
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-
     .editor-topbar {
       display: flex;
       align-items: center;
@@ -625,6 +604,7 @@
       padding-top: calc(12px + var(--safe-top, env(safe-area-inset-top, 0px)));
       background: var(--surface);
       border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
     }
 
     .editor-back-btn {
@@ -686,6 +666,7 @@
       padding: 8px 16px;
       background: var(--surface);
       border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0;
       overflow: visible;
       scrollbar-width: none;
     }
@@ -735,12 +716,23 @@
       padding: 6px 12px;
       background: var(--surface);
       border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0;
       overflow-x: auto;
       scrollbar-width: none;
     }
 
     .editor-toolbar::-webkit-scrollbar {
       display: none;
+    }
+
+    .editor-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid var(--border);
     }
 
     .toolbar-btn {
@@ -804,7 +796,6 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 16px;
-      padding-top: calc(var(--editor-header-h, 130px) + 16px);
     }
 
     .editor-content {
@@ -2158,13 +2149,10 @@
 
     .ref-preview-modal {
       border: 1px solid var(--border-soft);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      max-width: 400px !important;
-      /* Slightly wider than standard confirm cards for scripture */
-      text-align: left;
-      /* Reset confirm-card text-align */
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      max-width: 400px !important; /* Slightly wider than standard confirm cards for scripture */
+      text-align: left; /* Reset confirm-card text-align */
     }
-
     .bible-text-display {
       font-family: 'Lora', 'Georgia', serif;
       font-size: 1.1rem;
@@ -2175,7 +2163,6 @@
       border-radius: 12px;
       border-left: 4px solid var(--brand);
     }
-
     .ref-source-box {
       background: var(--card-bg);
       border: 1px solid var(--border-soft);
@@ -2891,29 +2878,22 @@
   <div class="modal-confirm-overlay" id="ref-preview-modal">
     <div class="modal-confirm-card ref-preview-modal">
       <div class="modal-header">
-        <h2 id="ref-preview-title" style="font-family:'Outfit',sans-serif; font-weight:600; color:var(--primary);">Verse
-        </h2>
+        <h2 id="ref-preview-title" style="font-family:'Outfit',sans-serif; font-weight:600; color:var(--primary);">Verse</h2>
         <button class="modal-close" onclick="closeModal('ref-preview-modal')">&times;</button>
       </div>
       <div class="modal-body" style="padding-top:0;">
         <div id="ref-preview-scripture" class="bible-text-display" style="margin-bottom:20px;"></div>
-
+        
         <div class="ref-source-box">
-          <div
-            style="font-size:12px; color:var(--text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">
-            Captured in Note</div>
+          <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Captured in Note</div>
           <div id="ref-preview-note-title" style="font-weight:600; color:var(--text-primary); margin-bottom:4px;"></div>
-          <div id="ref-preview-snippet"
-            style="font-style:italic; color:var(--text-secondary); font-size:14px; border-left:3px solid var(--primary-light); padding-left:12px; margin-top:8px;">
-          </div>
+          <div id="ref-preview-snippet" style="font-style:italic; color:var(--text-secondary); font-size:14px; border-left:3px solid var(--primary-light); padding-left:12px; margin-top:8px;"></div>
         </div>
       </div>
       <div class="modal-footer" style="padding-top:10px;">
-        <button class="modal-btn modal-btn--secondary" style="background:var(--error-light); color:var(--error);"
-          id="ref-delete-btn">Delete</button>
+        <button class="modal-btn modal-btn--secondary" style="background:var(--error-light); color:var(--error);" id="ref-delete-btn">Delete</button>
         <div style="flex:1;"></div>
-        <button class="modal-btn modal-btn--secondary" onclick="closeModal('ref-preview-modal')"
-          data-i18n="btn_close">Close</button>
+        <button class="modal-btn modal-btn--secondary" onclick="closeModal('ref-preview-modal')" data-i18n="btn_close">Close</button>
         <button class="modal-btn" id="ref-go-to-note-btn">Go to Note</button>
       </div>
     </div>
@@ -4395,15 +4375,6 @@
       saveBtn.textContent = 'Save';
       saveBtn.classList.remove('saved');
       editor.classList.add('open');
-
-      // Measure the fixed editor-header height so editor-body pads correctly
-      const syncHeaderHeight = () => {
-        const h = editor.querySelector('.editor-header');
-        if (h) document.documentElement.style.setProperty('--editor-header-h', h.offsetHeight + 'px');
-      };
-      requestAnimationFrame(syncHeaderHeight);
-      // Re-measure if fonts/layout shift slightly after transition
-      setTimeout(syncHeaderHeight, 350);
 
       // async pre-load bible data
       loadBibleData(state.bibleLang);
